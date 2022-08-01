@@ -1,0 +1,50 @@
+- name: install wallabag dependencies
+  apt:
+    name:
+      - composer
+      - gettext
+      - git
+      - nginx
+      - php-bcmath
+      - php-curl
+      - php-fpm
+      - php-gd
+      - php-intl
+      - php-sqlite3
+      - php-tidy
+      - php-xml
+- name: make base folder
+  file:
+    path: "/var/www/wallabag.tristanhavelick.com"
+    owner: 'www-data'
+    group: 'www-data'
+    state: directory
+- name: clone the repo
+  register: wallabag_clone
+  git:
+    repo: https://github.com/wallabag/wallabag.git
+    dest: /var/www/wallabag.tristanhavelick.com/public_html
+    version: '2.4.2'
+    single_branch: yes
+    depth: 1
+    clone: yes
+    update: yes
+- name: fix permissions on the repo
+  when: wallabag_clone.changed
+  file:
+    group: 'www-data'
+    owner: 'www-data'
+    path: "/var/www/wallabag.tristanhavelick.com/public_html"
+    state: directory
+    recurse: yes
+- name: make the log folder
+  file:
+    group: 'www-data'
+    owner: 'www-data'
+    path: "/var/www/wallabag.tristanhavelick.com/logs"
+    state: directory
+
+
+
+
+
