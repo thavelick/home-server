@@ -1,0 +1,9 @@
+---
+wallabag_domain: "{{ lookup('env', 'WALLABAG_DOMAIN') }}"
+wallabag_site_root: "{{ lookup('env', 'WALLABAG_SITE_ROOT') }}"
+wallabag_secret: "{{ lookup('env', 'WALLABAG_SECRET') }}"
+wallabag_server_name: "{{ lookup('env', 'WALLABAG_SERVER_NAME') }}"
+wallabag_email: "{{ lookup('env', 'WALLABAG_EMAIL') }}"
+wallabag_email_password: "{{ lookup('env', 'WALLABAG_EMAIL_PASSWORD') }}"
+wallabag_admin_user: "{{ lookup('env', 'WALLABAG_ADMIN_USER') }}"
+wallabag_admin_password: "{{ lookup('env', 'WALLABAG_ADMIN_PASSWORD') }}"
