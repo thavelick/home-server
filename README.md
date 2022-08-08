@@ -31,7 +31,6 @@ These scripts set up the following services:
     cat > hosts <<EOF
     [servers]
     my-server.dev.local
-    localhost ansible_port=2200 ansible_user='vagrant' ansible_ssh_private_key_file='/home/someuser/Projects/home-server/.vagrant/machines/default/virtualbox/private_key'
 
     [servers.vars]
     wallabag_domain=wallabag.dev.local
