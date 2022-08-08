@@ -5,9 +5,20 @@
     upgrade: yes
     update_cache: yes
     cache_valid_time: 86400 # One day
-- name: install some tools
+- name: install common packages
   apt:
     name:
       - acl
       - curl
+      - nginx
       - vim
+- name: copy nginx sever config
+  register: nginx_config
+  copy:
+    src: files/nginx.conf
+    dest: /etc/nginx/nginx.conf
+- name: restart nginx
+  when: nginx_config.changed
+  service:
+    name: nginx
+    state: restarted
