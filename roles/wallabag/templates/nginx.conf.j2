@@ -14,21 +14,19 @@ server {
 	    fastcgi_param DOCUMENT_ROOT $realpath_root;
 	    internal;
 	}
-	listen 80;
 
-    # listen 443 ssl;
-    # ssl_certificate /var/www/certs/{wallabag_domain}}/fullchain.pem;
-    # ssl_certificate_key /var/www/certs/{wallabag_domain}}/privkey.pem;
-    # include /etc/letsencrypt/options-ssl-nginx.conf;
-    # ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+	client_max_body_size 10M;
 
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/{{wallabag_domain}}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{wallabag_domain}}/privkey.pem;
 }
 
-# server {
-#     if ($host = {wallabag_domain}}) {
-#         return 301 https://$host$request_uri;
-#     }
-# 	server_name {wallabag_domain}};
-#     listen 80;
-#     return 404;
-# }
+server {
+    if ($host = {{wallabag_domain}}) {
+        return 301 https://$host$request_uri;
+    }
+	server_name {{wallabag_domain}};
+    listen 80;
+    return 404;
+}
