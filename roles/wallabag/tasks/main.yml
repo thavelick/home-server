@@ -50,12 +50,14 @@
     working_dir: "{{wallabag_site_root}}/public_html"
 - name: run the wallabag installer
   become_user: www-data
+  when: wallabag_clone.changed
   shell: >
     /usr/bin/php {{wallabag_site_root}}/public_html/bin/console
     wallabag:install
     --env=prod
     --no-interaction
 - name: set the wallabag admin password
+  when: wallabag_clone.changed
   become_user: www-data
   shell: >
     /usr/bin/php {{wallabag_site_root}}/public_html/bin/console
