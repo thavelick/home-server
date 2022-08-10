@@ -4,6 +4,7 @@ A set of ansible scripts for setting up my home server.
 
 ## Services
 These scripts set up the following services:
+* [Just Bangs](https://github.com/thavelick/just-bangs)
 * [Wallabag](https://wallabag.org)
 
 ## Upcoming services
