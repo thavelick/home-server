@@ -23,3 +23,6 @@
   service:
     name: nginx
     state: restarted
+- name: set the timezone to mountain time
+  timezone:
+    name: America/Denver
