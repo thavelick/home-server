@@ -9,11 +9,7 @@ These scripts set up the following services:
 ## Upcoming services
 * [Miniflux](https://miniflux.net)
 * [Kiwix](https://kiwix.org)
-* [Just Bangs](https://github.com/thavelick/just-bangs)
 * [YouTranscript](https://github.com/thavelick/youtranscript)
-
-## Other Todo:
-* Add SSL support
 
 ## Usage
 
@@ -24,15 +20,15 @@ These scripts set up the following services:
     ```
 2. Install Ansible
     > See the [Ansible documentation](https://docs.ansible.com/ansible/latest/intro_installation.html)
-3. Install Vagrant
-    > See the [Vagrant documentation](https://www.vagrantup.com/docs/installation)
-4. Create an inventory file:
+3. Create an inventory file:
     ```bash
     cat > hosts <<EOF
     [servers]
     my-server.dev.local
 
     [servers.vars]
+    just_bangs_domain=bangs.dev.local
+    just_bangs_site_root=/var/www/bangs.dev.local
     wallabag_domain=wallabag.dev.local
     wallabag_site_root=/var/www/wallabag.dev.local
     wallabag_secret="my super secret secret"
@@ -43,7 +39,7 @@ These scripts set up the following services:
     wallabag_admin_password=an-even-better-password
     EOF
     ```
-5. Run the playbook:
+4. Run the playbook:
     ```bash
     ansible-playbook -i hosts playbook.yml
     ```

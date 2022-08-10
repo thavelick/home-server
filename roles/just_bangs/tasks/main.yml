@@ -1,0 +1,63 @@
+- name: install just-bangs dependencies
+  apt:
+    name:
+      - python3
+- name: make base folder
+  file:
+    path: "{{just_bangs_site_root}}"
+    state: directory
+    owner: 'www-data'
+    group: 'www-data'
+- name: clone the repo
+  register: just_bangs_clone
+  become_user: 'www-data'
+  git:
+    repo: https://github.com/thavelick/just-bangs.git
+    dest: "{{just_bangs_site_root}}/public_html"
+    version: main
+    single_branch: yes
+    depth: 1
+    clone: yes
+    update: yes
+- name: check if the duckduckgo bangs file already exists
+  register: bangs_file
+  stat:
+    path: "{{just_bangs_site_root}}/public_html/bang.js"
+- name: pull down the duckduckgo bangs file (if it doesn't exist)
+  become_user: 'www-data'
+  when: not bangs_file.stat.exists
+  get_url:
+    url: https://duckduckgo.com/bang.js
+    dest: "{{just_bangs_site_root}}/public_html/bang.js"
+- name: copy the custom bangs file
+  become_user: 'www-data'
+  copy:
+    src: files/custom-bang.js
+    dest: "{{just_bangs_site_root}}/public_html/custom-bang.js"
+- name: create the systemd service
+  template:
+    src: templates/just-bangs.service.j2
+    dest: /etc/systemd/system/just-bangs.service
+- name: start and enable the systemd service
+  service:
+    name: just-bangs
+    enabled: yes
+    state: started
+- name: make the log folder
+  become_user: 'www-data'
+  file:
+    path: "{{just_bangs_site_root}}/logs"
+    state: directory
+- name: copy nginx site config
+  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{just_bangs_domain}}
+  register: just_bangs_nginx
+- name: enable the nginx site config
+  file:
+    dest: /etc/nginx/sites-enabled/{{just_bangs_domain}}
+    state: link
+    src: /etc/nginx/sites-available/{{just_bangs_domain}}
+- name: restart nginx
+  when: just_bangs_nginx.changed
+  service:
+    name: nginx
+    state: restarted
