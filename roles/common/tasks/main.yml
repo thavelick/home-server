@@ -11,6 +11,7 @@
       - acl
       - curl
       - nginx
+      - sqlite3
       - vim
 - name: copy nginx sever config
   register: nginx_config
