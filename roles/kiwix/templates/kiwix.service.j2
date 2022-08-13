@@ -1,0 +1,15 @@
+[Unit]
+Description=Kiwix
+After=syslog.target network.target
+
+[Service]
+# Note to self: I need to move this into a shell script because globs don't work
+# in systemd service files.
+ExecStart=/usr/bin/kiwix-serve --port 8181 {{kiwix_site_root}}/data/*.zim
+ExecStop=/usr/bin/pkill -f kiwix-serve
+Restart=on-failure
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,44 @@
+- name: install kiwix tools (includes kiwix-server)
+  apt:
+    name:
+      - kiwix-tools
+- name: make all the folders
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: 'www-data'
+    group: 'www-data'
+  with_items:
+    - "{{kiwix_site_root}}"
+    - "{{kiwix_site_root}}/data"
+    - "{{kiwix_site_root}}/logs"
+    - "{{kiwix_site_root}}/scripts"
+- name: copy the start script (with exec permissions)
+  copy:
+    src: files/start.sh
+    dest: "{{kiwix_site_root}}/scripts/start.sh"
+    owner: 'www-data'
+    group: 'www-data'
+    mode: '0755'
+- name: create the systemd service
+  template:
+    src: templates/kiwix.service.j2
+    dest: /etc/systemd/system/kiwix.service
+- name: start and enable the systemd service
+  service:
+    name: kiwix
+    enabled: yes
+    state: started
+- name: copy nginx site config
+  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{kiwix_domain}}
+  register: kiwix_nginx
+- name: enable the nginx site config
+  file:
+    dest: /etc/nginx/sites-enabled/{{kiwix_domain}}
+    state: link
+    src: /etc/nginx/sites-available/{{kiwix_domain}}
+- name: restart nginx
+  when: kiwix_nginx.changed
+  service:
+    name: nginx
+    state: restarted

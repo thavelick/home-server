@@ -6,6 +6,7 @@
     - common
     - geerlingguy.certbot
     - just_bangs
+    - kiwix
     - wallabag
   vars:
     certbot_create_if_missing: true
@@ -17,3 +18,4 @@
         - "home.tristanhavelick.com"
         - "{{just_bangs_domain}}"
         - "{{wallabag_domain}}"
+        - "{{kiwix_domain}}"

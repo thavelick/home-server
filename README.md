@@ -5,11 +5,11 @@ A set of ansible scripts for setting up my home server.
 ## Services
 These scripts set up the following services:
 * [Just Bangs](https://github.com/thavelick/just-bangs)
+* [Kiwix](https://kiwix.org)
 * [Wallabag](https://wallabag.org)
 
 ## Upcoming services
 * [Miniflux](https://miniflux.net)
-* [Kiwix](https://kiwix.org)
 * [YouTranscript](https://github.com/thavelick/youtranscript)
 
 ## Usage
@@ -30,6 +30,8 @@ These scripts set up the following services:
     [servers.vars]
     just_bangs_domain=bangs.dev.local
     just_bangs_site_root=/var/www/bangs.dev.local
+    kiwix_domain=kiwix.tristanhavelick.com
+    kiwix_site_root=/var/www/kiwix.tristanhavelick.com
     wallabag_domain=wallabag.dev.local
     wallabag_site_root=/var/www/wallabag.dev.local
     wallabag_secret="my super secret secret"
@@ -44,3 +46,7 @@ These scripts set up the following services:
     ```bash
     ansible-playbook -i hosts playbook.yml
     ```
+5. Copy/Upload zim files for kiwix to {{kiwix_site_root}}/data
+  * I thought about automating this, but many of these files are huge, making them easier to copy
+    locally if you have them, and it's often difficult to determine which is the newest or
+    best zim file in an automated fashion
