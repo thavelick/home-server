@@ -1,18 +1,26 @@
 [
     {
-        "t": "k",
-        "u": "http://kiwix.surface.local/search?pattern={{{s}}}"
-    },
-    {
         "t": "al",
-        "u": "https://wiki.archlinux.org/index.php?search={{{s}}}&title=Special%3ASearch&go=Go"
-    },
-    {
-        "t": "py",
-        "u": "https://docs.python.org/3/search.html?q={{{s}}}"
+        "u": "http://kiwix.tristanhavelick.com/search?content=archlinux_en_all_nopic_2021-10&pattern={{{s}}}"
     },
     {
         "t": "d",
-        "u": "https://duckduckgo.com/?q={{{s}}}"
+        "u": "https://lite.duckduckgo.com/lite?q={{{s}}}&kl=us-en"
+    },
+    {
+        "t": "k",
+        "u": "http://kiwix.tristanhavelick.com/search?pattern={{{s}}}"
+    },
+    {
+        "t": "m",
+        "u": "https://search.marginalia.nu/search?query={{{s}}}"
+    },
+    {
+        "t": "py",
+        "u": "http://kiwix.tristanhavelick.com/search?content=python-3.10.2&pattern={{{s}}}"
+    },
+    {
+        "t": "w",
+        "u": "http://kiwix.tristanhavelick.com/search?content=wikipedia_en_all&pattern={{{s}}}"
     }
 ]

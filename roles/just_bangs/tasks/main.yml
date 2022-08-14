@@ -31,6 +31,7 @@
     dest: "{{just_bangs_site_root}}/public_html/bang.js"
 - name: copy the custom bangs file
   become_user: 'www-data'
+  register: custom_bangs_file
   copy:
     src: files/custom-bang.js
     dest: "{{just_bangs_site_root}}/public_html/custom-bang.js"
@@ -60,4 +61,9 @@
   when: just_bangs_nginx.changed
   service:
     name: nginx
+    state: restarted
+- name: restart the just bangs service
+  when: custom_bangs_file.changed
+  service:
+    name: just-bangs
     state: restarted
