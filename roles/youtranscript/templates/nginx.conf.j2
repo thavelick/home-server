@@ -1,4 +1,10 @@
+limit_req_zone $binary_remote_addr zone=youtranscript_limit:10m rate=10r/s;
+
 server {
+    limit_req_status 429;
+    limit_conn_status 429;
+    limit_req zone=youtranscript_limit burst=10;
+
 	server_name {{youtranscript_domain}};
 	location / {
 		proxy_pass http://localhost:8008;
