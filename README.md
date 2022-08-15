@@ -28,20 +28,13 @@ These scripts set up the following services:
     my-server.dev.local
 
     [servers.vars]
-    just_bangs_domain=bangs.dev.local
-    just_bangs_site_root=/var/www/bangs.dev.local
-    kiwix_domain=kiwix.dev.local
-    kiwix_site_root=/var/www/kiwix.dev.local
-    wallabag_domain=wallabag.dev.local
-    wallabag_site_root=/var/www/wallabag.dev.local
+    certbot_admin_email=tristan@example.com
+    parent_domain=dev.local
     wallabag_secret="my super secret secret"
-    wallabag_server_name="Tristan's Wallabag"
     wallabag_email=tristan@example.com
     wallabag_email_password=a-really-good-password
     wallabag_admin_user=wallabag
     wallabag_admin_password=an-even-better-password
-    youtranscript_domain=youtranscript.dev.local
-    youtranscript_site_root=/var/www/youtranscript.dev.local
     EOF
     ```
 4. Run the playbook:
