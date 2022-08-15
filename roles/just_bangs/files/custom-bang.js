@@ -25,6 +25,6 @@
     },
     {
         "t": "ytt",
-        "u": "https://youtrascript.tristanhavelick.com/search?search_term={{{s}}}"
+        "u": "https://youtranscript.tristanhavelick.com/search?search_term={{{s}}}"
     }
 ]
