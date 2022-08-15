@@ -1,7 +1,3 @@
-- name: install just-bangs dependencies
-  apt:
-    name:
-      - python3
 - name: make base folder
   file:
     path: "{{just_bangs_site_root}}"

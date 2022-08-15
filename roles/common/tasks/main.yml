@@ -11,6 +11,7 @@
       - acl
       - curl
       - nginx
+      - python3
       - sqlite3
       - vim
 - name: copy nginx sever config

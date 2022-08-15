@@ -4,7 +4,6 @@
   become: yes
   roles:
     - common
-    - postgres
     - geerlingguy.certbot
     - just_bangs
     - kiwix
