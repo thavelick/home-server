@@ -1,0 +1,12 @@
+[Unit]
+Description=youTranscript
+After=syslog.target network.target
+
+[Service]
+WorkingDirectory={{youtranscript_site_root}}/public_html
+ExecStart={{youtranscript_site_root}}/public_html/youtranscript.py
+ExecStop=pkill youtranscript.py
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

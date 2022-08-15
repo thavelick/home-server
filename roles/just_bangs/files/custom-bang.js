@@ -1,7 +1,7 @@
 [
     {
         "t": "al",
-        "u": "http://kiwix.tristanhavelick.com/search?content=archlinux_en_all_nopic_2021-10&pattern={{{s}}}"
+        "u": "https://kiwix.tristanhavelick.com/search?content=archlinux_en_all_nopic_2021-10&pattern={{{s}}}"
     },
     {
         "t": "d",
@@ -9,7 +9,7 @@
     },
     {
         "t": "k",
-        "u": "http://kiwix.tristanhavelick.com/search?pattern={{{s}}}"
+        "u": "https://kiwix.tristanhavelick.com/search?pattern={{{s}}}"
     },
     {
         "t": "m",
@@ -17,10 +17,14 @@
     },
     {
         "t": "py",
-        "u": "http://kiwix.tristanhavelick.com/search?content=python-3.10.2&pattern={{{s}}}"
+        "u": "https://kiwix.tristanhavelick.com/search?content=python-3.10.2&pattern={{{s}}}"
     },
     {
         "t": "w",
-        "u": "http://kiwix.tristanhavelick.com/search?content=wikipedia_en_all&pattern={{{s}}}"
+        "u": "https://kiwix.tristanhavelick.com/search?content=wikipedia_en_all&pattern={{{s}}}"
+    },
+    {
+        "t": "ytt",
+        "u": "https://youtrascript.tristanhavelick.com/search?search_term={{{s}}}"
     }
 ]

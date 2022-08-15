@@ -1,0 +1,18 @@
+server {
+	server_name {{youtranscript_domain}};
+	location / {
+		proxy_pass http://localhost:8008;
+	}
+	listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/home.tristanhavelick.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/home.tristanhavelick.com/privkey.pem;
+}
+
+server {
+    if ($host = {{youtranscript_domain}}) {
+        return 301 https://$host$request_uri;
+    }
+	server_name {{youtranscript_domain}};
+    listen 80;
+    return 404;
+}
