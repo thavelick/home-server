@@ -6,11 +6,9 @@ A set of ansible scripts for setting up my home server.
 These scripts set up the following services:
 * [Just Bangs](https://github.com/thavelick/just-bangs)
 * [Kiwix](https://kiwix.org)
+* [Miniflux](https://miniflux.net)
 * [Wallabag](https://wallabag.org)
 * [YouTranscript](https://github.com/thavelick/youtranscript)
-
-## Upcoming services
-* [Miniflux](https://miniflux.net)
 
 ## Usage
 
@@ -30,6 +28,8 @@ These scripts set up the following services:
     [servers.vars]
     certbot_admin_email=tristan@example.com
     parent_domain=dev.local
+    miniflux_admin_password=good-password
+    miniflux_db_user_password=such-a-great-password
     wallabag_secret="my super secret secret"
     wallabag_email=tristan@example.com
     wallabag_email_password=a-really-good-password
@@ -45,3 +45,4 @@ These scripts set up the following services:
   * I thought about automating this, but many of these files are huge, making them easier to copy
     locally if you have them, and it's often difficult to determine which is the newest or
     best zim file in an automated fashion
+6. Visit all the sites!

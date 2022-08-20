@@ -1,0 +1,67 @@
+- name: install postgresql
+  apt: name=postgresql state=present
+- name: install psycopg2 (needed by ansible for postgresql commands)
+  apt: name=python3-psycopg2 state=present
+- name: create the miniflux database
+  become_user: postgres
+  postgresql_db:
+    name: "{{miniflux_db}}"
+- name: create a miniflux db user
+  become_user: postgres
+  postgresql_user:
+    name: "{{miniflux_db_user_name}}"
+    db: "{{miniflux_db}}"
+    password: "{{miniflux_db_user_password}}"
+    state: present
+- name: give the miniflux db user privileges
+  become_user: postgres
+  postgresql_privs:
+    db: postgres
+    privs: ALL
+    type: database
+    obj: "{{miniflux_db}}"
+    role: "{{miniflux_db_user_name}}"
+- name: install miniflux
+  become: yes
+  apt:
+    deb: https://github.com/miniflux/v2/releases/download/2.0.38/miniflux_2.0.38_armhf.deb
+    state: present
+- name: add miniflux linux user
+  become: yes
+  user:
+    name: "{{ miniflux_linux_user }}"
+    home: "/var/empty"
+    create_home: "no"
+    system: "yes"
+    shell: "/bin/false"
+- name: create directory "/etc/miniflux.d"
+  become: yes
+  file:
+    path: /etc/miniflux.d
+    state: directory
+- name: copy miniflux.conf
+  become: yes
+  register: miniflux_conf
+  template:
+    src: "miniflux.conf"
+    dest: "/etc/miniflux.conf"
+- name: start miniflux.service
+  become: yes
+  systemd:
+    name: miniflux
+    state: restarted
+    enabled: yes
+  when: miniflux_conf.changed
+- name: copy nginx site config
+  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{miniflux_domain}}
+  register: miniflux_nginx
+- name: enable the nginx site config
+  file:
+    dest: /etc/nginx/sites-enabled/{{miniflux_domain}}
+    state: link
+    src: /etc/nginx/sites-available/{{miniflux_domain}}
+- name: restart nginx
+  when: miniflux_nginx.changed
+  service:
+    name: nginx
+    state: restarted
