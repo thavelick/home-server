@@ -9,6 +9,7 @@ These scripts set up the following services:
 * [Miniflux](https://miniflux.net)
 * [Wallabag](https://wallabag.org)
 * [YouTranscript](https://github.com/thavelick/youtranscript)
+* Dynamic DNS with Namecheap
 
 ## Usage
 
@@ -38,12 +39,14 @@ These scripts set up the following services:
     dynamicdns_password=aaaaaaaa11111111aaaaaaaa11111111
     EOF
     ```
-4. Run the playbook:
+4. Set up DNS At Name cheap
+
+5. Run the playbook:
     ```bash
     ansible-playbook -i hosts playbook.yml
     ```
-5. Copy/Upload zim files for kiwix to {{kiwix_site_root}}/data
+6. Copy/Upload zim files for kiwix to {{kiwix_site_root}}/data
   * I thought about automating this, but many of these files are huge, making them easier to copy
     locally if you have them, and it's often difficult to determine which is the newest or
     best zim file in an automated fashion
-6. Visit all the sites!
+7. Visit all the sites!
