@@ -35,6 +35,7 @@ These scripts set up the following services:
     wallabag_email_password=a-really-good-password
     wallabag_admin_user=wallabag
     wallabag_admin_password=an-even-better-password
+    dynamicdns_password=aaaaaaaa11111111aaaaaaaa11111111
     EOF
     ```
 4. Run the playbook:

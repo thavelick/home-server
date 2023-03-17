@@ -1,0 +1,16 @@
+---
+- name: Install ddclient package
+  apt:
+    name: ddclient
+    state: present
+- name: Copy ddclient configuration file
+  template:
+    src: templates/ddclient.conf.j2
+    dest: /etc/ddclient.conf
+    owner: root
+    group: root
+    mode: 0644
+- name: Start ddclient service
+  service:
+    name: ddclient
+    state: started

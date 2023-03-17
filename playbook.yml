@@ -10,6 +10,7 @@
     - miniflux
     - youtranscript
     - wallabag
+    - dynamicdns
   vars:
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
