@@ -1,7 +1,7 @@
 [
     {
         "t": "al",
-        "u": "https://kiwix.tristanhavelick.com/search?content=archlinux_en_all_nopic_2021-10&pattern={{{s}}}"
+        "u": "https://kiwix.tristanhavelick.com/search?content=archlinux_en_all_nopic_2022-05&pattern={{{s}}}"
     },
     {
         "t": "d",
