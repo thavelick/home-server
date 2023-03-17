@@ -21,10 +21,11 @@
     state: directory
 - name: clone the repo
   register: wallabag_clone
+  become_user: www-data
   git:
     repo: https://github.com/wallabag/wallabag.git
     dest: "{{wallabag_site_root}}/public_html"
-    version: '2.4.2'
+    version: '2.4.3'
     single_branch: yes
     depth: 1
     clone: yes
