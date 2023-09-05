@@ -20,10 +20,6 @@
         "u": "https://kiwix.tristanhavelick.com/search?content=python-3.10.2&pattern={{{s}}}"
     },
     {
-        "t": "w",
-        "u": "https://kiwix.tristanhavelick.com/search?content=wikipedia_en_all&pattern={{{s}}}"
-    },
-    {
         "t": "ytt",
         "u": "https://youtranscript.tristanhavelick.com/search?search_term={{{s}}}"
     }
