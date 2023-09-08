@@ -4,12 +4,20 @@
         "u": "https://kiwix.tristanhavelick.com/search?content=archlinux_en_all_nopic_2022-05&pattern={{{s}}}"
     },
     {
+        "t": "cl",
+        "u": "https://denver.craigslist.org/search/?query={{{s}}}"
+    },
+    {
         "t": "d",
         "u": "https://lite.duckduckgo.com/lite?q={{{s}}}&kl=us-en"
     },
     {
         "t": "k",
         "u": "https://kiwix.tristanhavelick.com/search?pattern={{{s}}}"
+    },
+    {
+        "t": "lg",
+        "u": "http://libgen.is/search.php?req={{{s}}}"
     },
     {
         "t": "m",
