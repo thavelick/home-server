@@ -12,6 +12,10 @@
         "u": "https://lite.duckduckgo.com/lite?q={{{s}}}&kl=us-en"
     },
     {
+        "t": "jw",
+        "u": "https://www.justwatch.com/us/search?q={{{s}}}"
+    },
+    {
         "t": "k",
         "u": "https://kiwix.tristanhavelick.com/search?pattern={{{s}}}"
     },
