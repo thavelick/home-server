@@ -12,6 +12,10 @@
         "u": "https://lite.duckduckgo.com/lite?q={{{s}}}&kl=us-en"
     },
     {
+        "t": "e",
+	"u": "https://www.ebay.com/sch/i.html?_nkw={{{s}}}&rt=nc&LH_ItemCondition=4"
+    },
+    {
         "t": "jw",
         "u": "https://www.justwatch.com/us/search?q={{{s}}}"
     },
