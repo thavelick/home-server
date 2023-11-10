@@ -1,0 +1,58 @@
+- name: install navidrome prerequisites
+  apt:
+    name:
+      - ffmpeg
+- name: download navidrome release from github
+  get_url:
+    url: https://github.com/navidrome/navidrome/releases/download/v0.49.3/navidrome_0.49.3_Linux_armv7.tar.gz
+    dest: /tmp/navidrome.tar.gz
+- name: make all the folders
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: 'www-data'
+    group: 'www-data'
+  with_items:
+    - "{{navidrome_site_root}}"
+    - "{{navidrome_site_root}}/music"
+    - "{{navidrome_site_root}}/logs"
+    - "{{navidrome_site_root}}/bin"
+    - "{{navidrome_site_root}}/conf"
+- name: extract the navidrome release
+  unarchive:
+    dest: "{{navidrome_site_root}}/bin"
+    src: /tmp/navidrome.tar.gz
+    remote_src: yes
+    owner: 'www-data'
+    group: 'www-data'
+    mode: '0755'
+    creates: "{{navidrome_site_root}}/bin/navidrome"
+- name: create the config file
+  template:
+    src: templates/navidrome.toml.j2
+    dest: "{{navidrome_site_root}}/conf/navidrome.toml"
+    owner: 'www-data'
+    group: 'www-data'
+    mode: '0644'
+- name: create the systemd service
+  template:
+    src: templates/navidrome.service.j2
+    dest: /etc/systemd/system/navidrome.service
+- name: start and enable the systemd service
+  service:
+    name: navidrome
+    enabled: yes
+    state: started
+- name: copy nginx site config
+  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{ navidrome_domain }}
+  register: navidrome_nginx
+- name: enable the nginx site config
+  file:
+    dest: /etc/nginx/sites-enabled/{{ navidrome_domain }}}
+    state: link
+    src: /etc/nginx/sites-available/{{ navidrome_domain }}
+- name: restart nginx
+  when: navidrome_nginx.changed
+  service:
+    name: nginx
+    state: restarted

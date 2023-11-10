@@ -8,6 +8,7 @@
     - just_bangs
     - kiwix
     - miniflux
+    - navidrome
     - youtranscript
     - wallabag
     - dynamicdns
@@ -18,6 +19,8 @@
     kiwix_site_root: /var/www/kiwix.{{parent_domain}}
     miniflux_domain: miniflux.{{parent_domain}}
     miniflux_site_root: /var/www/miniflux.{{parent_domain}}
+    navidrome_domain: navidrome.{{parent_domain}}
+    navidrome_site_root: /var/www/navidrome.{{parent_domain}}
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
@@ -38,5 +41,6 @@
         - "{{just_bangs_domain}}"
         - "{{kiwix_domain}}"
         - "{{miniflux_domain}}"
+        - "{{navidrome_domain}}"
         - "{{wallabag_domain}}"
         - "{{youtranscript_domain}}"
