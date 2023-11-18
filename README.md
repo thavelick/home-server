@@ -9,6 +9,8 @@ These scripts set up the following services:
 * [Miniflux](https://miniflux.net)
 * [Wallabag](https://wallabag.org)
 * [YouTranscript](https://github.com/thavelick/youtranscript)
+* [ChatPad](https://github.com/deiucanta/chatpad)
+* [Navidrome](https://www.navidrome.org)
 * Dynamic DNS with Namecheap
 
 ## Usage
