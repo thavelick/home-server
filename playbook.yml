@@ -5,6 +5,7 @@
   roles:
     - common
     - geerlingguy.certbot
+    - chatpad
     - just_bangs
     - kiwix
     - miniflux
@@ -13,6 +14,8 @@
     - wallabag
     - dynamicdns
   vars:
+    chatpad_domain: chatpad.{{parent_domain}}
+    chatpad_site_root: /var/www/chatpad.{{parent_domain}}
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
     kiwix_domain: kiwix.{{parent_domain}}
@@ -38,6 +41,7 @@
     certbot_certs:
       - domains:
         - "home.{{parent_domain}}"
+        - "{{chatpad_domain}}"
         - "{{just_bangs_domain}}"
         - "{{kiwix_domain}}"
         - "{{miniflux_domain}}"
