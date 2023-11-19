@@ -12,8 +12,20 @@
       - curl
       - nginx
       - python3
+      - python3-pip
       - sqlite3
       - vim
+- name: install passlib
+  pip:
+    name: passlib
+- name: make the htpassword file
+  htpasswd:
+    path: /etc/nginx/.htpasswd
+    name: "{{ nginx_username }}"
+    password: "{{ nginx_password }}"
+    owner: www-data
+    group: www-data
+    mode: 0640
 - name: copy nginx sever config
   register: nginx_config
   copy:

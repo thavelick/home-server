@@ -3,17 +3,19 @@
   hosts: all
   become: yes
   roles:
-    - common
-    - geerlingguy.certbot
-    - chatpad
-    - just_bangs
-    - kiwix
-    - miniflux
-    - navidrome
-    - searxng
-    - youtranscript
-    - wallabag
-    - dynamicdns
+    - role: common
+      tags: searxng
+    - role: geerlingguy.certbot
+    - role: chatpad
+    - role: just_bangs
+    - role: kiwix
+    - role: miniflux
+    - role: navidrome
+    - role: searxng
+      tags: searxng
+    - role: youtranscript
+    - role: wallabag
+    - role: dynamicdns
   vars:
     chatpad_domain: chatpad.{{parent_domain}}
     chatpad_site_root: /var/www/chatpad.{{parent_domain}}

@@ -36,33 +36,45 @@ enabled_plugins:
   - 'Self Informations'
   - 'Tracker URL remover'
   - 'Ahmia blacklist'
-  # - 'Hostname replace'  # see hostname_replace configuration below
+  - 'Hostname replace'
   # - 'Open Access DOI rewrite'
 
 # plugins:
 #   - only_show_green_results
 
-# hostname_replace:
-#
-#   # twitter --> nitter
-#   '(www\.)?twitter\.com$': 'nitter.net'
+hostname_replace:
+  '(www\.)?reddit\.com$': 'old.reddit.com'
+  '(www\.)?twitter\.com$': 'nitter.net'
+  '(www\.)?medium\.com$': 'scribe.rip'
 
 engines:
-
-#   - name: fdroid
-#     disabled: false
-#
-#   - name: apk mirror
-#     disabled: false
-#
-#   - name: mediathekviewweb
-#     categories: TV
-#     disabled: false
-#
-#   - name: invidious
-#     disabled: false
-#     base_url:
-#       - https://invidious.snopyta.org
-#       - https://invidious.tiekoetter.com
-#       - https://invidio.xamh.de
-#       - https://inv.riverside.rocks
+  - name: bing
+    disabled: true
+  - name: duckduckgo
+    disabled: false
+  - name: google
+    disabled: true
+  - name: qwant
+    disabled: true
+  - name: startpage
+    disabled: false
+  - name: duckduckgo images
+    disabled: false
+  - name: bing images
+    disabled: true
+  - name: google images
+    disabled: true
+  - name: qwant images
+    disabled: true
+  - name: library genesis
+    disabled: false
+  - name: duckduckgo news
+    disabled: false
+  - name: google news
+    disabled: true
+  - name: bing news
+    disabled: true
+  - name: qwant news
+    disabled: true
+  - name: yahoo news
+    disabled: true

@@ -13,7 +13,7 @@
     },
     {
         "t": "e",
-	"u": "https://www.ebay.com/sch/i.html?_nkw={{{s}}}&rt=nc&LH_ItemCondition=4"
+        "u": "https://www.ebay.com/sch/i.html?_nkw={{{s}}}&rt=nc&LH_ItemCondition=4"
     },
     {
         "t": "jw",
@@ -42,5 +42,9 @@
     {
         "t": "ytt",
         "u": "https://youtranscript.tristanhavelick.com/search?search_term={{{s}}}"
+    },
+    {
+        "t": "x",
+        "u": "https://searxng.tristanhavelick.com/search?q={{{s}}}"
     }
 ]

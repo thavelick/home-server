@@ -31,6 +31,8 @@ These scripts set up the following services:
 
     [servers.vars]
     certbot_admin_email=tristan@example.com
+    nginx_username=your_username
+    nginx_password=your_password
     parent_domain=dev.local
     miniflux_admin_password=good-password
     miniflux_db_user_password=such-a-great-password
