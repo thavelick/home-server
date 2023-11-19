@@ -1,0 +1,71 @@
+- name: install searxng prerequisites
+  apt:
+    name:
+      - python3-dev
+      - python3-babel
+      - python3-venv
+      - uwsgi
+      - uwsgi-plugin-python3
+      - git
+      - build-essential
+      - libxslt-dev
+      - zlib1g-dev
+      - libffi-dev
+      - libssl-dev
+- name: make all the folders
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: 'www-data'
+    group: 'www-data'
+  with_items:
+    - "{{searxng_site_root}}"
+    - "{{searxng_site_root}}/src"
+    - "{{searxng_site_root}}/conf"
+- name: clone the repo
+  register: searxng_clone
+  become_user: 'www-data'
+  git:
+    repo: https://github.com/searxng/searxng
+    dest: "{{searxng_site_root}}/src"
+    single_branch: yes
+    depth: 1
+    clone: yes
+    update: yes
+- name: create the virtualenv
+  become_user: 'www-data'
+  command: python3 -m venv "{{searxng_site_root}}/venv"
+  when: searxng_clone.changed
+- name: install searxng requirements
+  become_user: 'www-data'
+  pip:
+    requirements: "{{searxng_site_root}}/src/requirements.txt"
+    virtualenv: "{{searxng_site_root}}/venv"
+  when: searxng_clone.changed
+- name: copy the searxng config file
+  become_user: 'www-data'
+  template:
+    src: templates/searxng.yml.j2
+    dest: "{{searxng_site_root}}/conf/searxng.yml"
+- name: create the systemd service
+  template:
+    src: templates/searxng.service.j2
+    dest: /etc/systemd/system/searxng.service
+- name: start and enable the systemd service
+  service:
+    name: searxng
+    enabled: yes
+    state: started
+- name: copy the nginx site config
+  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{searxng_domain}}
+  register: searxng_nginx
+- name: enable the nginx site config
+  file:
+    dest: /etc/nginx/sites-enabled/{{searxng_domain}}
+    state: link
+    src: /etc/nginx/sites-available/{{searxng_domain}}
+- name: restart nginx
+  when: searxng_nginx.changed
+  service:
+    name: nginx
+    state: restarted

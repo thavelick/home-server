@@ -1,0 +1,18 @@
+[Unit]
+Description=SearXNG
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory={{ searxng_site_root }}
+Environment="SEARXNG_SETTINGS_PATH={{ searxng_site_root }}/conf/searxng.yml"
+Environment="PYTHONPATH={{ searxng_site_root }}/src/"
+User=www-data
+Group=www-data
+ExecStart={{ searxng_site_root }}/venv/bin/python {{ searxng_site_root }}/src/searx/webapp.py
+TimeoutSec=30
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

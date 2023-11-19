@@ -11,6 +11,7 @@ These scripts set up the following services:
 * [YouTranscript](https://github.com/thavelick/youtranscript)
 * [ChatPad](https://github.com/deiucanta/chatpad)
 * [Navidrome](https://www.navidrome.org)
+* [SearXNG](https://github.com/searxng/searxng)
 * Dynamic DNS with Namecheap
 
 ## Usage
