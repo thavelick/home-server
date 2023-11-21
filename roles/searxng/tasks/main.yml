@@ -44,6 +44,7 @@
   when: searxng_clone.changed
 - name: copy the searxng config file
   become_user: 'www-data'
+  register: searxng_config
   template:
     src: templates/searxng.yml.j2
     dest: "{{searxng_site_root}}/conf/searxng.yml"
@@ -56,6 +57,11 @@
     name: searxng
     enabled: yes
     state: started
+- name: restart the systemd service
+  when: searxng_config.changed
+  service:
+    name: searxng
+    state: restarted
 - name: copy the nginx site config
   template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{searxng_domain}}
   register: searxng_nginx
