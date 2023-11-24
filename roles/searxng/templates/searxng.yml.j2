@@ -85,7 +85,7 @@ engines:
     paging: false
     # index: {"0": "popular", "1": "blogs", "2": "big_sites",
     # "3": "default", "4": experimental"}
-    search_url: https://api.marginalia.nu/public/search/{query}?index=4&count=20
+    search_url: https://api.marginalia.nu/{{ marginalia_api_key }}/search/{query}?index=4&count=20
     results_query: results
     url_query: url
     title_query: title
