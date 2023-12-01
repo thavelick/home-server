@@ -50,15 +50,15 @@
     certbot_create_method: standalone
     certbot_create_standalone_stop_services:
       - nginx
-  certbot_certs:
-    - domains:
-        - "home.{{parent_domain}}"
-        - "{{chatpad_domain}}"
-        - "{{jellyfin_domain}}"
-        - "{{just_bangs_domain}}"
-        - "{{kiwix_domain}}"
-        - "{{miniflux_domain}}"
-        - "{{navidrome_domain}}"
-        - "{{searxng_domain}}"
-        - "{{wallabag_domain}}"
-        - "{{youtranscript_domain}}"
+    certbot_certs:
+      - domains:
+          - "home.{{parent_domain}}"
+          - "{{chatpad_domain}}"
+          - "{{jellyfin_domain}}"
+          - "{{just_bangs_domain}}"
+          - "{{kiwix_domain}}"
+          - "{{miniflux_domain}}"
+          - "{{navidrome_domain}}"
+          - "{{searxng_domain}}"
+          - "{{wallabag_domain}}"
+          - "{{youtranscript_domain}}"
