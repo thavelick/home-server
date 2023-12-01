@@ -1,3 +1,4 @@
+---
 - name: make base folder
   file:
     path: "{{just_bangs_site_root}}"
@@ -11,10 +12,10 @@
     repo: https://github.com/thavelick/just-bangs.git
     dest: "{{just_bangs_site_root}}/public_html"
     version: main
-    single_branch: yes
+    single_branch: true
     depth: 1
-    clone: yes
-    update: yes
+    clone: true
+    update: true
 - name: check if the duckduckgo bangs file already exists
   register: bangs_file
   stat:
@@ -38,7 +39,7 @@
 - name: start and enable the systemd service
   service:
     name: just-bangs
-    enabled: yes
+    enabled: true
     state: started
 - name: make the log folder
   become_user: 'www-data'

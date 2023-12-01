@@ -1,3 +1,4 @@
+---
 - name: install navidrome prerequisites
   apt:
     name:
@@ -22,7 +23,7 @@
   unarchive:
     dest: "{{navidrome_site_root}}/bin"
     src: /tmp/navidrome.tar.gz
-    remote_src: yes
+    remote_src: true
     owner: 'www-data'
     group: 'www-data'
     mode: '0755'
@@ -41,7 +42,7 @@
 - name: start and enable the systemd service
   service:
     name: navidrome
-    enabled: yes
+    enabled: true
     state: started
 - name: copy nginx site config
   template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{ navidrome_domain }}

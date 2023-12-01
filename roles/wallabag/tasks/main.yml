@@ -1,3 +1,4 @@
+---
 - name: install wallabag dependencies
   apt:
     name:
@@ -26,13 +27,15 @@
     repo: https://github.com/wallabag/wallabag.git
     dest: "{{wallabag_site_root}}/public_html"
     version: '2.4.3'
-    single_branch: yes
+    single_branch: true
     depth: 1
-    clone: yes
-    update: yes
+    clone: true
+    update: true
 - name: copy parameters.yml
   register: wallabag_parameters
-  template: src=templates/parameters.yml.j2 dest={{wallabag_site_root}}/public_html/app/config/parameters.yml
+  template:
+    src: templates/parameters.yml.j2
+    dest: "{{wallabag_site_root}}/public_html/app/config/parameters.yml"
 - name: fix permissions on the repo
   when: wallabag_clone.changed or wallabag_parameters.changed
   file:
@@ -40,7 +43,7 @@
     owner: 'www-data'
     path: "{{wallabag_site_root}}/public_html"
     state: directory
-    recurse: yes
+    recurse: true
 - name: install php dependencies
   become_user: www-data
   composer:
@@ -73,7 +76,9 @@
     path: "{{wallabag_site_root}}/logs"
     state: directory
 - name: copy nginx site config
-  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{wallabag_domain}}
+  template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{wallabag_domain}}
   register: wallabag_nginx
 - name: enable the nginx site config
   file:

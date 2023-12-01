@@ -1,7 +1,7 @@
-
+---
 - name: Setup Home Server
   hosts: all
-  become: yes
+  become: true
   roles:
     - role: common
       tags:
@@ -50,8 +50,8 @@
     certbot_create_method: standalone
     certbot_create_standalone_stop_services:
       - nginx
-    certbot_certs:
-      - domains:
+  certbot_certs:
+    - domains:
         - "home.{{parent_domain}}"
         - "{{chatpad_domain}}"
         - "{{jellyfin_domain}}"

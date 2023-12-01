@@ -2,9 +2,9 @@
 - name: Update and upgrade apt packages
   become: true
   apt:
-    upgrade: yes
-    update_cache: yes
-    cache_valid_time: 86400 # One day
+    upgrade: true
+    update_cache: true
+    cache_valid_time: 86400  # One day
 - name: install common packages
   apt:
     name:
@@ -18,7 +18,7 @@
 - name: install passlib
   pip:
     name: passlib
-- name: make the htpassword file
+- name: make the htpasswd file
   htpasswd:
     path: /etc/nginx/.htpasswd
     name: "{{ nginx_username }}"

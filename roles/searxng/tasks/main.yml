@@ -1,3 +1,4 @@
+---
 - name: install searxng prerequisites
   apt:
     name:
@@ -28,10 +29,10 @@
   git:
     repo: https://github.com/searxng/searxng
     dest: "{{searxng_site_root}}/src"
-    single_branch: yes
+    single_branch: true
     depth: 1
-    clone: yes
-    update: yes
+    clone: true
+    update: true
 - name: create the virtualenv
   become_user: 'www-data'
   command: python3 -m venv "{{searxng_site_root}}/venv"
@@ -55,7 +56,7 @@
 - name: start and enable the systemd service
   service:
     name: searxng
-    enabled: yes
+    enabled: true
     state: started
 - name: restart the systemd service
   when: searxng_config.changed

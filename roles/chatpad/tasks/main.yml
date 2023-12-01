@@ -1,3 +1,4 @@
+---
 - name: make all the folders
   file:
     path: "{{item}}"
@@ -16,7 +17,7 @@
   unarchive:
     dest: "{{chatpad_site_root}}/public_html"
     src: /tmp/chatpad.tgz
-    remote_src: yes
+    remote_src: true
     owner: 'www-data'
     group: 'www-data'
     mode: '0755'

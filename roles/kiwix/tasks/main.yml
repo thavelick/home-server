@@ -1,3 +1,4 @@
+---
 - name: install kiwix tools (includes kiwix-server)
   apt:
     name:
@@ -27,7 +28,7 @@
 - name: start and enable the systemd service
   service:
     name: kiwix
-    enabled: yes
+    enabled: true
     state: started
 - name: copy nginx site config
   template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{kiwix_domain}}

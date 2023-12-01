@@ -1,3 +1,4 @@
+---
 - name: install postgresql
   apt: name=postgresql state=present
 - name: install psycopg2 (needed by ansible for postgresql commands)
@@ -22,12 +23,12 @@
     obj: "{{miniflux_db}}"
     role: "{{miniflux_db_user_name}}"
 - name: install miniflux
-  become: yes
+  become: true
   apt:
     deb: https://github.com/miniflux/v2/releases/download/2.0.38/miniflux_2.0.38_armhf.deb
     state: present
 - name: add miniflux linux user
-  become: yes
+  become: true
   user:
     name: "{{ miniflux_linux_user }}"
     home: "/var/empty"
@@ -35,22 +36,22 @@
     system: "yes"
     shell: "/bin/false"
 - name: create directory "/etc/miniflux.d"
-  become: yes
+  become: true
   file:
     path: /etc/miniflux.d
     state: directory
 - name: copy miniflux.conf
-  become: yes
+  become: true
   register: miniflux_conf
   template:
     src: "miniflux.conf"
     dest: "/etc/miniflux.conf"
 - name: start miniflux.service
-  become: yes
+  become: true
   systemd:
     name: miniflux
     state: restarted
-    enabled: yes
+    enabled: true
   when: miniflux_conf.changed
 - name: copy nginx site config
   template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{miniflux_domain}}
