@@ -62,13 +62,13 @@
       tags: searxng
     - role: youtranscript
     - role: wallabag
-    - role: nginx-forward
+    - role: nginx_forward
       vars: {domain: "{{jellyfin_domain}}", port: 8096}
-      tags: ["jellyfin", "nginx-forward"]
-    - role: nginx-forward
+      tags: ["jellyfin", "nginx_forward"]
+    - role: nginx_forward
       vars: {domain: "{{just_bangs_domain}}", port: 8484}
-      tags: ["just_bangs", "nginx-forward"]
-    - role: nginx-forward
+      tags: ["just_bangs", "nginx_forward"]
+    - role: nginx_forward
       vars: {domain: "{{kiwix_domain}}", port: 8181}
-      tags: ["kiwix", "nginx-forward"]
+      tags: ["kiwix", "nginx_forward"]
     - role: dynamicdns
