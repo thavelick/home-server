@@ -49,7 +49,7 @@
   register: navidrome_nginx
 - name: enable the nginx site config
   file:
-    dest: /etc/nginx/sites-enabled/{{ navidrome_domain }}}
+    dest: /etc/nginx/sites-enabled/{{ navidrome_domain }}
     state: link
     src: /etc/nginx/sites-available/{{ navidrome_domain }}
 - name: restart nginx

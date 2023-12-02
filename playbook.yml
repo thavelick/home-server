@@ -51,19 +51,24 @@
     - role: chatpad
     - role: vharmers.jellyfin
       tags: jellyfin
-    - role: nginx-forward
-      vars:
-        domain: "{{jellyfin_domain}}"
-        port: 8096
-      tags:
-        - jellyfin
-        - nginx-forward
     - role: just_bangs
+      tags: just_bangs
     - role: kiwix
+      tags: kiwix
     - role: miniflux
     - role: navidrome
+      tags: navidrome
     - role: searxng
       tags: searxng
     - role: youtranscript
     - role: wallabag
+    - role: nginx-forward
+      vars: {domain: "{{jellyfin_domain}}", port: 8096}
+      tags: ["jellyfin", "nginx-forward"]
+    - role: nginx-forward
+      vars: {domain: "{{just_bangs_domain}}", port: 8484}
+      tags: ["just_bangs", "nginx-forward"]
+    - role: nginx-forward
+      vars: {domain: "{{kiwix_domain}}", port: 8181}
+      tags: ["kiwix", "nginx-forward"]
     - role: dynamicdns

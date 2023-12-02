@@ -12,7 +12,6 @@
   with_items:
     - "{{kiwix_site_root}}"
     - "{{kiwix_site_root}}/data"
-    - "{{kiwix_site_root}}/logs"
     - "{{kiwix_site_root}}/scripts"
 - name: copy the start script (with exec permissions)
   copy:
@@ -30,16 +29,3 @@
     name: kiwix
     enabled: true
     state: started
-- name: copy nginx site config
-  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{kiwix_domain}}
-  register: kiwix_nginx
-- name: enable the nginx site config
-  file:
-    dest: /etc/nginx/sites-enabled/{{kiwix_domain}}
-    state: link
-    src: /etc/nginx/sites-available/{{kiwix_domain}}
-- name: restart nginx
-  when: kiwix_nginx.changed
-  service:
-    name: nginx
-    state: restarted

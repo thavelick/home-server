@@ -41,24 +41,6 @@
     name: just-bangs
     enabled: true
     state: started
-- name: make the log folder
-  become_user: 'www-data'
-  file:
-    path: "{{just_bangs_site_root}}/logs"
-    state: directory
-- name: copy nginx site config
-  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{just_bangs_domain}}
-  register: just_bangs_nginx
-- name: enable the nginx site config
-  file:
-    dest: /etc/nginx/sites-enabled/{{just_bangs_domain}}
-    state: link
-    src: /etc/nginx/sites-available/{{just_bangs_domain}}
-- name: restart nginx
-  when: just_bangs_nginx.changed
-  service:
-    name: nginx
-    state: restarted
 - name: restart the just bangs service
   when: custom_bangs_file.changed
   service:
