@@ -53,16 +53,3 @@
     state: restarted
     enabled: true
   when: miniflux_conf.changed
-- name: copy nginx site config
-  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{miniflux_domain}}
-  register: miniflux_nginx
-- name: enable the nginx site config
-  file:
-    dest: /etc/nginx/sites-enabled/{{miniflux_domain}}
-    state: link
-    src: /etc/nginx/sites-available/{{miniflux_domain}}
-- name: restart nginx
-  when: miniflux_nginx.changed
-  service:
-    name: nginx
-    state: restarted

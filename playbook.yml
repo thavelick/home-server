@@ -56,6 +56,7 @@
     - role: kiwix
       tags: kiwix
     - role: miniflux
+      tags: miniflux
     - role: navidrome
       tags: navidrome
     - role: searxng
@@ -71,4 +72,7 @@
     - role: nginx_forward
       vars: {domain: "{{kiwix_domain}}", port: 8181}
       tags: ["kiwix", "nginx_forward"]
+    - role: nginx_forward
+      vars: {domain: "{{miniflux_domain}}", port: "{{miniflux_port}}"}
+      tags: ["miniflux", "nginx_forward"]
     - role: dynamicdns
