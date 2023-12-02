@@ -45,11 +45,10 @@
   roles:
     - role: common
       tags:
-        - searxng
-        - jellyfin
+        - common
     - role: geerlingguy.certbot
     - role: chatpad
-    - role: vharmers.jellyfin
+    - role: jellyfin
       tags: jellyfin
     - role: just_bangs
       tags: just_bangs
@@ -63,16 +62,4 @@
       tags: searxng
     - role: youtranscript
     - role: wallabag
-    - role: nginx_forward
-      vars: {domain: "{{jellyfin_domain}}", port: 8096}
-      tags: ["jellyfin", "nginx_forward"]
-    - role: nginx_forward
-      vars: {domain: "{{just_bangs_domain}}", port: 8484}
-      tags: ["just_bangs", "nginx_forward"]
-    - role: nginx_forward
-      vars: {domain: "{{kiwix_domain}}", port: 8181}
-      tags: ["kiwix", "nginx_forward"]
-    - role: nginx_forward
-      vars: {domain: "{{miniflux_domain}}", port: "{{miniflux_port}}"}
-      tags: ["miniflux", "nginx_forward"]
     - role: dynamicdns

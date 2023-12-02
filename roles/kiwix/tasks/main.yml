@@ -29,3 +29,6 @@
     name: kiwix
     enabled: true
     state: started
+- name: configure nginx forward
+  include_role: {name: nginx_forward}
+  vars: {domain: "{{kiwix_domain}}", port: 8181}
