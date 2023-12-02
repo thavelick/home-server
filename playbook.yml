@@ -2,26 +2,6 @@
 - name: Setup Home Server
   hosts: all
   become: true
-  roles:
-    - role: common
-      tags:
-        - searxng
-        - jellyfin
-    - role: geerlingguy.certbot
-    - role: chatpad
-    - role: vharmers.jellyfin
-      tags: jellyfin
-    - role: jellyfin-nginx
-      tags: jellyfin
-    - role: just_bangs
-    - role: kiwix
-    - role: miniflux
-    - role: navidrome
-    - role: searxng
-      tags: searxng
-    - role: youtranscript
-    - role: wallabag
-    - role: dynamicdns
   vars:
     chatpad_domain: chatpad.{{parent_domain}}
     chatpad_site_root: /var/www/chatpad.{{parent_domain}}
@@ -62,3 +42,28 @@
           - "{{searxng_domain}}"
           - "{{wallabag_domain}}"
           - "{{youtranscript_domain}}"
+  roles:
+    - role: common
+      tags:
+        - searxng
+        - jellyfin
+    - role: geerlingguy.certbot
+    - role: chatpad
+    - role: vharmers.jellyfin
+      tags: jellyfin
+    - role: nginx-forward
+      vars:
+        domain: "{{jellyfin_domain}}"
+        port: 8096
+      tags:
+        - jellyfin
+        - nginx-forward
+    - role: just_bangs
+    - role: kiwix
+    - role: miniflux
+    - role: navidrome
+    - role: searxng
+      tags: searxng
+    - role: youtranscript
+    - role: wallabag
+    - role: dynamicdns
