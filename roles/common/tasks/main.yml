@@ -10,14 +10,14 @@
     name:
       - acl
       - curl
+      - git
       - nginx
       - python3
       - python3-pip
+      - python3-passlib
       - sqlite3
       - vim
-- name: install passlib
-  pip:
-    name: passlib
+
 - name: make the htpasswd file
   htpasswd:
     path: /etc/nginx/.htpasswd
