@@ -43,23 +43,15 @@
           - "{{wallabag_domain}}"
           - "{{youtranscript_domain}}"
   roles:
-    - role: common
-      tags:
-        - common
-    - role: geerlingguy.certbot
-    - role: chatpad
-    - role: jellyfin
-      tags: jellyfin
-    - role: just_bangs
-      tags: just_bangs
-    - role: kiwix
-      tags: kiwix
-    - role: miniflux
-      tags: miniflux
-    - role: navidrome
-      tags: navidrome
-    - role: searxng
-      tags: searxng
-    - role: youtranscript
-    - role: wallabag
-    - role: dynamicdns
+    - {role: common, tags: common}
+    - {role: geerlingguy.certbot, tags: certbot}
+    - {role: chatpad, tags: chatpad}
+    - {role: jellyfin, tags: jellyfin}
+    - {role: just_bangs, tags: just_bangs}
+    - {role: kiwix, tags: kiwix}
+    - {role: miniflux, tags: miniflux}
+    - {role: navidrome, tags: navidrome}
+    - {role: searxng, tags: searxng}
+    - {role: youtranscript, tags: youtranscript}
+    - {role: wallabag, tags: wallabag}
+    - {role: dynamicdns, tags: dynamicdns}
