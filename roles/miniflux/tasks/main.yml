@@ -22,10 +22,18 @@
     type: database
     obj: "{{miniflux_db}}"
     role: "{{miniflux_db_user_name}}"
+- name: add miniflux repo
+  become: true
+  apt_repository:
+    repo: "deb [trusted=yes] https://repo.miniflux.app/apt/ /"
+    state: present
+    filename: miniflux
+    update_cache: true
+
 - name: install miniflux
   become: true
   apt:
-    deb: https://github.com/miniflux/v2/releases/download/2.0.38/miniflux_2.0.38_armhf.deb
+    name: miniflux
     state: present
 - name: add miniflux linux user
   become: true
