@@ -21,6 +21,8 @@
     wallabag_server_name: "Tristan's Wallabag"
     youtranscript_domain: youtranscript.{{parent_domain}}
     youtranscript_site_root: /var/www/youtranscript.{{parent_domain}}
+    ytdl_sub_user: jellyfin
+    ytdl_sub_root: /var/www/ytdl_sub
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
     miniflux_db: miniflux_db
@@ -53,5 +55,6 @@
     - {role: navidrome, tags: navidrome}
     - {role: searxng, tags: searxng}
     - {role: youtranscript, tags: youtranscript}
+    # - {role: ytdl_sub, tags: ytdl_sub}
     - {role: wallabag, tags: wallabag}
     - {role: dynamicdns, tags: dynamicdns}

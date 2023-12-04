@@ -1,0 +1,35 @@
+---
+- name: install ffmpeg
+  apt:
+    name: ffmpeg
+    state: present
+- name: make ytdl-sub folders
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{ytdl_sub_user}}"
+    group: "{{ytdl_sub_user}}"
+  with_items:
+    - "{{ytdl_sub_root}}"
+    - "{{ytdl_sub_root}}/venv"
+    - "{{ytdl_sub_root}}/conf"
+    - "{{ytdl_sub_root}}/data"
+- name: install ytdl-sub (in a venv)
+  pip:
+    name: ytdl-sub
+    virtualenv: "{{ytdl_sub_root}}/venv"
+    virtualenv_command: python3 -m venv
+    state: present
+- name: copy the config file
+  template:
+    src: templates/subscriptions.yml.j2
+    dest: "{{ytdl_sub_root}}/conf/subscriptions.yml"
+    owner: "{{ytdl_sub_user}}"
+    group: "{{ytdl_sub_user}}"
+- name: set up a cron to pull subscriptions every 6 hours
+  cron:
+    name: "pull subscriptions"
+    minute: "0"
+    hour: "*/6"
+    job: "{{ytdl_sub_root}}/venv/bin/ytdl-sub sub {{ytdl_sub_root}}/conf/subscriptions.yml"
+    user: "{{ytdl_sub_user}}"
