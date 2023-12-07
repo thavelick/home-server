@@ -1,6 +1,6 @@
 ---
 - name: copy nginx site config
-  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{domain}}
+  template: src={{nginx_conf_template}} dest=/etc/nginx/sites-available/{{domain}}
   register: nginx_forward
 - name: enable the nginx site config
   file:
