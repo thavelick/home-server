@@ -1,8 +1,6 @@
 server {
 	server_name {{wallabag_domain}};
 	root {{wallabag_site_root}}/public_html/web;
-	access_log {{wallabag_site_root}}/logs/access.log;
-	error_log {{wallabag_site_root}}/logs/error.log;
 	location / {
 	    try_files $uri /app.php$is_args$args;
 	}

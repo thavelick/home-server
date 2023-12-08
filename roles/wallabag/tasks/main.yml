@@ -69,24 +69,8 @@
     --env=prod
     {{wallabag_admin_user}}
     {{wallabag_admin_password}}
-- name: make the log folder
-  file:
-    group: 'www-data'
-    owner: 'www-data'
-    path: "{{wallabag_site_root}}/logs"
-    state: directory
-- name: copy nginx site config
-  template:
-    src: templates/nginx.conf.j2
-    dest: /etc/nginx/sites-available/{{wallabag_domain}}
-  register: wallabag_nginx
-- name: enable the nginx site config
-  file:
-    dest: /etc/nginx/sites-enabled/{{wallabag_domain}}
-    state: link
-    src: /etc/nginx/sites-available/{{wallabag_domain}}
-- name: restart nginx
-  when: wallabag_nginx.changed
-  service:
-    name: nginx
-    state: restarted
+- name: configure nginx
+  include_role: {name: nginx_forward}
+  vars:
+    domain: "{{wallabag_domain}}"
+    nginx_conf_template: wallabag_nginx.conf.j2
