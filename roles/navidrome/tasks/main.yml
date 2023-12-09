@@ -34,15 +34,9 @@
     owner: 'www-data'
     group: 'www-data'
     mode: '0644'
-- name: create the systemd service
-  template:
-    src: templates/navidrome.service.j2
-    dest: /etc/systemd/system/navidrome.service
-- name: start and enable the systemd service
-  service:
-    name: navidrome
-    enabled: true
-    state: started
+- name: configure service
+  include_role: {name: service_standard}
+  vars: {service_name: navidrome}
 - name: copy nginx site config
   template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{ navidrome_domain }}
   register: navidrome_nginx

@@ -32,15 +32,9 @@
   copy:
     src: files/custom-bang.js
     dest: "{{just_bangs_site_root}}/public_html/custom-bang.js"
-- name: create the systemd service
-  template:
-    src: templates/just-bangs.service.j2
-    dest: /etc/systemd/system/just-bangs.service
-- name: start and enable the systemd service
-  service:
-    name: just-bangs
-    enabled: true
-    state: started
+- name: configure service
+  include_role: {name: service_standard}
+  vars: {service_name: just-bangs}
 - name: restart the just bangs service
   when: custom_bangs_file.changed
   service:

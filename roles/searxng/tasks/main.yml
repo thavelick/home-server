@@ -49,15 +49,9 @@
   template:
     src: templates/searxng.yml.j2
     dest: "{{searxng_site_root}}/conf/searxng.yml"
-- name: create the systemd service
-  template:
-    src: templates/searxng.service.j2
-    dest: /etc/systemd/system/searxng.service
-- name: start and enable the systemd service
-  service:
-    name: searxng
-    enabled: true
-    state: started
+- name: configure service
+  include_role: {name: service_standard}
+  vars: {service_name: searxng}
 - name: restart the systemd service
   when: searxng_config.changed
   service:

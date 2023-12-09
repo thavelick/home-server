@@ -20,15 +20,9 @@
     owner: 'www-data'
     group: 'www-data'
     mode: '0755'
-- name: create the systemd service
-  template:
-    src: templates/kiwix.service.j2
-    dest: /etc/systemd/system/kiwix.service
-- name: start and enable the systemd service
-  service:
-    name: kiwix
-    enabled: true
-    state: started
-- name: configure nginx forward
+- name: configure service
+  include_role: {name: service_standard}
+  vars: {service_name: kiwix}
+- name: configure nginx
   include_role: {name: nginx_standard}
   vars: {domain: "{{kiwix_domain}}", port: 8181}

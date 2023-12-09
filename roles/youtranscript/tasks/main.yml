@@ -16,15 +16,9 @@
     depth: 1
     clone: true
     update: true
-- name: create the systemd service
-  template:
-    src: templates/youtranscript.service.j2
-    dest: /etc/systemd/system/youtranscript.service
-- name: start and enable the systemd service
-  service:
-    name: youtranscript
-    enabled: true
-    state: started
+- name: configure service
+  include_role: {name: service_standard}
+  vars: {service_name: youtranscript}
 - name: make the log folder
   become_user: 'www-data'
   file:
