@@ -1,0 +1,49 @@
+---
+- name: create the tubesync user
+  user:
+    name: "{{tubesync_user}}"
+    state: present
+    shell: /bin/false
+    createhome: true
+    home: "{{tubesync_home_directory}}"
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{tubesync_user}}"
+    group: "{{tubesync_user}}"
+    mode: 0755
+  loop:
+    - "{{tubesync_base_directory}}"
+    - "{{tubesync_config_directory}}"
+    - "{{tubesync_downloads_directory}}"
+- name: get the user id
+  command: id -u {{tubesync_user}}
+  register: tubesync_user_id
+  changed_when: false
+- name: get the group id
+  command: id -g jellyfin
+  register: tubesync_group_id
+  changed_when: false
+- name: get the current timezone
+  command: cat /etc/timezone
+  register: current_timezone
+  changed_when: false
+- name: Run tubesync container
+  docker_container:
+    name: tubesync
+    image: ghcr.io/meeb/tubesync:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "4848:4848"
+    volumes:
+      - "{{tubesync_config_directory}}:/config"
+      - "{{tubesync_downloads_directory}}:/downloads"
+    env:
+      TZ: "{{current_timezone.stdout}}"
+      PUID: "{{tubesync_user_id.stdout}}"
+      PGID: "{{tubesync_group_id.stdout}}"
+- name: configure nginx
+  include_role: {name: nginx_standard}
+  vars: {domain: "{{tubesync_domain}}", port: 4848}

@@ -16,13 +16,12 @@
     navidrome_site_root: /var/www/navidrome.{{parent_domain}}
     searxng_domain: searxng.{{parent_domain}}
     searxng_site_root: /var/www/searxng.{{parent_domain}}
+    tubesync_domain: tubesync.{{parent_domain}}
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
     youtranscript_domain: youtranscript.{{parent_domain}}
     youtranscript_site_root: /var/www/youtranscript.{{parent_domain}}
-    ytdl_sub_user: jellyfin
-    ytdl_sub_root: /var/www/ytdl_sub
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
     miniflux_db: miniflux_db
@@ -42,11 +41,13 @@
           - "{{miniflux_domain}}"
           - "{{navidrome_domain}}"
           - "{{searxng_domain}}"
+          - "{{tubesync_domain}}"
           - "{{wallabag_domain}}"
           - "{{youtranscript_domain}}"
   roles:
     - {role: common, tags: common}
     - {role: geerlingguy.certbot, tags: certbot}
+    - {role: geerlingguy.docker, tags: docker}
     - {role: chatpad, tags: chatpad}
     - {role: jellyfin, tags: jellyfin}
     - {role: just_bangs, tags: just_bangs}
@@ -54,7 +55,7 @@
     - {role: miniflux, tags: miniflux}
     - {role: navidrome, tags: navidrome}
     - {role: searxng, tags: searxng}
+    - {role: tubesync, tags: tubesync}
     - {role: youtranscript, tags: youtranscript}
-    - {role: ytdl_sub, tags: ytdl_sub}
     - {role: wallabag, tags: wallabag}
     - {role: dynamicdns, tags: dynamicdns}

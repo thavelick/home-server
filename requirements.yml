@@ -2,3 +2,4 @@
 roles:
   - name: vharmers.jellyfin
   - name: geerlingguy.certbot
+  - name: geerlingguy.docker

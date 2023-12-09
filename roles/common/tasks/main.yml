@@ -17,7 +17,6 @@
       - python3-passlib
       - sqlite3
       - vim
-
 - name: make the htpasswd file
   htpasswd:
     path: /etc/nginx/.htpasswd

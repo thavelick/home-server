@@ -1,0 +1,6 @@
+---
+tubesync_user: jellyfin
+tubesync_home_directory: /var/lib/jellyfin
+tubesync_base_directory: /var/www/tubesync
+tubesync_config_directory: "{{tubesync_base_directory}}/config"
+tubesync_downloads_directory: "{{tubesync_base_directory}}/downloads"
