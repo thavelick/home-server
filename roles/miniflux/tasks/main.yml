@@ -62,5 +62,5 @@
     enabled: true
   when: miniflux_conf.changed
 - name: configure nginx forward
-  include_role: {name: nginx_forward}
+  include_role: {name: nginx_standard}
   vars: {domain: "{{miniflux_domain}}", port: "{{miniflux_port}}"}

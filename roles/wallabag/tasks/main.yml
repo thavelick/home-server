@@ -70,7 +70,7 @@
     {{wallabag_admin_user}}
     {{wallabag_admin_password}}
 - name: configure nginx
-  include_role: {name: nginx_forward}
+  include_role: {name: nginx_standard}
   vars:
     domain: "{{wallabag_domain}}"
     nginx_conf_template: wallabag_nginx.conf.j2

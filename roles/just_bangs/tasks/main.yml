@@ -47,5 +47,5 @@
     name: just-bangs
     state: restarted
 - name: configure nginx forward
-  include_role: {name: nginx_forward}
+  include_role: {name: nginx_standard}
   vars: {domain: "{{just_bangs_domain}}", port: 8484}

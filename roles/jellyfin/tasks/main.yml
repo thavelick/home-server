@@ -2,7 +2,7 @@
 - name: setup jellyfin
   include_role: {name: vharmers.jellyfin}
 - name: configure nginx
-  include_role: {name: nginx_forward}
+  include_role: {name: nginx_standard}
   vars:
     domain: "{{jellyfin_domain}}"
     port: 8096

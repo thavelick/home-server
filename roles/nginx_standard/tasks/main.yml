@@ -1,14 +1,14 @@
 ---
 - name: copy nginx site config
   template: src={{nginx_conf_template}} dest=/etc/nginx/sites-available/{{domain}}
-  register: nginx_forward
+  register: nginx_standard
 - name: enable the nginx site config
   file:
     dest: /etc/nginx/sites-enabled/{{domain}}
     state: link
     src: /etc/nginx/sites-available/{{domain}}
 - name: restart nginx
-  when: nginx_forward.changed
+  when: nginx_standard.changed
   service:
     name: nginx
     state: restarted
