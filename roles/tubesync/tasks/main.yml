@@ -44,6 +44,8 @@
       TZ: "{{current_timezone.stdout}}"
       PUID: "{{tubesync_user_id.stdout}}"
       PGID: "{{tubesync_group_id.stdout}}"
+      HTTP_USER: "{{tubesync_web_user}}"
+      HTTP_PASS: "{{tubesync_web_password}}"
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars: {domain: "{{tubesync_domain}}", port: 4848}
