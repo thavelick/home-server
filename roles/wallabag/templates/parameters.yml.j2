@@ -11,13 +11,7 @@ parameters:
     database_charset: utf8mb4
     domain_name: 'https://{{wallabag_domain}}'
     server_name: "{{wallabag_server_name}}"
-    mailer_transport: smtp
-    mailer_user: {{wallabag_email}}
-    mailer_password: {{wallabag_email_password}}
-    mailer_host: smtp.migadu.com
-    mailer_port: false
-    mailer_encryption: null
-    mailer_auth_mode: null
+    mailer_dsn: smtp://{{wallabag_email}}:{{wallabag_email_password}}@smtp.migadu.com
     locale: en
     secret: {{wallabag_secret}}
     twofactor_auth: false

@@ -5,7 +5,7 @@
       - ffmpeg
 - name: download navidrome release from github
   get_url:
-    url: https://github.com/navidrome/navidrome/releases/download/v0.49.3/navidrome_0.49.3_Linux_armv7.tar.gz
+    url: https://github.com/navidrome/navidrome/releases/download/v0.50.1/navidrome_0.50.1_linux_amd64.tar.gz
     dest: /tmp/navidrome.tar.gz
 - name: make all the folders
   file:
@@ -16,7 +16,6 @@
   with_items:
     - "{{navidrome_site_root}}"
     - "{{navidrome_site_root}}/music"
-    - "{{navidrome_site_root}}/logs"
     - "{{navidrome_site_root}}/bin"
     - "{{navidrome_site_root}}/conf"
 - name: extract the navidrome release
