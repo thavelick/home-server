@@ -26,10 +26,10 @@
     dest: "{{ytdl_sub_root}}/conf/subscriptions.yml"
     owner: "{{ytdl_sub_user}}"
     group: "{{ytdl_sub_user}}"
-- name: set up a cron to pull subscriptions every 6 hours
-  cron:
-    name: "pull subscriptions"
-    minute: "0"
-    hour: "*/6"
-    job: "{{ytdl_sub_root}}/venv/bin/ytdl-sub sub {{ytdl_sub_root}}/conf/subscriptions.yml"
-    user: "{{ytdl_sub_user}}"
+# - name: set up a cron to pull subscriptions every 6 hours
+#   cron:
+#     name: "pull subscriptions"
+#     minute: "0"
+#     hour: "*/6"
+#     job: "{{ytdl_sub_root}}/venv/bin/ytdl-sub sub {{ytdl_sub_root}}/conf/subscriptions.yml"
+#     user: "{{ytdl_sub_user}}"

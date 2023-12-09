@@ -55,6 +55,6 @@
     - {role: navidrome, tags: navidrome}
     - {role: searxng, tags: searxng}
     - {role: youtranscript, tags: youtranscript}
-    # - {role: ytdl_sub, tags: ytdl_sub}
+    - {role: ytdl_sub, tags: ytdl_sub}
     - {role: wallabag, tags: wallabag}
     - {role: dynamicdns, tags: dynamicdns}
