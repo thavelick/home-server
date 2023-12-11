@@ -11,6 +11,7 @@ These scripts set up the following services:
 * [Miniflux](https://miniflux.net)
 * [Navidrome](https://www.navidrome.org)
 * [SearXNG](https://github.com/searxng/searxng)
+    * With [Just Auth](https://github.com/thavelick/just-auth) for authentication
 * [TubeSync](https://github.com/meeb/tubesync)
 * [YouTranscript](https://github.com/thavelick/youtranscript)
 * [Wallabag](https://wallabag.org)
@@ -36,8 +37,6 @@ These scripts set up the following services:
     dynamicdns_password=aaaaaaaa11111111aaaaaaaa11111111
     navidrome_username=your_username
     navidrome_password=your_password
-    nginx_username=your_username
-    nginx_password=your_password
     marginalia_api_key=your_api_key
     miniflux_admin_password=good-password
     miniflux_db_user_password=such-a-great-password
@@ -48,6 +47,8 @@ These scripts set up the following services:
     wallabag_admin_user=wallabag
     wallabag_admin_password=an-even-better-password
     searxng_secret_key=another-secret-key
+    searxng_just_auth_password="choose a password for searxng"
+    searxng_just_auth_salt="just a random string"
     EOF
     ```
 4. Set up DNS At Name cheap

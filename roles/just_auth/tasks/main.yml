@@ -1,0 +1,27 @@
+---
+- name: make the base folder
+  file:
+    path: "{{just_auth_site_root}}"
+    state: directory
+    owner: www-data
+    group: www-data
+- name: clone the repo
+  register: just_auth_clone
+  become_user: www-data
+  git:
+    repo: https://github.com/thavelick/just-auth.git
+    dest: "{{just_auth_site_root}}/public_html"
+    version: main
+    single_branch: true
+    depth: 1
+    clone: true
+    update: true
+- name: create the systemd service
+  template:
+    src: templates/just-auth.service.j2
+    dest: /etc/systemd/system/{{proxy_to_service_name}}-just-auth.service
+- name: start and enable the systemd service
+  service:
+    name: "{{proxy_to_service_name}}-just-auth"
+    enabled: true
+    state: started

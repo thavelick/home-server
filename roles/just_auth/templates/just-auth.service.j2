@@ -1,0 +1,14 @@
+[Unit]
+Description=Just Auth ({{proxy_to_service_name}})
+After=syslog.target network.target
+
+[Service]
+WorkingDirectory={{just_auth_site_root}}/public_html
+ExecStart={{just_auth_site_root}}/public_html/just_auth.py
+Restart=on-failure
+Environment="JUST_AUTH_PASSWORD={{password}}"
+Environment="JUST_AUTH_SALT={{salt}}"
+Environment="JUST_AUTH_PROXY_TO_URL=http://localhost:{{app_port}}"
+Environment="JUST_AUTH_PORT={{auth_port}}"
+[Install]
+WantedBy=default.target

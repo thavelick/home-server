@@ -6,6 +6,7 @@
     chatpad_domain: chatpad.{{parent_domain}}
     chatpad_site_root: /var/www/chatpad.{{parent_domain}}
     jellyfin_domain: jellyfin.{{parent_domain}}
+    just_auth_site_root: /var/www/just_auth
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
     kiwix_domain: kiwix.{{parent_domain}}
