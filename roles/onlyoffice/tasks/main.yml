@@ -1,0 +1,24 @@
+---
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+  loop:
+    - "{{onlyoffice_base_directory}}"
+    - "{{onlyoffice_data_directory}}"
+- name: run the onlyoffice container
+  docker_container:
+    name: onlyoffice
+    image: onlyoffice/documentserver:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "9786:80"
+    volumes:
+      - "{{onlyoffice_data_directory}}:/var/www/onlyoffice/Data"
+- name: configure nginx
+  include_role: {name: nginx_standard}
+  vars: {domain: "{{onlyoffice_domain}}", port: 9786}

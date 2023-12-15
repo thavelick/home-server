@@ -1,0 +1,3 @@
+---
+onlyoffice_base_directory: /var/www/onlyoffice
+onlyoffice_data_directory: "{{onlyoffice_base_directory}}/data"
