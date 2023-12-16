@@ -19,6 +19,8 @@
       - "9786:80"
     volumes:
       - "{{onlyoffice_data_directory}}:/var/www/onlyoffice/Data"
+    env:
+      JWT_SECRET: "{{onlyoffice_jwt_secret}}"
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars: {domain: "{{onlyoffice_domain}}", port: 9786}

@@ -1,0 +1,8 @@
+#!/bin/bash
+set -x
+
+php occ app:install onlyoffice
+php occ config:system:set onlyoffice DocumentServerUrl --value="https://{{onlyoffice_domain}}/"
+# php occ config:system:set onlyoffice DocumentServerInternalUrl --value="https://{{onlyoffice_domain}}/"
+# php occ config:system:set onlyoffice StorageUrl --value="http://nginx-server/"
+php occ config:system:set onlyoffice jwt_secret --value="{{onlyoffice_jwt_secret}}"

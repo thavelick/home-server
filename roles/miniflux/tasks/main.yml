@@ -1,8 +1,4 @@
 ---
-- name: install postgresql
-  apt: name=postgresql state=present
-- name: install psycopg2 (needed by ansible for postgresql commands)
-  apt: name=python3-psycopg2 state=present
 - name: create the miniflux database
   become_user: postgres
   postgresql_db:
@@ -29,7 +25,6 @@
     state: present
     filename: miniflux
     update_cache: true
-
 - name: install miniflux
   become: true
   apt:

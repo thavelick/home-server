@@ -1,0 +1,53 @@
+---
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{nextcloud_user}}"
+    group: "{{nextcloud_user}}"
+    mode: 0755
+  loop:
+    - "{{nextcloud_base_directory}}"
+    - "{{nextcloud_data_directory}}"
+    - "{{nextcloud_config_directory}}"
+    - "{{nextcloud_base_directory}}/apps"
+    - "{{nextcloud_base_directory}}/app-hooks"
+    - "{{nextcloud_base_directory}}/app-hooks/post_installation"
+
+# Although it looks like this should run automatically, it doesn't.
+# after nextcloud is installed, you have to docker exec into the container
+# and run this manually,
+- name: copy the onlyoffice install script
+  template:
+    src: templates/onlyoffice.sh.j2
+    dest: "{{nextcloud_base_directory}}/app-hooks/post_installation/onlyoffice.sh"
+    mode: 0755
+- name: run the nextcloud container
+  docker_container:
+    name: nextcloud
+    image: nextcloud:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "9787:80"
+    volumes:
+      - "{{nextcloud_data_directory}}:/var/www/html/data:rw"
+      - "{{nextcloud_config_directory}}:/var/www/html/config"
+      - "{{nextcloud_base_directory}}/apps:/var/www/html/custom_apps"
+      - "{{nextcloud_base_directory}}/app-hooks/post_installation:/docker-entrypoint-hooks.d/post-installation"
+    env:
+      SQLITE_DATABASE: nextcloud
+      NEXTCLOUD_TRUSTED_DOMAINS: "{{nextcloud_domain}}"
+      NEXTCLOUD_ADMIN_USER: "{{nextcloud_admin_user}}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{nextcloud_admin_password}}"
+      HTTP_X_FORWARDED_PROTO: https
+      HTTP_X_FORWARDED_HOST: "{{nextcloud_domain}}"
+      OVERWRITEHOST: "{{nextcloud_domain}}"
+      OVERWRITEPROTOCOL: https
+      TRUSTED_PROXIES: "172.16.0.0/12"
+- name: configure nginx
+  include_role: {name: nginx_standard}
+  vars:
+    domain: "{{nextcloud_domain}}"
+    port: 9787
+    nginx_conf_template: nextcloud_nginx.conf.j2

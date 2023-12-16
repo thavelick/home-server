@@ -10,6 +10,8 @@ These scripts set up the following services:
 * [Kiwix](https://kiwix.org)
 * [Miniflux](https://miniflux.net)
 * [Navidrome](https://www.navidrome.org)
+* [Nextcloud](https://nextcloud.com)
+* [OnlyOffice](https://www.onlyoffice.com)
 * [SearXNG](https://github.com/searxng/searxng)
     * With [Just Auth](https://github.com/thavelick/just-auth) for authentication
 * [TubeSync](https://github.com/meeb/tubesync)
@@ -37,9 +39,11 @@ These scripts set up the following services:
     dynamicdns_password=aaaaaaaa11111111aaaaaaaa11111111
     navidrome_username=your_username
     navidrome_password=your_password
+    nextcloud_admin_user=your-hidden-password
     marginalia_api_key=your_api_key
     miniflux_admin_password=good-password
     miniflux_db_user_password=such-a-great-password
+    onlyoffice_jwt_secret=something-really-secret
     parent_domain=dev.local
     wallabag_secret="my super secret secret"
     wallabag_email=tristan@example.com

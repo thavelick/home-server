@@ -1,0 +1,7 @@
+---
+nextcloud_base_directory: /var/www/nextcloud
+nextcloud_data_directory: "{{nextcloud_base_directory}}/data"
+nextcloud_config_directory: "{{nextcloud_base_directory}}/config"
+nextcloud_user: www-data
+nextcloud_admin_user: admin
+nextcloud_admin_password: not-so-secret
