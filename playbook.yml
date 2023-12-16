@@ -3,6 +3,7 @@
   hosts: all
   become: true
   vars:
+    backup_staging_directory: /var/www/backup-staging
     chatpad_domain: chatpad.{{parent_domain}}
     chatpad_site_root: /var/www/chatpad.{{parent_domain}}
     jellyfin_domain: jellyfin.{{parent_domain}}
@@ -16,10 +17,15 @@
     navidrome_domain: navidrome.{{parent_domain}}
     navidrome_site_root: /var/www/navidrome.{{parent_domain}}
     nextcloud_domain: nextcloud.{{parent_domain}}
+    nextcloud_base_directory: /var/www/nextcloud
+    nextcloud_data_directory: "{{nextcloud_base_directory}}/data"
+    nextcloud_config_directory: "{{nextcloud_base_directory}}/config"
     onlyoffice_domain: onlyoffice.{{parent_domain}}
     searxng_domain: searxng.{{parent_domain}}
     searxng_site_root: /var/www/searxng.{{parent_domain}}
     tubesync_domain: tubesync.{{parent_domain}}
+    tubesync_base_directory: /var/www/tubesync
+    tubesync_config_directory: "{{tubesync_base_directory}}/config"
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
@@ -66,3 +72,4 @@
     - {role: youtranscript, tags: youtranscript}
     - {role: wallabag, tags: wallabag}
     - {role: dynamicdns, tags: dynamicdns}
+    - {role: backup, tags: backup}

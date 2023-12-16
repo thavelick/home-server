@@ -1,0 +1,45 @@
+---
+- name: make the backup staging and repository directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - "{{backup_staging_directory}}"
+    - "{{borg_backup_directory}}"
+- name: copy the pre-backup script
+  template:
+    src: files/prebackup.sh
+    dest: "/root/prebackup.sh"
+    owner: root
+    group: root
+    mode: 0755
+- name: set up a cron to run the prebackup script hourly, on the half hour
+  cron:
+    name: pre-backup
+    minute: "30"
+    hour: "*"
+    job: "/root/prebackup.sh {{backup_staging_directory}} {{ wallabag_site_root}}/wallabag.db"
+- name: set up to backup folders locally with borg
+  include_role: {name: borgbase.ansible_role_borgbackup}
+  vars:
+    borg_encryption_passphrase: "{{borg_passphrase}}"
+    borg_repository: "{{borg_backup_directory}}"
+    borg_source_directories:
+      - "{{backup_staging_directory}}"
+      - "{{nextcloud_data_directory}}"
+      - "{{nextcloud_config_directory}}"
+      - "{{tubesync_config_directory}}"
+    borg_retention_policy:
+      keep_hourly: 3
+      keep_daily: 7
+      keep_weekly: 4
+      keep_monthly: 6
+- name: initialize the repository
+  command: borg init --encryption=repokey-blake2 {{borg_backup_directory}}
+  environment:
+    BORG_PASSPHRASE: "{{borg_passphrase}}"
+  args:
+    creates: "{{borg_backup_directory}}/config"
