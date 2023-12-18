@@ -3,4 +3,5 @@ roles:
   - name: borgbase.ansible_role_borgbackup
   - name: geerlingguy.certbot
   - name: geerlingguy.docker
+  - name: stefangweichinger.ansible_rclone
   - name: vharmers.jellyfin

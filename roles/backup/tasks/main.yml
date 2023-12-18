@@ -43,3 +43,18 @@
     BORG_PASSPHRASE: "{{borg_passphrase}}"
   args:
     creates: "{{borg_backup_directory}}/config"
+- name: install and configure rclone
+  include_role: {name: stefangweichinger.ansible_rclone}
+  vars:
+    rclone_configs:
+      - name: backblaze
+        properties:
+          type: b2
+          account: "{{backblaze_account_id}}"
+          key: "{{backblaze_application_key}}"
+- name: set up a cron to send backups to backblaze daily at 10am
+  cron:
+    name: backup-to-backblaze
+    minute: "0"
+    hour: "10"
+    job: "rclone sync {{borg_backup_directory}} backblaze:{{backblaze_bucket_name}} --config /root/.config/rclone/rclone.conf"
