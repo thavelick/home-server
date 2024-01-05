@@ -6,6 +6,9 @@
     backup_staging_directory: /var/www/backup-staging
     chatpad_domain: chatpad.{{parent_domain}}
     chatpad_site_root: /var/www/chatpad.{{parent_domain}}
+    firefly_domain: firefly.{{parent_domain}}
+    firefly_site_root: /var/www/firefly.{{parent_domain}}
+    firefly_importer_domain: firefly-importer.{{parent_domain}}
     jellyfin_domain: jellyfin.{{parent_domain}}
     just_auth_site_root: /var/www/just_auth
     just_bangs_domain: bangs.{{parent_domain}}
@@ -44,6 +47,8 @@
       - domains:
           - "home.{{parent_domain}}"
           - "{{chatpad_domain}}"
+          - "{{firefly_domain}}"
+          - "{{firefly_importer_domain}}"
           - "{{jellyfin_domain}}"
           - "{{just_bangs_domain}}"
           - "{{kiwix_domain}}"
@@ -60,6 +65,7 @@
     - {role: geerlingguy.certbot, tags: certbot}
     - {role: geerlingguy.docker, tags: docker}
     - {role: chatpad, tags: chatpad}
+    - {role: firefly, tags: firefly}
     - {role: jellyfin, tags: jellyfin}
     - {role: just_bangs, tags: just_bangs}
     - {role: kiwix, tags: kiwix}
