@@ -1,0 +1,30 @@
+---
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+  loop:
+    - "{{transmission_base_directory}}"
+    - "{{transmission_base_directory}}/config"
+    - "{{transmission_base_directory}}/downloads"
+- name: run the transmission container
+  docker_container:
+    name: transmission-openvpn
+    image: haugene/transmission-openvpn:latest
+    state: started
+    restart_policy: unless-stopped
+    privileged: true
+    published_ports:
+      - "9091:9091"
+    volumes:
+      - "{{transmission_base_directory}}/config:/config"
+      - "{{transmission_base_directory}}/downloads:/data"
+    env:
+      OPENVPN_PROVIDER: "{{openvpn_provider}}"
+      OPENVPN_CONFIG: "{{openvpn_config}}"
+      OPENVPN_USERNAME: "{{openvpn_username}}"
+      OPENVPN_PASSWORD: "{{openvpn_password}}"
+      LOCAL_NETWORK: "{{local_network}}"

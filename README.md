@@ -16,6 +16,7 @@ These scripts set up the following services:
     * With [Just Auth](https://github.com/thavelick/just-auth) for authentication
 * [TubeSync](https://github.com/meeb/tubesync)
 * [YouTranscript](https://github.com/thavelick/youtranscript)
+* [Transmission + OpenVPN](https://github.com/haugene/docker-transmission-openvpn)
 * [Wallabag](https://wallabag.org)
 * Dynamic DNS with Namecheap
 
@@ -40,10 +41,15 @@ These scripts set up the following services:
     navidrome_username=your_username
     navidrome_password=your_password
     nextcloud_admin_user=your-hidden-password
+    local_network=192.168.1.0/16
     marginalia_api_key=your_api_key
     miniflux_admin_password=good-password
     miniflux_db_user_password=such-a-great-password
     onlyoffice_jwt_secret=something-really-secret
+    openvpn_provider=your-provider
+    openvpn_config=uk_london
+    openvpn_username=p83748378
+    openvpn_password=ptrlkn1nt
     parent_domain=dev.local
     wallabag_secret="my super secret secret"
     wallabag_email=tristan@example.com

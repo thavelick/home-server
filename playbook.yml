@@ -26,6 +26,8 @@
     onlyoffice_domain: onlyoffice.{{parent_domain}}
     searxng_domain: searxng.{{parent_domain}}
     searxng_site_root: /var/www/searxng.{{parent_domain}}
+    transmission_domain: transmission.{{parent_domain}}
+    transmission_base_directory: /var/www/transmission
     tubesync_domain: tubesync.{{parent_domain}}
     tubesync_base_directory: /var/www/tubesync
     tubesync_config_directory: "{{tubesync_base_directory}}/config"
@@ -76,6 +78,7 @@
     - {role: searxng, tags: searxng}
     - {role: tubesync, tags: tubesync}
     - {role: youtranscript, tags: youtranscript}
+    - {role: transmission, tags: transmission}
     - {role: wallabag, tags: wallabag}
     - {role: dynamicdns, tags: dynamicdns}
     - {role: backup, tags: backup}
