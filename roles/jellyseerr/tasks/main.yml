@@ -1,0 +1,27 @@
+---
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: jellyfin
+    group: jellyfin
+    mode: 0755
+  loop:
+    - "{{jellyseerr_base_directory}}"
+    - "{{jellyseerr_base_directory}}/config"
+- name: get the current timezone
+  command: cat /etc/timezone
+  register: current_timezone
+  changed_when: false
+- name: run the jellyseerr container
+  docker_container:
+    name: jellyseerr
+    image: fallenbagel/jellyseerr:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "5055:5055"
+    volumes:
+      - "{{jellyseerr_base_directory}}/config:/app/config"
+    env:
+      TZ: "{{current_timezone.stdout}}"

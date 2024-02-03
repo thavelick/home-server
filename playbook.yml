@@ -10,6 +10,7 @@
     firefly_site_root: /var/www/firefly.{{parent_domain}}
     firefly_importer_domain: firefly-importer.{{parent_domain}}
     jellyfin_domain: jellyfin.{{parent_domain}}
+    jellyseerr_base_directory: /var/www/jellyseerr
     just_auth_site_root: /var/www/just_auth
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
@@ -72,6 +73,7 @@
     - {role: chatpad, tags: chatpad}
     - {role: firefly, tags: firefly}
     - {role: jellyfin, tags: jellyfin}
+    - {role: jellyseerr, tags: jellyseerr}
     - {role: just_bangs, tags: just_bangs}
     - {role: kiwix, tags: kiwix}
     - {role: miniflux, tags: miniflux}
