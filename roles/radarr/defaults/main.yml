@@ -1,0 +1,6 @@
+---
+radarr_base_directory: /var/www/radarr
+radarr_config_directory: "{{radarr_base_directory}}/config"
+radarr_home_directory: /home/jellyfin
+radarr_movies_directory: "{{radarr_base_directory}}/movies"
+radarr_user: jellyfin

@@ -1,0 +1,47 @@
+---
+# - name: create the radarr user
+#   user:
+#     name: "{{radarr_user}}"
+#     state: present
+#    shell: /bin/false
+#     createhome: true
+#     home: "{{ radarr_home_directory }}"
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{radarr_user}}"
+    group: "{{radarr_user}}"
+    mode: 0755
+  loop:
+    - "{{radarr_base_directory}}"
+    - "{{radarr_config_directory}}"
+    - "{{radarr_movies_directory}}"
+- name: get the user id
+  command: id -u "{{radarr_user}}"
+  register: radarr_user_id
+  changed_when: false
+- name: get the group id
+  command: id -g "{{radarr_user}}"
+  register: radarr_group_id
+  changed_when: false
+- name: get the current timezone
+  command: cat /etc/timezone
+  register: current_timezone
+  changed_when: false
+- name: run the radarr container
+  docker_container:
+    name: radarr
+    image: lscr.io/linuxserver/radarr:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "7878:7878"
+    volumes:
+      - "{{radarr_config_directory}}:/config"
+      - "{{radarr_movies_directory}}:/movies"
+      - "{{radarr_data_directory}}:/data"
+    env:
+      PUID: "{{radarr_user_id.stdout}}"
+      PGID: "{{radarr_group_id.stdout}}"
+      TZ: "{{current_timezone.stdout}}"

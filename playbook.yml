@@ -24,6 +24,8 @@
     nextcloud_data_directory: "{{nextcloud_base_directory}}/data"
     nextcloud_config_directory: "{{nextcloud_base_directory}}/config"
     onlyoffice_domain: onlyoffice.{{parent_domain}}
+    radarr_base_directory: /var/www/radarr
+    radarr_data_directory: "{{transmission_base_directory}}/downloads"
     searxng_domain: searxng.{{parent_domain}}
     searxng_site_root: /var/www/searxng.{{parent_domain}}
     transmission_domain: transmission.{{parent_domain}}
@@ -75,6 +77,7 @@
     - {role: nextcloud, tags: nextcloud}
     - {role: navidrome, tags: navidrome}
     - {role: onlyoffice, tags: onlyoffice}
+    - {role: radarr, tags: radarr}
     - {role: searxng, tags: searxng}
     - {role: tubesync, tags: tubesync}
     - {role: youtranscript, tags: youtranscript}
