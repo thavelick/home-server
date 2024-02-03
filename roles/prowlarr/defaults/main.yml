@@ -1,0 +1,5 @@
+---
+prowlarr_base_directory: /var/www/prowlarr
+prowlarr_config_directory: "{{prowlarr_base_directory}}/config"
+prowlarr_home_directory: /home/jellyfin
+prowlarr_user: jellyfin

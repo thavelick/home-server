@@ -1,0 +1,37 @@
+---
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{prowlarr_user}}"
+    group: "{{prowlarr_user}}"
+    mode: 0755
+  loop:
+    - "{{prowlarr_base_directory}}"
+    - "{{prowlarr_config_directory}}"
+- name: get the user id
+  command: id -u "{{prowlarr_user}}"
+  register: prowlarr_user_id
+  changed_when: false
+- name: get the group id
+  command: id -g "{{prowlarr_user}}"
+  register: prowlarr_group_id
+  changed_when: false
+- name: get the current timezone
+  command: cat /etc/timezone
+  register: current_timezone
+  changed_when: false
+- name: run the prowlarr container
+  docker_container:
+    name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "9696:9696"
+    volumes:
+      - "{{prowlarr_config_directory}}:/config"
+    env:
+      PUID: "{{prowlarr_user_id.stdout}}"
+      PGID: "{{prowlarr_group_id.stdout}}"
+      TZ: "{{current_timezone.stdout}}"
