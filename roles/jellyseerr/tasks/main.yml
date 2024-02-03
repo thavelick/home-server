@@ -25,3 +25,6 @@
       - "{{jellyseerr_base_directory}}/config:/app/config"
     env:
       TZ: "{{current_timezone.stdout}}"
+- name: configure nginx
+  include_role: {name: nginx_standard}
+  vars: {domain: "{{jellyseerr_domain}}", port: 5055}

@@ -11,6 +11,7 @@
     firefly_importer_domain: firefly-importer.{{parent_domain}}
     jellyfin_domain: jellyfin.{{parent_domain}}
     jellyseerr_base_directory: /var/www/jellyseerr
+    jellyseerr_domain: jellyseerr.{{parent_domain}}
     just_auth_site_root: /var/www/just_auth
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
@@ -56,6 +57,7 @@
           - "{{firefly_domain}}"
           - "{{firefly_importer_domain}}"
           - "{{jellyfin_domain}}"
+          - "{{jellyseerr_domain}}"
           - "{{just_bangs_domain}}"
           - "{{kiwix_domain}}"
           - "{{miniflux_domain}}"
