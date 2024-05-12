@@ -1,36 +1,12 @@
 ---
-- name: make all the folders
-  file:
-    path: "{{item}}"
-    state: directory
-    owner: 'www-data'
-    group: 'www-data'
-  with_items:
-    - "{{chatpad_site_root}}"
-    - "{{chatpad_site_root}}/logs"
-    - "{{chatpad_site_root}}/public_html"
-- name: download the release from github
-  get_url:
-    url: https://github.com/thavelick/chatpad/releases/download/v0.1-apha/thavelick-chatpad-95b9e19aa8e8438ecb5e1416ffb4cdc156335f6c.tgz
-    dest: /tmp/chatpad.tgz
-- name: extract the release
-  unarchive:
-    dest: "{{chatpad_site_root}}/public_html"
-    src: /tmp/chatpad.tgz
-    remote_src: true
-    owner: 'www-data'
-    group: 'www-data'
-    mode: '0755'
-- name: copy nginx site config
-  template: src=templates/nginx.conf.j2 dest=/etc/nginx/sites-available/{{ chatpad_domain }}
-  register: chatpad_nginx
-- name: enable the nginx site config
-  file:
-    dest: /etc/nginx/sites-enabled/{{ chatpad_domain }}
-    state: link
-    src: /etc/nginx/sites-available/{{ chatpad_domain }}
-- name: restart nginx
-  when: chatpad_nginx.changed
-  service:
-    name: nginx
-    state: restarted
+- name: run the chatpad container
+  docker_container:
+    name: chatpad
+    image: ghcr.io/deiucanta/chatpad:latest
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - 8012:80
+- name: configure nginx for chatpad
+  include_role: {name: nginx_standard}
+  vars: {domain: "{{ chatpad_domain }}", port: 8012}
