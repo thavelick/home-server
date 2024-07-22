@@ -12,6 +12,8 @@ server {
 	listen 443 ssl;
     ssl_certificate /etc/letsencrypt/live/home.tristanhavelick.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/home.tristanhavelick.com/privkey.pem;
+
+    access_log {{youtranscript_site_root}}/logs/access.log;
 }
 
 server {
