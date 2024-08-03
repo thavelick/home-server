@@ -1,0 +1,30 @@
+---
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    mode: 0755
+  loop:
+    - "{{home_assistant_site_root}}"
+    - "{{home_assistant_site_root}}/config"
+- name: get the current timezone
+  command: cat /etc/timezone
+  register: current_timezone
+  changed_when: false
+- name: Run home assistant container
+  docker_container:
+    name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    state: started
+    restart_policy: unless-stopped
+    privileged: true
+    published_ports:
+      - "8123:8123"
+    volumes:
+      - "{{home_assistant_site_root}}/config:/config"
+      - /dev/snd:/dev/snd
+    env:
+      TZ: "{{current_timezone.stdout}}"
+- name: configure nginx
+  include_role: {name: nginx_standard}
+  vars: {domain: "{{home_assistant_domain}}", port: 8123}

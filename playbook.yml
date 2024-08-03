@@ -9,6 +9,8 @@
     firefly_domain: firefly.{{parent_domain}}
     firefly_site_root: /var/www/firefly.{{parent_domain}}
     firefly_importer_domain: firefly-importer.{{parent_domain}}
+    home_assistant_domain: assistant.{{parent_domain}}
+    home_assistant_site_root: /var/www/assistant.{{parent_domain}}
     jellyfin_domain: jellyfin.{{parent_domain}}
     jellyseerr_base_directory: /var/www/jellyseerr
     jellyseerr_domain: jellyseerr.{{parent_domain}}
@@ -56,6 +58,7 @@
           - "{{chatpad_domain}}"
           - "{{firefly_domain}}"
           - "{{firefly_importer_domain}}"
+          - "{{home_assistant_domain}}"
           - "{{jellyfin_domain}}"
           - "{{jellyseerr_domain}}"
           - "{{just_bangs_domain}}"
@@ -74,6 +77,7 @@
     - {role: geerlingguy.docker, tags: docker}
     - {role: chatpad, tags: chatpad}
     - {role: firefly, tags: firefly}
+    - {role: home_assistant, tags: home_assistant}
     - {role: jellyfin, tags: jellyfin}
     - {role: jellyseerr, tags: jellyseerr}
     - {role: just_bangs, tags: just_bangs}
