@@ -1,0 +1,30 @@
+# templates/dnsmasq.conf.j2
+
+# dnsmasq.conf for local DNS resolution
+interface=eth0
+listen-address=127.0.0.1,{{ web_server_ip }}
+
+# DNS settings for hosting domain
+address=/chatpad.tristanhavelick.com/{{ web_server_ip }}
+address=/firefly.tristanhavelick.com/{{ web_server_ip }}
+address=/jellyfin.tristanhavelick.com/{{ web_server_ip }}
+address=/jellyseerr.tristanhavelick.com/{{ web_server_ip }}
+address=/bangs.tristanhavelick.com/{{ web_server_ip }}
+address=/kiwix.tristanhavelick.com/{{ web_server_ip }}
+address=/miniflux.tristanhavelick.com/{{ web_server_ip }}
+address=/navidrome.tristanhavelick.com/{{ web_server_ip }}
+address=/nextcloud.tristanhavelick.com/{{ web_server_ip }}
+address=/onlyoffice.tristanhavelick.com/{{ web_server_ip }}
+address=/searxng.tristanhavelick.com/{{ web_server_ip }}
+address=/transmission.tristanhavelick.com/{{ web_server_ip }}
+address=/tubesync.tristanhavelick.com/{{ web_server_ip }}
+address=/articles.tristanhavelick.com/{{ web_server_ip }}
+address=/youtranscript.tristanhavelick.com/{{ web_server_ip }}
+address=/assistant.tristanhavelick.com/{{ web_server_ip }}
+
+# Forward all other queries to Google DNS
+server=8.8.8.8
+server=8.8.4.4
+
+# Optional: Set a cache size
+cache-size=1000
