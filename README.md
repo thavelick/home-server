@@ -4,7 +4,6 @@ A set of ansible scripts for setting up my home server.
 
 ## Services
 These scripts set up the following services:
-* [ChatPad](https://github.com/deiucanta/chatpad)
 * [Jellyfin](https://jellyfin.org)
 * [Just Bangs](https://github.com/thavelick/just-bangs)
 * [Kiwix](https://kiwix.org)

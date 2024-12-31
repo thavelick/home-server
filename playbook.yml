@@ -4,8 +4,6 @@
   become: true
   vars:
     backup_staging_directory: /var/www/backup-staging
-    chatpad_domain: chatpad.{{parent_domain}}
-    chatpad_site_root: /var/www/chatpad.{{parent_domain}}
     firefly_domain: firefly.{{parent_domain}}
     firefly_site_root: /var/www/firefly.{{parent_domain}}
     firefly_importer_domain: firefly-importer.{{parent_domain}}
@@ -54,7 +52,6 @@
     certbot_certs:
       - domains:
           - "home.{{parent_domain}}"
-          - "{{chatpad_domain}}"
           - "{{firefly_domain}}"
           - "{{firefly_importer_domain}}"
           - "{{home_assistant_domain}}"
@@ -73,7 +70,6 @@
     - {role: common, tags: common}
     - {role: geerlingguy.certbot, tags: certbot}
     - {role: geerlingguy.docker, tags: docker}
-    - {role: chatpad, tags: chatpad}
     - {role: firefly, tags: firefly}
     - {role: home_assistant, tags: home_assistant}
     - {role: jellyfin, tags: jellyfin}
