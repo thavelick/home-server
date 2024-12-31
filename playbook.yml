@@ -21,8 +21,6 @@
     kiwix_site_root: /var/www/kiwix.{{parent_domain}}
     miniflux_domain: miniflux.{{parent_domain}}
     miniflux_site_root: /var/www/miniflux.{{parent_domain}}
-    navidrome_domain: navidrome.{{parent_domain}}
-    navidrome_site_root: /var/www/navidrome.{{parent_domain}}
     nextcloud_domain: nextcloud.{{parent_domain}}
     nextcloud_base_directory: /var/www/nextcloud
     nextcloud_data_directory: "{{nextcloud_base_directory}}/data"
@@ -65,7 +63,6 @@
           - "{{just_bangs_domain}}"
           - "{{kiwix_domain}}"
           - "{{miniflux_domain}}"
-          - "{{navidrome_domain}}"
           - "{{nextcloud_domain}}"
           - "{{onlyoffice_domain}}"
           - "{{searxng_domain}}"
@@ -85,7 +82,6 @@
     - {role: kiwix, tags: kiwix}
     - {role: miniflux, tags: miniflux}
     - {role: nextcloud, tags: nextcloud}
-    - {role: navidrome, tags: navidrome}
     - {role: onlyoffice, tags: onlyoffice}
     - {role: prowlarr, tags: prowlarr}
     - {role: radarr, tags: radarr}

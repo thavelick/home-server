@@ -9,7 +9,6 @@ These scripts set up the following services:
 * [Just Bangs](https://github.com/thavelick/just-bangs)
 * [Kiwix](https://kiwix.org)
 * [Miniflux](https://miniflux.net)
-* [Navidrome](https://www.navidrome.org)
 * [Nextcloud](https://nextcloud.com)
 * [OnlyOffice](https://www.onlyoffice.com)
 * [SearXNG](https://github.com/searxng/searxng)
@@ -38,8 +37,6 @@ These scripts set up the following services:
     [servers.vars]
     certbot_admin_email=tristan@example.com
     dynamicdns_password=aaaaaaaa11111111aaaaaaaa11111111
-    navidrome_username=your_username
-    navidrome_password=your_password
     nextcloud_admin_user=your-hidden-password
     local_network=192.168.1.0/16
     marginalia_api_key=your_api_key
