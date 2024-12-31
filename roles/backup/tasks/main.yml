@@ -21,7 +21,7 @@
     name: pre-backup
     minute: "30"
     hour: "*"
-    job: "/root/prebackup.sh {{backup_staging_directory}} {{ wallabag_site_root}}/wallabag.db {{ firefly_site_root}}/database/database.sqlite"
+    job: "/root/prebackup.sh {{backup_staging_directory}} {{ wallabag_site_root}}/wallabag.db
 - name: set up to backup folders locally with borg
   include_role: {name: borgbase.ansible_role_borgbackup}
   vars:

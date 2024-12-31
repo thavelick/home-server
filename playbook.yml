@@ -4,9 +4,6 @@
   become: true
   vars:
     backup_staging_directory: /var/www/backup-staging
-    firefly_domain: firefly.{{parent_domain}}
-    firefly_site_root: /var/www/firefly.{{parent_domain}}
-    firefly_importer_domain: firefly-importer.{{parent_domain}}
     home_assistant_domain: assistant.{{parent_domain}}
     home_assistant_site_root: /var/www/assistant.{{parent_domain}}
     jellyfin_domain: jellyfin.{{parent_domain}}
@@ -52,8 +49,6 @@
     certbot_certs:
       - domains:
           - "home.{{parent_domain}}"
-          - "{{firefly_domain}}"
-          - "{{firefly_importer_domain}}"
           - "{{home_assistant_domain}}"
           - "{{jellyfin_domain}}"
           - "{{jellyseerr_domain}}"
@@ -70,7 +65,6 @@
     - {role: common, tags: common}
     - {role: geerlingguy.certbot, tags: certbot}
     - {role: geerlingguy.docker, tags: docker}
-    - {role: firefly, tags: firefly}
     - {role: home_assistant, tags: home_assistant}
     - {role: jellyfin, tags: jellyfin}
     - {role: jellyseerr, tags: jellyseerr}
