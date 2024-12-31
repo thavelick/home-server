@@ -1,0 +1,74 @@
+---
+- name: Install system dependencies
+  apt:
+    name:
+      - python3-venv
+      - python3-pip
+      - alsa-utils
+    state: present
+- name: clone the openwakeword repo
+  register: openwakeword_clone
+  git:
+    repo: https://github.com/rhasspy/wyoming-openwakeword.git
+    dest: "{{wyoming_satellite_root}}/wyoming-openwakeword"
+    version: master
+    single_branch: true
+    depth: 1
+    clone: true
+    update: true
+- name: stop the openwakeword service if it exists
+  systemd:
+    name: wyoming-openwakeword
+    state: stopped
+- name: Run openwakeword setup script
+  command: "{{wyoming_satellite_root}}/wyoming-openwakeword/script/setup"
+- name: Configure openwakeword start script
+  template:
+    src: templates/start_openwakeword.sh.j2
+    dest: "{{wyoming_satellite_root}}/start_openwakeword.sh"
+    mode: 0755
+- name: Configure openwakeword service
+  template:
+    src: templates/wyoming-openwakeword.service.j2
+    dest: /etc/systemd/system/wyoming-openwakeword.service
+- name: Enable and start wyoming-openwakeword service
+  systemd:
+    name: wyoming-openwakeword
+    daemon_reload: true
+    enabled: true
+    state: started
+- name: make base folder
+  file:
+    path: "{{wyoming_satellite_root}}"
+    state: directory
+- name: clone the satellite repo
+  register: wyoming_satellite_clone
+  git:
+    repo: https://github.com/rhasspy/wyoming-satellite.git
+    dest: "{{wyoming_satellite_root}}/wyoming-satellite"
+    version: master
+    single_branch: true
+    depth: 1
+    clone: true
+    update: true
+- name: stop the wyoming-satellite service if it exists
+  systemd:
+    name: wyoming-satellite
+    state: stopped
+- name: Run satellite setup script
+  command: "{{wyoming_satellite_root}}/wyoming-satellite/script/setup"
+- name: Configure Wyoming Satellite service
+  template:
+    src: templates/wyoming-satellite.service.j2
+    dest: /etc/systemd/system/wyoming-satellite.service
+- name: Configure satellite start script
+  template:
+    src: templates/start.sh.j2
+    dest: "{{wyoming_satellite_root}}/start.sh"
+    mode: 0755
+- name: Enable and start wyoming-satellite service
+  systemd:
+    name: wyoming-satellite
+    daemon_reload: true
+    enabled: true
+    state: started

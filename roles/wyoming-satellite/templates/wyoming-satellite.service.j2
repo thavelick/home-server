@@ -1,0 +1,15 @@
+[Unit]
+Description=Wyoming Satellite
+After=wyoming-openwakeword.service
+
+[Service]
+User=root
+WorkingDirectory={{ wyoming_satellite_root }}/wyoming-satellite
+ExecStart={{ wyoming_satellite_root }}/start.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+
+

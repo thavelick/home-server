@@ -1,0 +1,15 @@
+[Unit]
+Description=Wyoming Open Wake Word
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory={{ wyoming_satellite_root }}/wyoming-satellite
+ExecStart={{ wyoming_satellite_root }}/start_openwakeword.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+
+
