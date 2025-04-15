@@ -12,6 +12,7 @@
       - curl
       - git
       - nginx
+      - ntp
       - postgresql
       - python3
       - python3-pip
