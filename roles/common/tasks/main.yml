@@ -19,6 +19,12 @@
       - python3-psycopg2
       - sqlite3
       - vim
+- name: start and enable ntp
+  become: true
+  service:
+    name: ntp
+    state: started
+    enabled: true
 - name: copy nginx sever config
   register: nginx_config
   copy:
