@@ -46,10 +46,13 @@
       OVERWRITEHOST: "{{nextcloud_domain}}"
       OVERWRITEPROTOCOL: https
       TRUSTED_PROXIES: "172.16.0.0/12"
-# Wait for container to potentially initialize after start/restart
-- name: pause briefly before attempting upgrade
+  register: nextcloud_container_result
+
+# Wait for container to potentially initialize after start/restart, but only if it was changed
+- name: pause for 2 minutes if container was updated
   pause:
-    seconds: 10
+    minutes: 2
+  when: nextcloud_container_result.changed
 # Run upgrade command - safe to run even if no upgrade needed
 - name: run nextcloud upgrade command
   command: docker exec --user www-data nextcloud php occ upgrade
