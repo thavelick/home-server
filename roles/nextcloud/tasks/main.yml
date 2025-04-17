@@ -26,6 +26,7 @@
   docker_container:
     name: nextcloud
     image: nextcloud:latest
+    pull: true
     state: started
     restart_policy: unless-stopped
     published_ports:
