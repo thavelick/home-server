@@ -15,6 +15,7 @@
   docker_container:
     name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
+    pull: true
     state: started
     restart_policy: unless-stopped
     privileged: true
