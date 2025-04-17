@@ -46,6 +46,20 @@
       OVERWRITEHOST: "{{nextcloud_domain}}"
       OVERWRITEPROTOCOL: https
       TRUSTED_PROXIES: "172.16.0.0/12"
+# Wait for container to potentially initialize after start/restart
+- name: pause briefly before attempting upgrade
+  pause:
+    seconds: 15
+# Run upgrade command - safe to run even if no upgrade needed
+- name: run nextcloud upgrade command
+  command: docker exec --user www-data nextcloud php occ upgrade
+  register: occ_upgrade_result
+  changed_when: "'Nextcloud is already latest version' not in occ_upgrade_result.stdout"
+  failed_when: occ_upgrade_result.rc != 0 and 'Nextcloud is not installed' not in occ_upgrade_result.stderr
+# Ensure maintenance mode is off - safe to run even if already off
+- name: ensure maintenance mode is off
+  command: docker exec --user www-data nextcloud php occ maintenance:mode --off
+  changed_when: false # This command doesn't reliably indicate change
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars:
