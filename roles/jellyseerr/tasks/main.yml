@@ -17,6 +17,7 @@
   docker_container:
     name: jellyseerr
     image: fallenbagel/jellyseerr:latest
+    pull: true
     state: started
     restart_policy: unless-stopped
     published_ports:
