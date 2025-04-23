@@ -9,13 +9,6 @@
   loop:
     - "{{onlyoffice_base_directory}}"
     - "{{onlyoffice_data_directory}}"
-- name: pull latest onlyoffice image
-  community.docker.docker_image:
-    name: onlyoffice/documentserver
-    tag: latest
-    source: pull
-  register: onlyoffice_image
-
 - name: run the onlyoffice container
   docker_container:
     name: onlyoffice
@@ -28,8 +21,7 @@
       - "{{onlyoffice_data_directory}}:/var/www/onlyoffice/Data"
     env:
       JWT_SECRET: "{{onlyoffice_jwt_secret}}"
-    recreate: "{{ onlyoffice_image.changed | default(false) }}"
-    force_restart: "{{ onlyoffice_image.changed | default(false) }}"
+    pull: yes
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars: {domain: "{{onlyoffice_domain}}", port: 9786}
