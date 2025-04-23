@@ -19,6 +19,7 @@
     privileged: true
     published_ports:
       - "9091:9091"
+    pull: true
     volumes:
       - "{{transmission_base_directory}}/config:/config"
       - "{{transmission_base_directory}}/downloads:/data"
