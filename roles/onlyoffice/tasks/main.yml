@@ -14,6 +14,7 @@
     name: onlyoffice/documentserver
     tag: latest
     source: pull
+  register: onlyoffice_image
 
 - name: run the onlyoffice container
   docker_container:
@@ -27,8 +28,8 @@
       - "{{onlyoffice_data_directory}}:/var/www/onlyoffice/Data"
     env:
       JWT_SECRET: "{{onlyoffice_jwt_secret}}"
-    recreate: true
-    force_restart: true
+    recreate: "{{ onlyoffice_image.changed | default(false) }}"
+    force_restart: "{{ onlyoffice_image.changed | default(false) }}"
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars: {domain: "{{onlyoffice_domain}}", port: 9786}
