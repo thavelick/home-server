@@ -35,3 +35,4 @@
       PUID: "{{prowlarr_user_id.stdout}}"
       PGID: "{{prowlarr_group_id.stdout}}"
       TZ: "{{current_timezone.stdout}}"
+    pull: yes
