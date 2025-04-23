@@ -21,7 +21,7 @@
       - "{{onlyoffice_data_directory}}:/var/www/onlyoffice/Data"
     env:
       JWT_SECRET: "{{onlyoffice_jwt_secret}}"
-    pull: yes
+    pull: true
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars: {domain: "{{onlyoffice_domain}}", port: 9786}
