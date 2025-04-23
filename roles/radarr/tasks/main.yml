@@ -45,3 +45,4 @@
       PUID: "{{radarr_user_id.stdout}}"
       PGID: "{{radarr_group_id.stdout}}"
       TZ: "{{current_timezone.stdout}}"
+    pull: yes
