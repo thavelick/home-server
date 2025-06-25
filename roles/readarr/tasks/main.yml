@@ -43,6 +43,7 @@
       - "{{readarr_config_directory}}:/config"
       - "{{readarr_books_directory}}:/books"
       - "{{readarr_downloads_directory}}:/downloads"
+      - "{{transmission_base_directory}}/downloads:/data"
     env:
       PUID: "{{readarr_user_id.stdout}}"
       PGID: "{{readarr_group_id.stdout}}"
