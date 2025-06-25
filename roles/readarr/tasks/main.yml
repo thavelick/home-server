@@ -1,4 +1,12 @@
 ---
+- name: create the readarr user
+  user:
+    name: "{{readarr_user}}"
+    state: present
+    shell: /bin/false
+    createhome: true
+    home: "{{readarr_home_directory}}"
+
 - name: create directories
   file:
     path: "{{item}}"
