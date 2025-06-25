@@ -1,0 +1,7 @@
+---
+readarr_base_directory: /var/www/readarr
+readarr_config_directory: "{{readarr_base_directory}}/config"
+readarr_home_directory: /home/jellyfin
+readarr_books_directory: "{{readarr_base_directory}}/books"
+readarr_downloads_directory: "{{readarr_base_directory}}/downloads"
+readarr_user: jellyfin

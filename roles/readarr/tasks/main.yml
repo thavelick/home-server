@@ -1,0 +1,42 @@
+---
+- name: create directories
+  file:
+    path: "{{item}}"
+    state: directory
+    owner: "{{readarr_user}}"
+    group: "{{readarr_user}}"
+    mode: 0755
+  loop:
+    - "{{readarr_base_directory}}"
+    - "{{readarr_config_directory}}"
+    - "{{readarr_books_directory}}"
+    - "{{readarr_downloads_directory}}"
+- name: get the user id
+  command: id -u "{{readarr_user}}"
+  register: readarr_user_id
+  changed_when: false
+- name: get the group id
+  command: id -g "{{readarr_user}}"
+  register: readarr_group_id
+  changed_when: false
+- name: get the current timezone
+  command: cat /etc/timezone
+  register: current_timezone
+  changed_when: false
+- name: run the readarr container
+  docker_container:
+    name: readarr
+    image: lscr.io/linuxserver/readarr:develop
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "8787:8787"
+    volumes:
+      - "{{readarr_config_directory}}:/config"
+      - "{{readarr_books_directory}}:/books"
+      - "{{readarr_downloads_directory}}:/downloads"
+    env:
+      PUID: "{{readarr_user_id.stdout}}"
+      PGID: "{{readarr_group_id.stdout}}"
+      TZ: "{{current_timezone.stdout}}"
+    pull: yes

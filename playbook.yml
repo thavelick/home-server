@@ -75,6 +75,7 @@
     - {role: onlyoffice, tags: onlyoffice}
     - {role: prowlarr, tags: prowlarr}
     - {role: radarr, tags: radarr}
+    - {role: readarr, tags: readarr}
     - {role: searxng, tags: searxng}
     - {role: tubesync, tags: tubesync}
     - {role: youtranscript, tags: youtranscript}
