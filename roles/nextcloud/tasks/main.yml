@@ -36,6 +36,7 @@
       - "{{nextcloud_config_directory}}:/var/www/html/config"
       - "{{nextcloud_base_directory}}/apps:/var/www/html/custom_apps"
       - "{{nextcloud_base_directory}}/app-hooks/post_installation:/docker-entrypoint-hooks.d/post-installation"
+      - "{{transmission_base_directory}}:/var/www/transmission"
     env:
       SQLITE_DATABASE: nextcloud
       NEXTCLOUD_TRUSTED_DOMAINS: "{{nextcloud_domain}}"

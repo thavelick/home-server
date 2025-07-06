@@ -1,11 +1,15 @@
 ---
+- name: create the highseas group
+  group:
+    name: highseas
+    state: present
 - name: create directories
   file:
     path: "{{item}}"
     state: directory
     owner: www-data
-    group: www-data
-    mode: 0755
+    group: highseas
+    mode: 0775
   loop:
     - "{{transmission_base_directory}}"
     - "{{transmission_base_directory}}/config"

@@ -6,14 +6,16 @@
     shell: /bin/false
     createhome: true
     home: "{{readarr_home_directory}}"
+    groups: highseas
+    append: true
 
 - name: create directories
   file:
     path: "{{item}}"
     state: directory
     owner: "{{readarr_user}}"
-    group: "{{readarr_user}}"
-    mode: 0755
+    group: highseas
+    mode: 0775
   loop:
     - "{{readarr_base_directory}}"
     - "{{readarr_config_directory}}"
@@ -24,7 +26,7 @@
   register: readarr_user_id
   changed_when: false
 - name: get the group id
-  command: id -g "{{readarr_user}}"
+  shell: "getent group highseas | cut -d: -f3"
   register: readarr_group_id
   changed_when: false
 - name: get the current timezone
@@ -34,7 +36,7 @@
 - name: run the readarr container
   docker_container:
     name: readarr
-    image: lscr.io/linuxserver/readarr:develop
+    image: linuxserver/readarr:0.4.18-develop
     state: started
     restart_policy: unless-stopped
     published_ports:
