@@ -36,8 +36,16 @@
         "u": "https://search.marginalia.nu/search?query={{{s}}}"
     },
     {
+        "t": "pw",
+        "u": "http://bernard:9696/search?query={{{s}}}&type=search"
+    },
+    {
         "t": "py",
         "u": "https://kiwix.tristanhavelick.com/search?content=python-3.10.2&pattern={{{s}}}"
+    },
+    {
+        "t": "sg",
+        "u": "https://app.thestorygraph.com/browse?search_term={{{s}}}"
     },
     {
         "t": "ytt",
