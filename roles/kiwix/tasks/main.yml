@@ -25,4 +25,4 @@
   vars: {service_name: kiwix}
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{kiwix_domain}}", port: 8181}
+  vars: {domain: "{{kiwix_domain}}", service_port: 8181}

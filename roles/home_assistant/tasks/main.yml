@@ -28,4 +28,4 @@
       TZ: "{{current_timezone.stdout}}"
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{home_assistant_domain}}", port: 8123}
+  vars: {domain: "{{home_assistant_domain}}", service_port: 8123}

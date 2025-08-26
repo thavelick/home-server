@@ -68,5 +68,5 @@
   include_role: {name: nginx_standard}
   vars:
     domain: "{{nextcloud_domain}}"
-    port: 9787
+    service_port: 9787
     nginx_conf_template: nextcloud_nginx.conf.j2

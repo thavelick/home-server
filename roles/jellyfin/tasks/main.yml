@@ -5,5 +5,5 @@
   include_role: {name: nginx_standard}
   vars:
     domain: "{{jellyfin_domain}}"
-    port: 8096
+    service_port: 8096
     nginx_conf_template: jellyfin_nginx.conf.j2

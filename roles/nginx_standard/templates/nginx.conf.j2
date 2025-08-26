@@ -5,7 +5,7 @@ server {
         proxy_set_header Host $host;
 	proxy_set_header Upgrade $http_upgrade;
 	proxy_set_header Connection "upgrade";
-		proxy_pass http://localhost:{{port}};
+		proxy_pass http://localhost:{{service_port}};
 	}
 	listen 443 ssl;
     add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;

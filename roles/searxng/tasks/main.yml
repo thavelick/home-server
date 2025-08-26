@@ -68,4 +68,4 @@
     app_port: 8888
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{searxng_domain}}", port: 8788}
+  vars: {domain: "{{searxng_domain}}", service_port: 8788}

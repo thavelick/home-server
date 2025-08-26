@@ -7,13 +7,13 @@
   become_user: postgres
   postgresql_user:
     name: "{{miniflux_db_user_name}}"
-    db: "{{miniflux_db}}"
+    login_db: "{{miniflux_db}}"
     password: "{{miniflux_db_user_password}}"
     state: present
 - name: give the miniflux db user privileges
   become_user: postgres
   postgresql_privs:
-    db: postgres
+    login_db: postgres
     privs: ALL
     type: database
     obj: "{{miniflux_db}}"
@@ -58,4 +58,4 @@
   when: miniflux_conf.changed
 - name: configure nginx forward
   include_role: {name: nginx_standard}
-  vars: {domain: "{{miniflux_domain}}", port: "{{miniflux_port}}"}
+  vars: {domain: "{{miniflux_domain}}", service_port: "{{miniflux_port}}"}

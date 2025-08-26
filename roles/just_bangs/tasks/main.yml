@@ -42,4 +42,4 @@
     state: restarted
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{just_bangs_domain}}", port: 8484}
+  vars: {domain: "{{just_bangs_domain}}", service_port: 8484}

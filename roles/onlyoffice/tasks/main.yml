@@ -24,4 +24,4 @@
     pull: true
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{onlyoffice_domain}}", port: 9786}
+  vars: {domain: "{{onlyoffice_domain}}", service_port: 9786}

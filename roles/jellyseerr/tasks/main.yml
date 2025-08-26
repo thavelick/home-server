@@ -28,4 +28,4 @@
       TZ: "{{current_timezone.stdout}}"
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{jellyseerr_domain}}", port: 5055}
+  vars: {domain: "{{jellyseerr_domain}}", service_port: 5055}
