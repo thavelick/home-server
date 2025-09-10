@@ -48,10 +48,6 @@
         "u": "https://app.thestorygraph.com/browse?search_term={{{s}}}"
     },
     {
-        "t": "ytt",
-        "u": "https://youtranscript.tristanhavelick.com/search?search_term={{{s}}}"
-    },
-    {
         "t": "x",
         "u": "https://searxng.tristanhavelick.com/search?q={{{s}}}"
     }

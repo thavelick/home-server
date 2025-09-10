@@ -35,8 +35,6 @@
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
     web_server_ip: "{{ansible_default_ipv4.address}}"
-    youtranscript_domain: youtranscript.{{parent_domain}}
-    youtranscript_site_root: /var/www/youtranscript.{{parent_domain}}
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
     miniflux_db: miniflux_db
@@ -60,7 +58,6 @@
           - "{{searxng_domain}}"
           - "{{tubesync_domain}}"
           - "{{wallabag_domain}}"
-          - "{{youtranscript_domain}}"
   roles:
     - {role: common, tags: common}
     - {role: geerlingguy.certbot, tags: certbot}
@@ -78,7 +75,6 @@
     - {role: readarr, tags: readarr}
     - {role: searxng, tags: searxng}
     - {role: tubesync, tags: tubesync}
-    - {role: youtranscript, tags: youtranscript}
     - {role: transmission, tags: transmission}
     - {role: wallabag, tags: wallabag}
     - {role: dnsmasq, tags: dnsmasq}

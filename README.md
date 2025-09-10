@@ -13,7 +13,6 @@ These scripts set up the following services:
 * [SearXNG](https://github.com/searxng/searxng)
     * With [Just Auth](https://github.com/thavelick/just-auth) for authentication
 * [TubeSync](https://github.com/meeb/tubesync)
-* [YouTranscript](https://github.com/thavelick/youtranscript)
 * [Transmission + OpenVPN](https://github.com/haugene/docker-transmission-openvpn)
 * [Wallabag](https://wallabag.org)
 * Dynamic DNS with Namecheap
