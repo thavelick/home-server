@@ -9,6 +9,7 @@
   apt:
     name:
       - acl
+      - avahi-daemon
       - curl
       - git
       - nginx
@@ -23,6 +24,12 @@
   become: true
   service:
     name: ntp
+    state: started
+    enabled: true
+- name: start and enable avahi-daemon
+  become: true
+  service:
+    name: avahi-daemon
     state: started
     enabled: true
 - name: copy nginx sever config
