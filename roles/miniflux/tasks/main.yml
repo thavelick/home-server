@@ -1,15 +1,15 @@
 ---
-- name: create the miniflux database
-  become_user: postgres
-  postgresql_db:
-    name: "{{miniflux_db}}"
 - name: create a miniflux db user
   become_user: postgres
   postgresql_user:
     name: "{{miniflux_db_user_name}}"
-    login_db: "{{miniflux_db}}"
     password: "{{miniflux_db_user_password}}"
     state: present
+- name: create the miniflux database
+  become_user: postgres
+  postgresql_db:
+    name: "{{miniflux_db}}"
+    owner: "{{miniflux_db_user_name}}"
 - name: give the miniflux db user privileges
   become_user: postgres
   postgresql_privs:
