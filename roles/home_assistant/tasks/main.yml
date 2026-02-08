@@ -7,6 +7,16 @@
   loop:
     - "{{home_assistant_site_root}}"
     - "{{home_assistant_site_root}}/config"
+- name: deploy home assistant configuration files
+  copy:
+    src: "{{item}}"
+    dest: "{{home_assistant_site_root}}/config/{{item}}"
+    mode: 0644
+  loop:
+    - configuration.yaml
+    - automations.yaml
+    - scripts.yaml
+    - scenes.yaml
 - name: get the current timezone
   command: cat /etc/timezone
   register: current_timezone
