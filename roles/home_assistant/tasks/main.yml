@@ -7,6 +7,7 @@
   loop:
     - "{{home_assistant_site_root}}"
     - "{{home_assistant_site_root}}/config"
+    - "{{home_assistant_matter_data_directory}}"
 - name: deploy home assistant configuration files
   copy:
     src: "{{item}}"
@@ -34,6 +35,18 @@
     volumes:
       - "{{home_assistant_site_root}}/config:/config"
       - /dev/snd:/dev/snd
+    env:
+      TZ: "{{current_timezone.stdout}}"
+- name: run matter server container
+  docker_container:
+    name: matter-server
+    image: ghcr.io/home-assistant-libs/python-matter-server:stable
+    pull: true
+    state: started
+    restart_policy: unless-stopped
+    network_mode: host
+    volumes:
+      - "{{home_assistant_matter_data_directory}}:/data"
     env:
       TZ: "{{current_timezone.stdout}}"
 - name: configure nginx
