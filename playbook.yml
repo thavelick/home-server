@@ -6,6 +6,7 @@
     backup_staging_directory: /var/www/backup-staging
     home_assistant_domain: assistant.{{parent_domain}}
     home_assistant_site_root: /var/www/assistant.{{parent_domain}}
+    home_assistant_matter_data_directory: "{{home_assistant_site_root}}/matter-server/data"
     jellyfin_domain: jellyfin.{{parent_domain}}
     jellyseerr_base_directory: /var/www/jellyseerr
     jellyseerr_domain: jellyseerr.{{parent_domain}}
