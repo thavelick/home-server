@@ -13,6 +13,17 @@ homeassistant:
   external_url: https://assistant.tristanhavelick.com
   internal_url: http://192.168.1.192:8123
 
+google_assistant:
+  project_id: ha-tristanhavelick-gh
+  service_account: !include SERVICE_ACCOUNT.json
+  report_state: true
+  exposed_domains:
+    - switch
+    - light
+  entity_config:
+    light.kauf_bulb_302ddd_kauf_bulb_cold_rgb:
+      expose: false
+
 http:
   trusted_proxies:
     - 127.0.0.1

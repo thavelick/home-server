@@ -54,6 +54,8 @@ These scripts set up the following services:
     searxng_secret_key=another-secret-key
     searxng_just_auth_password="choose a password for searxng"
     searxng_just_auth_salt="just a random string"
+    home_assistant_google_service_account_private_key="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+    home_assistant_google_service_account_private_key_id=your_private_key_id
     EOF
     ```
 4. Set up DNS At Name cheap
