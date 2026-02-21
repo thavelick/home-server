@@ -27,7 +27,12 @@ python3 verify_services.py
 
 ## Architecture
 
-**Single playbook** (`playbook.yml`) targets one host with `become: true`. Playbook-level variables define domains, directories, and credentials. The `hosts` file (gitignored) contains the inventory and all secrets.
+**Single playbook** (`playbook.yml`) targets one host with `become: true`. Playbook-level variables define domains, directories, and credentials.
+
+**Variable storage** uses `group_vars/home/`:
+- `vars.yml` — non-secret config (paths, generic settings), committed to git
+- `vault.yml` — secrets encrypted with `ansible-vault`, committed to git
+- The vault password lives in `.vault-password` (gitignored). `ansible.cfg` points to this file so decryption is automatic.
 
 **Reusable utility roles:**
 - `nginx_standard` — nginx reverse proxy config, included by most service roles via `include_role` with variable overrides
@@ -79,5 +84,5 @@ roles/{name}/
 
 - Commit messages: `feat:` / `fix:` prefix style
 - Docker containers use `restart_policy: unless-stopped`
-- Secrets live in the gitignored `hosts` file, never in committed code
+- Secrets live in `group_vars/home/vault.yml`, encrypted with `ansible-vault`. The vault password file (`.vault-password`) is gitignored
 - External roles from Galaxy are pinned in `requirements.yml`

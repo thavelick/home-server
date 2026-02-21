@@ -1,0 +1,9 @@
+---
+borg_backup_directory: /media/disk2/backup/home-server
+ffmpegfs_source_directory: /media/disk2/podcasts
+ffmpegfs_mount_directory: /media/podcasts_mp4
+onlyoffice_data_directory: /media/disk2/onlyoffice
+radarr_movies_directory: /media/disk2/movies
+tubesync_downloads_directory: /media/disk2/tubesync_downloads
+openvpn_provider: PIA
+openvpn_config: uk_london

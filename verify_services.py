@@ -11,9 +11,10 @@ Based on Ansible playbook configuration.
 
 import requests
 import socket
+import subprocess
 import sys
-import configparser
 import re
+import yaml
 from urllib3.exceptions import InsecureRequestWarning
 from typing import Dict, List, Optional, Tuple
 
@@ -21,14 +22,50 @@ from typing import Dict, List, Optional, Tuple
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
+def load_yaml_file(path: str) -> Optional[Dict]:
+    """Load a YAML file, automatically decrypting ansible-vault files.
+    Returns None if the file is missing or cannot be decrypted."""
+    try:
+        with open(path, "r") as f:
+            content = f.read()
+    except FileNotFoundError:
+        return None
+
+    if content.startswith("$ANSIBLE_VAULT"):
+        result = subprocess.run(
+            ["ansible-vault", "view", path],
+            capture_output=True, text=True
+        )
+        if result.returncode != 0:
+            return None
+        content = result.stdout
+
+    return yaml.safe_load(content)
+
+
+def find_parent_domain(hosts_content: str) -> Optional[str]:
+    """Find parent_domain from hosts file (legacy) or group_vars YAML files."""
+    # Check hosts file first (legacy format)
+    domain_match = re.search(r"parent_domain\s*=\s*([^\s\n]+)", hosts_content)
+    if domain_match:
+        return domain_match.group(1).strip()
+
+    # Check group_vars YAML files
+    for vars_file in ["group_vars/home/vars.yml", "group_vars/home/vault.yml"]:
+        data = load_yaml_file(vars_file)
+        if data and "parent_domain" in data:
+            return data["parent_domain"]
+
+    return None
+
+
 def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
-    """Parse Ansible hosts file to get server hostname and parent domain"""
+    """Parse Ansible hosts file and group_vars to get server hostname and parent domain"""
     try:
         with open(filename, "r") as f:
             content = f.read()
 
         # Extract server hostname from [home] or [servers] section
-        # Look for section then find the next non-empty, non-comment line
         lines = content.split("\n")
         server_hostname = None
         in_target_section = False
@@ -39,7 +76,6 @@ def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
                 in_target_section = True
                 continue
             elif line.startswith("[") and in_target_section:
-                # Hit another section, stop looking
                 break
             elif in_target_section and line and not line.startswith("#"):
                 server_hostname = line
@@ -50,11 +86,9 @@ def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
                 "Could not find server hostname in hosts file (looked for [home] or [servers] section)"
             )
 
-        # Extract parent_domain from vars
-        domain_match = re.search(r"parent_domain\s*=\s*([^\s\n]+)", content)
-        if not domain_match:
-            raise ValueError("Could not find parent_domain in hosts file")
-        parent_domain = domain_match.group(1).strip()
+        parent_domain = find_parent_domain(content)
+        if not parent_domain:
+            raise ValueError("Could not find parent_domain in hosts or group_vars")
 
         return server_hostname, parent_domain
 
