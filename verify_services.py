@@ -11,9 +11,10 @@ Based on Ansible playbook configuration.
 
 import requests
 import socket
+import subprocess
 import sys
-import configparser
 import re
+import yaml
 from urllib3.exceptions import InsecureRequestWarning
 from typing import Dict, List, Optional, Tuple
 
@@ -22,13 +23,12 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
-    """Parse Ansible hosts file to get server hostname and parent domain"""
+    """Parse Ansible hosts file and group_vars to get server hostname and parent domain"""
     try:
         with open(filename, "r") as f:
             content = f.read()
 
         # Extract server hostname from [home] or [servers] section
-        # Look for section then find the next non-empty, non-comment line
         lines = content.split("\n")
         server_hostname = None
         in_target_section = False
@@ -39,7 +39,6 @@ def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
                 in_target_section = True
                 continue
             elif line.startswith("[") and in_target_section:
-                # Hit another section, stop looking
                 break
             elif in_target_section and line and not line.startswith("#"):
                 server_hostname = line
@@ -50,11 +49,39 @@ def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
                 "Could not find server hostname in hosts file (looked for [home] or [servers] section)"
             )
 
-        # Extract parent_domain from vars
+        # Look for parent_domain in hosts file (legacy), then group_vars
+        parent_domain = None
+
+        # Check hosts file first (legacy format)
         domain_match = re.search(r"parent_domain\s*=\s*([^\s\n]+)", content)
-        if not domain_match:
-            raise ValueError("Could not find parent_domain in hosts file")
-        parent_domain = domain_match.group(1).strip()
+        if domain_match:
+            parent_domain = domain_match.group(1).strip()
+
+        # Check group_vars YAML files
+        if not parent_domain:
+            for vars_file in ["group_vars/home/vars.yml", "group_vars/home/vault.yml"]:
+                try:
+                    with open(vars_file, "r") as f:
+                        file_content = f.read()
+                    if file_content.startswith("$ANSIBLE_VAULT"):
+                        # Decrypt vault file
+                        result = subprocess.run(
+                            ["ansible-vault", "view", vars_file],
+                            capture_output=True, text=True
+                        )
+                        if result.returncode == 0:
+                            file_content = result.stdout
+                        else:
+                            continue
+                    data = yaml.safe_load(file_content)
+                    if data and "parent_domain" in data:
+                        parent_domain = data["parent_domain"]
+                        break
+                except FileNotFoundError:
+                    continue
+
+        if not parent_domain:
+            raise ValueError("Could not find parent_domain in hosts or group_vars")
 
         return server_hostname, parent_domain
 

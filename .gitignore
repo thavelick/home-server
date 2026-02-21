@@ -1,3 +1,4 @@
 .vscode
-hosts
+.vault-password
+ansible.log
 scratch/
