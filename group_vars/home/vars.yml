@@ -1,6 +1,4 @@
 ---
-# Non-secret variables — safe to commit
-
 borg_backup_directory: /media/disk2/backup/home-server
 ffmpegfs_source_directory: /media/disk2/podcasts
 ffmpegfs_mount_directory: /media/podcasts_mp4
