@@ -24,6 +24,11 @@ google_assistant:
     light.kauf_bulb_302ddd_kauf_bulb_cold_rgb:
       expose: false
 
+rest_command:
+  roku_find_remote:
+    url: "http://192.168.1.141:8060/keypress/FindRemote"
+    method: POST
+
 http:
   trusted_proxies:
     - 127.0.0.1
