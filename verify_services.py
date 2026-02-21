@@ -9,24 +9,60 @@ Checks that all configured services are responding properly:
 Based on Ansible playbook configuration.
 """
 
-import requests
+import re
 import socket
 import subprocess
 import sys
-import re
-import yaml
-from urllib3.exceptions import InsecureRequestWarning
 from typing import Dict, List, Optional, Tuple
 
+import requests
+import yaml
+from urllib3.exceptions import InsecureRequestWarning
+
 # Suppress SSL warnings when checking without verification
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+import urllib3
+urllib3.disable_warnings(InsecureRequestWarning)
+
+# ANSI color codes
+GREEN = "\033[32m"
+YELLOW = "\033[33m"
+RED = "\033[31m"
+RESET = "\033[0m"
+
+STATUS_COLORS = {"ok": GREEN, "WARN": YELLOW, "FAIL": RED}
+
+
+def colorize(text: str, color: str) -> str:
+    """Wrap text in an ANSI color code."""
+    return f"{color}{text}{RESET}"
+
+
+def colorize_status(status: str) -> str:
+    """Wrap a status string in the appropriate ANSI color."""
+    color = STATUS_COLORS.get(status)
+    if color:
+        return colorize(status, color)
+    return status
+
+
+def pad_colored(status: str, width: int) -> str:
+    """Colorize a status string and pad it to the given visible width.
+
+    ANSI escape codes are invisible but affect string length,
+    so we pad based on the raw status length, not the colored length.
+    """
+    colored = colorize_status(status)
+    padding = width - len(status)
+    if padding > 0:
+        return colored + " " * padding
+    return colored
 
 
 def load_yaml_file(path: str) -> Optional[Dict]:
     """Load a YAML file, automatically decrypting ansible-vault files.
     Returns None if the file is missing or cannot be decrypted."""
     try:
-        with open(path, "r") as f:
+        with open(path, "r", encoding="utf-8") as f:
             content = f.read()
     except FileNotFoundError:
         return None
@@ -34,7 +70,7 @@ def load_yaml_file(path: str) -> Optional[Dict]:
     if content.startswith("$ANSIBLE_VAULT"):
         result = subprocess.run(
             ["ansible-vault", "view", path],
-            capture_output=True, text=True
+            capture_output=True, text=True, check=False
         )
         if result.returncode != 0:
             return None
@@ -62,7 +98,7 @@ def find_parent_domain(hosts_content: str) -> Optional[str]:
 def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
     """Parse Ansible hosts file and group_vars to get server hostname and parent domain"""
     try:
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Extract server hostname from [home] or [servers] section
@@ -75,15 +111,16 @@ def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
             if line in ["[home]", "[servers]"]:
                 in_target_section = True
                 continue
-            elif line.startswith("[") and in_target_section:
+            if line.startswith("[") and in_target_section:
                 break
-            elif in_target_section and line and not line.startswith("#"):
+            if in_target_section and line and not line.startswith("#"):
                 server_hostname = line
                 break
 
         if not server_hostname:
             raise ValueError(
-                "Could not find server hostname in hosts file (looked for [home] or [servers] section)"
+                "Could not find server hostname in hosts file"
+                " (looked for [home] or [servers] section)"
             )
 
         parent_domain = find_parent_domain(content)
@@ -94,11 +131,11 @@ def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
 
     except FileNotFoundError:
         print(
-            "❌ hosts file not found. Please create it following the README.md format."
+            "FAIL: hosts file not found. Please create it following the README.md format."
         )
         sys.exit(1)
-    except Exception as e:
-        print(f"❌ Error parsing hosts file: {e}")
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        print(f"FAIL: Error parsing hosts file: {e}")
         sys.exit(1)
 
 
@@ -167,7 +204,7 @@ SERVICES = {
 
 
 def check_https_endpoint(
-    hostname: str, valid_status_codes: List[int] = None, timeout: int = 10
+    hostname: str, valid_status_codes: Optional[List[int]] = None, timeout: int = 10
 ) -> Tuple[str, int, str]:
     """Check if HTTPS endpoint responds properly
     Returns: (status_icon, status_code, details)
@@ -179,21 +216,21 @@ def check_https_endpoint(
         url = f"https://{hostname}"
         response = requests.get(url, timeout=timeout, verify=True)
         if response.status_code in valid_status_codes:
-            return "✅", response.status_code, ""
-        else:
-            return "⚠️", response.status_code, f"HTTP {response.status_code}"
+            return "ok", response.status_code, ""
+        return "WARN", response.status_code, f"HTTP {response.status_code}"
     except requests.exceptions.SSLError as e:
-        return "❌", 0, f"SSL Error: {str(e)}"
+        return "FAIL", 0, f"SSL Error: {str(e)}"
     except requests.exceptions.Timeout:
-        return "❌", 0, "Timeout"
+        return "FAIL", 0, "Timeout"
     except requests.exceptions.ConnectionError:
-        return "❌", 0, "Connection refused"
-    except Exception as e:
-        return "❌", 0, f"Error: {str(e)}"
+        return "FAIL", 0, "Connection refused"
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        return "FAIL", 0, f"Error: {str(e)}"
 
 
-def check_http_port(
-    hostname: str, port: int, valid_status_codes: List[int] = None, timeout: int = 10
+def check_http_port(  # pylint: disable=too-many-return-statements
+    hostname: str, port: int,
+    valid_status_codes: Optional[List[int]] = None, timeout: int = 10,
 ) -> Tuple[str, int, str]:
     """Check if HTTP port responds
     Returns: (status_icon, status_code, details)
@@ -208,128 +245,121 @@ def check_http_port(
         sock.close()
 
         if result != 0:
-            return "❌", 0, "Port closed"
+            return "FAIL", 0, "Port closed"
 
         # Try HTTP request
         try:
             url = f"http://{hostname}:{port}"
             response = requests.get(url, timeout=timeout)
             if response.status_code in valid_status_codes:
-                return "✅", response.status_code, ""
-            else:
-                return "⚠️", response.status_code, f"HTTP {response.status_code}"
+                return "ok", response.status_code, ""
+            return "WARN", response.status_code, f"HTTP {response.status_code}"
         except requests.exceptions.Timeout:
-            return "❌", 0, "HTTP timeout"
+            return "FAIL", 0, "HTTP timeout"
         except requests.exceptions.ConnectionError:
-            return "❌", 0, "HTTP connection refused"
-        except Exception as e:
-            return "⚠️", 0, f"Port open (HTTP error: {str(e)[:50]})"
+            return "FAIL", 0, "HTTP connection refused"
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            return "WARN", 0, f"Port open (HTTP error: {str(e)[:50]})"
 
-    except Exception as e:
-        return "❌", 0, f"Error: {str(e)}"
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        return "FAIL", 0, f"Error: {str(e)}"
+
+
+def check_service(config):
+    """Check a single service's HTTPS and port status.
+    Returns: (tag, https_status, port_status, details)
+    """
+    tag = config["tag"]
+    valid_codes = config.get("valid_status_codes", [200])
+
+    https_status = "-"
+    https_details = ""
+    if config["https_hostname"]:
+        https_status, _, https_msg = check_https_endpoint(
+            config["https_hostname"], valid_codes
+        )
+        if https_msg:
+            https_details = https_msg
+
+    port_status = "-"
+    port_details = ""
+    if config["port"]:
+        port_status, _, port_msg = check_http_port(
+            SERVER_HOSTNAME, config["port"], valid_codes
+        )
+        if port_msg:
+            port_details = port_msg
+
+    details_parts = []
+    if https_details:
+        details_parts.append(f"HTTPS: {https_details}")
+    if port_details:
+        details_parts.append(f"Port: {port_details}")
+    details = ", ".join(details_parts)
+
+    return tag, https_status, port_status, details
+
+
+def count_status(results, index, status):
+    """Count how many results have a given status at the given index."""
+    return sum(1 for r in results if r[index] == status)
+
+
+def format_summary(label, results, index):
+    """Format a colored summary line for HTTPS or port results."""
+    up = count_status(results, index, "ok")
+    warn = count_status(results, index, "WARN")
+    down = count_status(results, index, "FAIL")
+    total = up + warn + down
+    return (
+        f"{label}: {colorize(f'{up} ok', GREEN)}, "
+        f"{colorize(f'{warn} warn', YELLOW)}, "
+        f"{colorize(f'{down} fail', RED)} ({total} total)"
+    )
 
 
 def main():
     """Main verification function"""
-    print("# Home Server Service Verification")
+    print("Home Server Service Verification")
+    print(f"Server: {SERVER_HOSTNAME}")
+    print(f"Domain: {PARENT_DOMAIN}")
     print()
-    print(f"**Server:** {SERVER_HOSTNAME}  ")
-    print(f"**Domain:** {PARENT_DOMAIN}")
-    print()
+
+    name_width = max(
+        len("SERVICE"),
+        max(len(c["tag"]) for c in SERVICES.values()),
+    )
+    header = f"{'SERVICE':<{name_width}}  HTTPS  PORT   DETAILS"
+    print(header)
+    print("-" * len(header))
 
     all_results = []
-
-    print("## 🌐 Service Status Check")
-    print()
-    print("| Service | HTTPS Hostname | Port | HTTPS | Port | Details |")
-    print("|---------|----------------|------|--------|------|---------|")
-
-    for service_name, config in SERVICES.items():
-        tag = config["tag"]
-        hostname = config["https_hostname"] or "-"
-        port_display = f"{SERVER_HOSTNAME}:{config['port']}" if config["port"] else "-"
-
-        # Check HTTPS if available
-        https_status = "-"
-        https_details = ""
-        if config["https_hostname"]:
-            valid_codes = config.get("valid_status_codes", [200])
-            https_icon, https_code, https_msg = check_https_endpoint(
-                config["https_hostname"], valid_codes
-            )
-            https_status = https_icon
-            if https_msg:  # Only show details if not success
-                https_details = https_msg
-
-        # Check port if available
-        port_status = "-"
-        port_details = ""
-        if config["port"]:
-            valid_codes = config.get("valid_status_codes", [200])
-            port_icon, port_code, port_msg = check_http_port(
-                SERVER_HOSTNAME, config["port"], valid_codes
-            )
-            port_status = port_icon
-            if port_msg:  # Only show details if not success
-                port_details = port_msg
-
-        # Combine details only if there are issues
-        details_parts = []
-        if https_details:
-            details_parts.append(f"HTTPS: {https_details}")
-        if port_details:
-            details_parts.append(f"Port: {port_details}")
-        details = ", ".join(details_parts) if details_parts else ""
-
+    for config in SERVICES.values():
+        tag, https_status, port_status, details = check_service(config)
+        details_str = f"  {colorize(details, RED)}" if details else ""
         print(
-            f"| {tag} | {hostname} | {port_display} | {https_status} | {port_status} | {details} |"
+            f"{tag:<{name_width}}  "
+            f"{pad_colored(https_status, 5)}  "
+            f"{pad_colored(port_status, 5)}"
+            f"{details_str}"
         )
-        all_results.append(
-            (tag, hostname, port_display, https_status, port_status, details)
-        )
+        all_results.append((https_status, port_status))
 
     print()
-    print("## 📊 Summary")
-    print()
+    print(format_summary("HTTPS", all_results, 0))
+    print(format_summary("Ports", all_results, 1))
 
-    # Count status icons
-    https_up = sum(
-        1 for _, _, _, https_status, _, _ in all_results if https_status == "✅"
+    total_issues = (
+        count_status(all_results, 0, "WARN")
+        + count_status(all_results, 0, "FAIL")
+        + count_status(all_results, 1, "WARN")
+        + count_status(all_results, 1, "FAIL")
     )
-    https_warn = sum(
-        1 for _, _, _, https_status, _, _ in all_results if https_status == "⚠️"
-    )
-    https_down = sum(
-        1 for _, _, _, https_status, _, _ in all_results if https_status == "❌"
-    )
-    https_total = https_up + https_warn + https_down
-
-    port_up = sum(
-        1 for _, _, _, _, port_status, _ in all_results if port_status == "✅"
-    )
-    port_warn = sum(
-        1 for _, _, _, _, port_status, _ in all_results if port_status == "⚠️"
-    )
-    port_down = sum(
-        1 for _, _, _, _, port_status, _ in all_results if port_status == "❌"
-    )
-    port_total = port_up + port_warn + port_down
-
-    print(
-        f"**HTTPS:** {https_up} ✅, {https_warn} ⚠️, {https_down} ❌ ({https_total} total)  "
-    )
-    print(
-        f"**Ports:** {port_up} ✅, {port_warn} ⚠️, {port_down} ❌ ({port_total} total)"
-    )
-    print()
-
-    # Exit with error code if any services are down
-    total_issues = https_warn + https_down + port_warn + port_down
     if total_issues > 0:
-        print(f"⚠️  **{total_issues} issue(s) detected!**")
+        print(f"\n{colorize(f'{total_issues} issue(s) detected!', RED)}")
         sys.exit(1)
     else:
-        print(f"🎉 **All services are healthy!**")
+        print(f"\n{colorize('All services are healthy!', GREEN)}")
         sys.exit(0)
 
 
