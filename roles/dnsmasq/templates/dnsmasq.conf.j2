@@ -19,6 +19,9 @@ address=/articles.tristanhavelick.com/{{ web_server_ip }}
 address=/assistant.tristanhavelick.com/{{ web_server_ip }}
 address=/home.tristanhavelick.com/{{ web_server_ip }}
 
+# Forward reverse DNS for LAN to router (for local hostnames)
+server=/1.168.192.in-addr.arpa/192.168.1.1
+
 # Forward all other queries to Google DNS
 server=8.8.8.8
 server=8.8.4.4

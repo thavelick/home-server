@@ -1,0 +1,57 @@
+---
+- name: Create ntopng directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ ntopng_base_directory }}/redis"
+    - "{{ ntopng_base_directory }}/data"
+
+- name: Create ntopng Docker network
+  docker_network:
+    name: ntopng_net
+
+- name: Start ntopng Redis container
+  docker_container:
+    name: ntopng-redis
+    image: redis:7-alpine
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ ntopng_base_directory }}/redis:/data"
+    networks:
+      - name: ntopng_net
+
+- name: Start netflow2ng container
+  docker_container:
+    name: netflow2ng
+    image: synfinatic/netflow2ng:latest
+    restart_policy: unless-stopped
+    published_ports:
+      - "2055:2055/udp"
+    networks:
+      - name: ntopng_net
+    command: >
+      -a 0.0.0.0:2055
+      -z tcp://*:5556
+
+- name: Start ntopng container
+  docker_container:
+    name: ntopng
+    image: ntop/ntopng:latest
+    restart_policy: unless-stopped
+    published_ports:
+      - "3000:3000"
+    volumes:
+      - "{{ ntopng_base_directory }}/data:/var/lib/ntopng"
+    networks:
+      - name: ntopng_net
+    dns_servers:
+      - "{{ web_server_ip }}"
+    command: >
+      -i tcp://netflow2ng:5556
+      -r ntopng-redis:6379
+      --community
+      -m 192.168.1.0/24
+      -n 1
+      -w 0.0.0.0:3000

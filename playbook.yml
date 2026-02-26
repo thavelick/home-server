@@ -32,6 +32,7 @@
     tubesync_domain: tubesync.{{parent_domain}}
     tubesync_base_directory: /var/www/tubesync
     tubesync_config_directory: "{{tubesync_base_directory}}/config"
+    ntopng_base_directory: /var/www/ntopng
     uptime_kuma_base_directory: /var/www/uptime-kuma
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
@@ -78,6 +79,7 @@
     - {role: searxng, tags: searxng}
     - {role: tubesync, tags: tubesync}
     - {role: transmission, tags: transmission}
+    - {role: ntopng, tags: ntopng}
     - {role: uptime_kuma, tags: uptime_kuma}
     - {role: wallabag, tags: wallabag}
     - {role: dnsmasq, tags: dnsmasq}
