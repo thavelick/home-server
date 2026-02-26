@@ -9,6 +9,7 @@ Checks that all configured services are responding properly:
 Based on Ansible playbook configuration.
 """
 
+import ipaddress
 import re
 import socket
 import subprocess
@@ -203,6 +204,72 @@ SERVICES = {
 }
 
 
+def is_private_ip(addr: str) -> bool:
+    """Check if an IP address is in a private range (RFC 1918 or IPv6 link-local)."""
+    try:
+        return ipaddress.ip_address(addr).is_private
+    except ValueError:
+        return False
+
+
+def resolve_server_ip(server: str) -> Optional[str]:
+    """Resolve a server hostname to an IP address, or return None on failure."""
+    try:
+        return socket.gethostbyname(server)
+    except socket.gaierror:
+        return None
+
+
+def run_dig(query_name: str, server_ip: Optional[str] = None,
+            timeout: int = 5) -> Tuple[bool, str]:
+    """Run dig +short and return (success, output_or_error)."""
+    cmd = ["dig", "+short", query_name]
+    if server_ip:
+        cmd.insert(1, f"@{server_ip}")
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=timeout, check=False
+        )
+    except FileNotFoundError:
+        return False, "dig not found (install bind-tools)"
+    except subprocess.TimeoutExpired:
+        return False, "DNS timeout"
+
+    if result.returncode != 0:
+        return False, f"dig failed: {result.stderr.strip()}"
+
+    output = result.stdout.strip()
+    if not output:
+        return False, "No DNS result"
+
+    return True, output.splitlines()[0]
+
+
+def check_dns_resolve(
+    server: Optional[str], query_name: str,
+    expect_private: bool = False, timeout: int = 5,
+) -> Tuple[str, str, str]:
+    """Check if a DNS query resolves successfully via dig +short.
+    When server is given, queries that specific server; otherwise uses system default.
+    When expect_private is True, warns if the result is not a private IP.
+    Returns: (status, ip_result, details)
+    """
+    server_ip = None
+    if server:
+        server_ip = resolve_server_ip(server)
+        if not server_ip:
+            return "FAIL", "", f"Cannot resolve server {server}"
+
+    success, output = run_dig(query_name, server_ip, timeout)
+    if not success:
+        return "FAIL", "", output
+
+    if expect_private and not is_private_ip(output):
+        return "WARN", output, "Expected private IP"
+
+    return "ok", output, ""
+
+
 def check_https_endpoint(
     hostname: str, valid_status_codes: Optional[List[int]] = None, timeout: int = 10
 ) -> Tuple[str, int, str]:
@@ -228,41 +295,41 @@ def check_https_endpoint(
         return "FAIL", 0, f"Error: {str(e)}"
 
 
-def check_http_port(  # pylint: disable=too-many-return-statements
+def is_port_open(hostname: str, port: int, timeout: int = 10) -> bool:
+    """Check if a TCP port is accepting connections."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(timeout)
+    try:
+        return sock.connect_ex((hostname, port)) == 0
+    finally:
+        sock.close()
+
+
+def check_http_port(
     hostname: str, port: int,
     valid_status_codes: Optional[List[int]] = None, timeout: int = 10,
 ) -> Tuple[str, int, str]:
-    """Check if HTTP port responds
+    """Check if HTTP port responds.
     Returns: (status_icon, status_code, details)
     """
     if valid_status_codes is None:
         valid_status_codes = [200]
+
+    if not is_port_open(hostname, port, timeout):
+        return "FAIL", 0, "Port closed"
+
     try:
-        # First check if port is open
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(timeout)
-        result = sock.connect_ex((hostname, port))
-        sock.close()
-
-        if result != 0:
-            return "FAIL", 0, "Port closed"
-
-        # Try HTTP request
-        try:
-            url = f"http://{hostname}:{port}"
-            response = requests.get(url, timeout=timeout)
-            if response.status_code in valid_status_codes:
-                return "ok", response.status_code, ""
-            return "WARN", response.status_code, f"HTTP {response.status_code}"
-        except requests.exceptions.Timeout:
-            return "FAIL", 0, "HTTP timeout"
-        except requests.exceptions.ConnectionError:
-            return "FAIL", 0, "HTTP connection refused"
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            return "WARN", 0, f"Port open (HTTP error: {str(e)[:50]})"
-
+        url = f"http://{hostname}:{port}"
+        response = requests.get(url, timeout=timeout)
+        if response.status_code in valid_status_codes:
+            return "ok", response.status_code, ""
+        return "WARN", response.status_code, f"HTTP {response.status_code}"
+    except requests.exceptions.Timeout:
+        return "FAIL", 0, "HTTP timeout"
+    except requests.exceptions.ConnectionError:
+        return "FAIL", 0, "HTTP connection refused"
     except Exception as e:  # pylint: disable=broad-exception-caught
-        return "FAIL", 0, f"Error: {str(e)}"
+        return "WARN", 0, f"Port open (HTTP error: {str(e)[:50]})"
 
 
 def check_service(config):
@@ -272,32 +339,25 @@ def check_service(config):
     tag = config["tag"]
     valid_codes = config.get("valid_status_codes", [200])
 
-    https_status = "-"
-    https_details = ""
+    https_status, https_details = "-", ""
     if config["https_hostname"]:
-        https_status, _, https_msg = check_https_endpoint(
+        https_status, _, https_details = check_https_endpoint(
             config["https_hostname"], valid_codes
         )
-        if https_msg:
-            https_details = https_msg
 
-    port_status = "-"
-    port_details = ""
+    port_status, port_details = "-", ""
     if config["port"]:
-        port_status, _, port_msg = check_http_port(
+        port_status, _, port_details = check_http_port(
             SERVER_HOSTNAME, config["port"], valid_codes
         )
-        if port_msg:
-            port_details = port_msg
 
     details_parts = []
     if https_details:
         details_parts.append(f"HTTPS: {https_details}")
     if port_details:
         details_parts.append(f"Port: {port_details}")
-    details = ", ".join(details_parts)
 
-    return tag, https_status, port_status, details
+    return tag, https_status, port_status, ", ".join(details_parts)
 
 
 def count_status(results, index, status):
@@ -316,6 +376,57 @@ def format_summary(label, results, index):
         f"{colorize(f'{warn} warn', YELLOW)}, "
         f"{colorize(f'{down} fail', RED)} ({total} total)"
     )
+
+
+def format_infra_row(name: str, name_width: int, status: str, details: str) -> str:
+    """Format a single infrastructure check row for display."""
+    details_str = ""
+    if details:
+        if status == "ok":
+            details_str = f"  {details}"
+        else:
+            color = YELLOW if status == "WARN" else RED
+            details_str = f"  {colorize(details, color)}"
+    return (
+        f"{name:<{name_width}}  "
+        f"{pad_colored(status, 6)}"
+        f"{details_str}"
+    )
+
+
+def print_infra_checks() -> int:
+    """Run and print infrastructure DNS checks.
+    Returns the number of failures.
+    """
+    name_width = max(len("INFRASTRUCTURE"), len("dnsmasq forward"))
+    print()
+    header = f"{'INFRASTRUCTURE':<{name_width}}  STATUS  DETAILS"
+    print(header)
+    print("-" * len(header))
+
+    checks = [
+        ("dnsmasq local", SERVER_HOSTNAME, f"assistant.{PARENT_DOMAIN}", True),
+        ("dnsmasq forward", SERVER_HOSTNAME, "google.com", False),
+        ("dynamicdns", None, f"home.{PARENT_DOMAIN}", False),
+    ]
+
+    results: List[Tuple[str, str, str]] = []
+    for name, server, query, expect_private in checks:
+        status, ip_result, details = check_dns_resolve(
+            server, query, expect_private=expect_private
+        )
+        results.append((name, status, details or ip_result))
+
+    for name, status, details in results:
+        print(format_infra_row(name, name_width, status, details))
+
+    infra_fail = sum(1 for _, status, _ in results if status != "ok")
+    infra_ok = len(results) - infra_fail
+    print(
+        f"\nInfra: {colorize(f'{infra_ok} ok', GREEN)}, "
+        f"{colorize(f'{infra_fail} fail', RED)} ({len(results)} total)"
+    )
+    return infra_fail
 
 
 def main():
@@ -345,6 +456,8 @@ def main():
         )
         all_results.append((https_status, port_status))
 
+    infra_fail = print_infra_checks()
+
     print()
     print(format_summary("HTTPS", all_results, 0))
     print(format_summary("Ports", all_results, 1))
@@ -354,6 +467,7 @@ def main():
         + count_status(all_results, 0, "FAIL")
         + count_status(all_results, 1, "WARN")
         + count_status(all_results, 1, "FAIL")
+        + infra_fail
     )
     if total_issues > 0:
         print(f"\n{colorize(f'{total_issues} issue(s) detected!', RED)}")
