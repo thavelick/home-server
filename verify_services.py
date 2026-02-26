@@ -201,6 +201,7 @@ SERVICES = {
     "prowlarr": {"tag": "prowlarr", "https_hostname": None, "port": 9696},
     "radarr": {"tag": "radarr", "https_hostname": None, "port": 7878},
     "readarr": {"tag": "readarr", "https_hostname": None, "port": 8787},
+    "uptime_kuma": {"tag": "uptime_kuma", "https_hostname": None, "port": 3001},
 }
 
 

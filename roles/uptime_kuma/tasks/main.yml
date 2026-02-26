@@ -1,0 +1,17 @@
+---
+- name: create data directory
+  file:
+    path: "{{uptime_kuma_base_directory}}/data"
+    state: directory
+    mode: 0755
+- name: run the uptime-kuma container
+  docker_container:
+    name: uptime-kuma
+    image: louislam/uptime-kuma:2
+    pull: true
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "3001:3001"
+    volumes:
+      - "{{uptime_kuma_base_directory}}/data:/app/data"

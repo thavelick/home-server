@@ -32,6 +32,7 @@
     tubesync_domain: tubesync.{{parent_domain}}
     tubesync_base_directory: /var/www/tubesync
     tubesync_config_directory: "{{tubesync_base_directory}}/config"
+    uptime_kuma_base_directory: /var/www/uptime-kuma
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
@@ -77,6 +78,7 @@
     - {role: searxng, tags: searxng}
     - {role: tubesync, tags: tubesync}
     - {role: transmission, tags: transmission}
+    - {role: uptime_kuma, tags: uptime_kuma}
     - {role: wallabag, tags: wallabag}
     - {role: dnsmasq, tags: dnsmasq}
     - {role: dynamicdns, tags: dynamicdns}
