@@ -37,7 +37,7 @@
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
-    web_server_ip: "{{ansible_default_ipv4.address}}"
+    web_server_ip: "{{ansible_facts.default_ipv4.address}}"
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
     miniflux_db: miniflux_db
