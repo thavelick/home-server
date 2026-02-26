@@ -22,7 +22,7 @@ ansible-playbook -i hosts playbook.yml --tags home_assistant
 ansible-playbook -i hosts playbook.yml --check --diff --tags home_assistant
 
 # Verify deployed services are responding
-python3 verify_services.py
+python3 scripts/verify_services.py
 ```
 
 ## Architecture
