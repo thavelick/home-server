@@ -1,0 +1,37 @@
+---
+- name: create frandsjam directory
+  file:
+    path: "{{frandsjam_base_directory}}"
+    state: directory
+    mode: 0755
+
+- name: copy server files
+  copy:
+    src: "{{item}}"
+    dest: "{{frandsjam_base_directory}}/{{item}}"
+  loop:
+    - Dockerfile
+    - server.js
+    - package.json
+  register: frandsjam_files
+
+- name: build frandsjam docker image
+  docker_image:
+    name: frandsjam
+    source: build
+    force_source: "{{frandsjam_files.changed}}"
+    build:
+      path: "{{frandsjam_base_directory}}"
+
+- name: run frandsjam container
+  docker_container:
+    name: frandsjam
+    image: frandsjam
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "{{frandsjam_port}}:2567"
+
+- name: configure nginx
+  include_role: {name: nginx_standard}
+  vars: {domain: "{{frandsjam_domain}}", service_port: "{{frandsjam_port}}"}
