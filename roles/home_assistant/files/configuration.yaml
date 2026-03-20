@@ -29,6 +29,20 @@ rest_command:
     url: "http://192.168.1.141:8060/keypress/FindRemote"
     method: POST
 
+template:
+  - sensor:
+      - name: "Pixel 10a Battery Drain Cumulative"
+        unit_of_measurement: "%"
+        state_class: total_increasing
+        state: >
+          {% set current = states('sensor.pixel_10a_battery_level') | float(0) %}
+          {% set previous = this.attributes.get('last_level', current) %}
+          {% set drain = previous - current if current < previous else 0 %}
+          {% set total = this.state | float(0) + drain %}
+          {{ total }}
+        attributes:
+          last_level: "{{ states('sensor.pixel_10a_battery_level') | float(0) }}"
+
 http:
   trusted_proxies:
     - 127.0.0.1
