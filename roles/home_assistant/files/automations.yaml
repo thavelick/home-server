@@ -1,1 +1,13 @@
-[]
+- id: cpu_temperature_alert
+  alias: "CPU Temperature Alert"
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.cpu_temperature
+      above: 85
+      for:
+        minutes: 5
+  action:
+    - service: notify.mobile_app_pixel_10a
+      data:
+        title: "Server Temperature Warning"
+        message: "CPU temperature is {{ states('sensor.cpu_temperature') }}°C"

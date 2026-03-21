@@ -43,6 +43,14 @@ template:
         attributes:
           last_level: "{{ states('sensor.pixel_10a_battery_level') | float(0) }}"
 
+command_line:
+  - sensor:
+      name: "CPU Temperature"
+      command: "cat /sys/class/thermal/thermal_zone2/temp"
+      unit_of_measurement: "°C"
+      value_template: "{{ value | int / 1000 }}"
+      scan_interval: 60
+
 http:
   trusted_proxies:
     - 127.0.0.1
