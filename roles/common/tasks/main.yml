@@ -11,7 +11,9 @@
       - acl
       - avahi-daemon
       - curl
+      - fancontrol
       - git
+      - lm-sensors
       - nginx
       - ntp
       - postgresql
