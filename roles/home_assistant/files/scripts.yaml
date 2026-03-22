@@ -1,0 +1,34 @@
+living_room_volume_40:
+  alias: "Living Room Volume 40"
+  sequence:
+    - service: media_player.volume_set
+      target:
+        entity_id: media_player.living_room
+      data:
+        volume_level: 0.491
+    - service: rest_command.roku_volume_up
+    - delay:
+        milliseconds: 300
+    - service: rest_command.roku_volume_down
+
+living_room_volume_60:
+  alias: "Living Room Volume 60"
+  sequence:
+    - service: media_player.volume_set
+      target:
+        entity_id: media_player.living_room
+      data:
+        volume_level: 0.727
+    - service: rest_command.roku_volume_up
+    - delay:
+        milliseconds: 300
+    - service: rest_command.roku_volume_down
+
+living_room_mute_toggle:
+  alias: "Living Room Mute Toggle"
+  sequence:
+    - service: media_player.volume_mute
+      target:
+        entity_id: media_player.living_room
+      data:
+        is_volume_muted: "{{ not state_attr('media_player.living_room', 'is_volume_muted') }}"

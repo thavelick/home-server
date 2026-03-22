@@ -28,6 +28,12 @@ rest_command:
   roku_find_remote:
     url: "http://192.168.1.141:8060/keypress/FindRemote"
     method: POST
+  roku_volume_up:
+    url: "http://192.168.1.141:8060/keypress/VolumeUp"
+    method: POST
+  roku_volume_down:
+    url: "http://192.168.1.141:8060/keypress/VolumeDown"
+    method: POST
 
 template:
   - sensor:
