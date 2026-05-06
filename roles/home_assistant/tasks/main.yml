@@ -54,6 +54,20 @@
       - "{{home_assistant_matter_data_directory}}:/data"
     env:
       TZ: "{{current_timezone.stdout}}"
+- name: deploy wait-for-internet unit (restarts HA once DNS is ready after boot)
+  copy:
+    src: home-assistant-wait-for-internet.service
+    dest: /etc/systemd/system/home-assistant-wait-for-internet.service
+    mode: 0644
+  register: wait_for_internet_unit
+- name: reload systemd if unit changed
+  systemd:
+    daemon_reload: true
+  when: wait_for_internet_unit.changed
+- name: enable wait-for-internet unit
+  systemd:
+    name: home-assistant-wait-for-internet.service
+    enabled: true
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars: {domain: "{{home_assistant_domain}}", service_port: 8123}
