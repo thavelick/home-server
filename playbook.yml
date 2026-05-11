@@ -1,4 +1,8 @@
 ---
+# Adding a new service? Default to a Docker-based role.
+# Only deploy natively (apt/systemd) when Docker genuinely can't work —
+# e.g. DNS resolvers, kernel-adjacent tools, or anything that needs to run
+# before Docker is up.
 - name: Setup Home Server
   hosts: all
   become: true
@@ -85,3 +89,11 @@
     - {role: dnsmasq, tags: dnsmasq}
     - {role: dynamicdns, tags: dynamicdns}
     - {role: backup, tags: backup}
+  post_tasks:
+    - name: Verify deployed services are responding
+      ansible.builtin.command: ./scripts/verify_services.py
+      delegate_to: localhost
+      become: false
+      changed_when: false
+      tags: always
+      when: not ansible_check_mode
