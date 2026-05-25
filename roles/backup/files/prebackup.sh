@@ -3,6 +3,7 @@ set -e
 
 backup_staging_directory=$1
 wallabag_db_file=$2
+nextcloud_db_file=$3
 miniflux_dump_file="${backup_staging_directory}/miniflux.sql"
 
 
@@ -11,5 +12,6 @@ miniflux_dump_file="${backup_staging_directory}/miniflux.sql"
 cd "${backup_staging_directory}"
 sudo -u postgres pg_dump miniflux_db > "${miniflux_dump_file}"
 
-# copy the wallbag db file to the backup staging directory
-cp "${wallabag_db_file}" "${backup_staging_directory}"
+# snapshot sqlite databases using the online backup API for a consistent copy
+sqlite3 "${wallabag_db_file}" ".backup '${backup_staging_directory}/wallabag.db'"
+sqlite3 "${nextcloud_db_file}" ".backup '${backup_staging_directory}/nextcloud.db'"
