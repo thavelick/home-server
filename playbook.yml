@@ -13,9 +13,12 @@
     home_assistant_config_directory: "{{home_assistant_site_root}}/config"
     home_assistant_matter_data_directory: "{{home_assistant_site_root}}/matter-server/data"
     jellyfin_domain: jellyfin.{{parent_domain}}
+    jellyfin_data_directory: /var/lib/jellyfin
     jellyseerr_base_directory: /var/www/jellyseerr
+    jellyseerr_config_directory: "{{jellyseerr_base_directory}}/config"
     jellyseerr_domain: jellyseerr.{{parent_domain}}
     just_auth_site_root: /var/www/just_auth
+    letsencrypt_state_directory: /root/letsencrypt
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
     kiwix_domain: kiwix.{{parent_domain}}
@@ -39,6 +42,7 @@
     tubesync_config_directory: "{{tubesync_base_directory}}/config"
     ntopng_base_directory: /var/www/ntopng
     uptime_kuma_base_directory: /var/www/uptime-kuma
+    uptime_kuma_data_directory: "{{uptime_kuma_base_directory}}/data"
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"

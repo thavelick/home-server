@@ -21,7 +21,17 @@
     name: pre-backup
     minute: "30"
     hour: "*"
-    job: "/root/prebackup.sh {{backup_staging_directory}} {{ wallabag_site_root}}/wallabag.db {{nextcloud_data_directory}}/nextcloud.db"
+    job: >-
+      /root/prebackup.sh {{backup_staging_directory}}
+      wallabag={{wallabag_site_root}}/wallabag.db
+      nextcloud={{nextcloud_data_directory}}/nextcloud.db
+      jellyfin_library={{jellyfin_data_directory}}/data/library.db
+      jellyfin={{jellyfin_data_directory}}/data/jellyfin.db
+      radarr={{radarr_config_directory}}/radarr.db
+      prowlarr={{prowlarr_config_directory}}/prowlarr.db
+      readarr={{readarr_config_directory}}/readarr.db
+      jellyseerr={{jellyseerr_config_directory}}/db/db.sqlite3
+      uptime_kuma={{uptime_kuma_data_directory}}/kuma.db
 - name: set up to backup folders locally with borg
   include_role: {name: borgbase.ansible_role_borgbackup}
   vars:
@@ -34,6 +44,13 @@
       - "{{tubesync_config_directory}}"
       - "{{home_assistant_config_directory}}"
       - "{{home_assistant_matter_data_directory}}"
+      - "{{jellyfin_data_directory}}"
+      - "{{jellyseerr_config_directory}}"
+      - "{{letsencrypt_state_directory}}"
+      - "{{prowlarr_config_directory}}"
+      - "{{radarr_config_directory}}"
+      - "{{readarr_config_directory}}"
+      - "{{uptime_kuma_data_directory}}"
     borg_retention_policy:
       keep_hourly: 3
       keep_daily: 7

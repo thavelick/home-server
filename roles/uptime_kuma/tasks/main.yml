@@ -1,7 +1,7 @@
 ---
 - name: create data directory
   file:
-    path: "{{uptime_kuma_base_directory}}/data"
+    path: "{{uptime_kuma_data_directory}}"
     state: directory
     mode: 0755
 - name: run the uptime-kuma container
@@ -14,4 +14,4 @@
     published_ports:
       - "3001:3001"
     volumes:
-      - "{{uptime_kuma_base_directory}}/data:/app/data"
+      - "{{uptime_kuma_data_directory}}:/app/data"
