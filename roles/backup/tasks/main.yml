@@ -32,6 +32,8 @@
       - "{{nextcloud_data_directory}}"
       - "{{nextcloud_config_directory}}"
       - "{{tubesync_config_directory}}"
+      - "{{home_assistant_config_directory}}"
+      - "{{home_assistant_matter_data_directory}}"
     borg_retention_policy:
       keep_hourly: 3
       keep_daily: 7

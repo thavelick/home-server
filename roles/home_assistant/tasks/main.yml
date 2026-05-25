@@ -6,12 +6,12 @@
     mode: 0755
   loop:
     - "{{home_assistant_site_root}}"
-    - "{{home_assistant_site_root}}/config"
+    - "{{home_assistant_config_directory}}"
     - "{{home_assistant_matter_data_directory}}"
 - name: deploy home assistant configuration files
   copy:
     src: "{{item}}"
-    dest: "{{home_assistant_site_root}}/config/{{item}}"
+    dest: "{{home_assistant_config_directory}}/{{item}}"
     mode: 0644
   loop:
     - configuration.yaml
@@ -21,7 +21,7 @@
 - name: deploy google service account
   template:
     src: SERVICE_ACCOUNT.json.j2
-    dest: "{{home_assistant_site_root}}/config/SERVICE_ACCOUNT.json"
+    dest: "{{home_assistant_config_directory}}/SERVICE_ACCOUNT.json"
     mode: 0644
 - name: get the current timezone
   command: cat /etc/timezone
@@ -37,7 +37,7 @@
     privileged: true
     network_mode: host
     volumes:
-      - "{{home_assistant_site_root}}/config:/config"
+      - "{{home_assistant_config_directory}}:/config"
       - /dev/snd:/dev/snd
       - /sys/class/thermal:/sys/class/thermal:ro
     env:
