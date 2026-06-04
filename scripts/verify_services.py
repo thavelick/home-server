@@ -152,42 +152,56 @@ SERVICES = {
         "tag": "home_assistant",
         "https_hostname": f"assistant.{PARENT_DOMAIN}",
         "port": 8123,
+        "body_match": "Home Assistant",
     },
     "jellyfin": {
         "tag": "jellyfin",
         "https_hostname": f"jellyfin.{PARENT_DOMAIN}",
         "port": 8096,
+        "body_match": "Jellyfin",
     },
     "jellyseerr": {
         "tag": "jellyseerr",
         "https_hostname": f"jellyseerr.{PARENT_DOMAIN}",
         "port": 5055,
+        "body_match": "Jellyseerr",
     },
     "just_bangs": {
         "tag": "just_bangs",
         "https_hostname": f"bangs.{PARENT_DOMAIN}",
         "port": 8484,
+        "body_match": "Just Bangs!",
     },
-    "kiwix": {"tag": "kiwix", "https_hostname": f"kiwix.{PARENT_DOMAIN}", "port": 8181},
+    "kiwix": {
+        "tag": "kiwix",
+        "https_hostname": f"kiwix.{PARENT_DOMAIN}",
+        "port": 8181,
+        "body_match": "Kiwix",
+    },
     "miniflux": {
         "tag": "miniflux",
         "https_hostname": f"miniflux.{PARENT_DOMAIN}",
         "port": 8050,
+        "body_match": "Miniflux",
     },
     "nextcloud": {
         "tag": "nextcloud",
         "https_hostname": f"nextcloud.{PARENT_DOMAIN}",
         "port": 9787,
+        "body_match": "Nextcloud",
     },
     "onlyoffice": {
         "tag": "onlyoffice",
         "https_hostname": f"onlyoffice.{PARENT_DOMAIN}",
         "port": 9786,
+        "body_match": "ONLYOFFICE",
     },
     "searxng": {
         "tag": "searxng",
         "https_hostname": f"searxng.{PARENT_DOMAIN}",
         "port": 8788,
+        # searxng sits behind just_auth, which serves its sign-in page until authenticated
+        "body_match": "Just Auth!",
     },
     "transmission": {"tag": "transmission", "https_hostname": None, "port": 9091},
     "tubesync": {
@@ -195,11 +209,13 @@ SERVICES = {
         "https_hostname": f"tubesync.{PARENT_DOMAIN}",
         "port": 4848,
         "valid_status_codes": [200, 401],
+        "body_match": "Basic auth required",
     },
     "wallabag": {
         "tag": "wallabag",
         "https_hostname": f"articles.{PARENT_DOMAIN}",
         "port": None,
+        "body_match": "wallabag",
     },
     # Services with ports but no HTTPS hostnames
     "prowlarr": {"tag": "prowlarr", "https_hostname": None, "port": 9696},
@@ -277,9 +293,12 @@ def check_dns_resolve(
 
 
 def check_https_endpoint(
-    hostname: str, valid_status_codes: Optional[List[int]] = None, timeout: int = 10
+    hostname: str, valid_status_codes: Optional[List[int]] = None,
+    body_match: Optional[str] = None, timeout: int = 10,
 ) -> Tuple[str, int, str]:
-    """Check if HTTPS endpoint responds properly
+    """Check if HTTPS endpoint responds properly.
+    When body_match is given, the response body must contain that string;
+    this catches nginx serving its default page (HTTP 200) instead of proxying.
     Returns: (status_icon, status_code, details)
     """
     if valid_status_codes is None:
@@ -289,6 +308,8 @@ def check_https_endpoint(
         url = f"https://{hostname}"
         response = requests.get(url, timeout=timeout, verify=True)
         if response.status_code in valid_status_codes:
+            if body_match and body_match not in response.text:
+                return "WARN", response.status_code, f"Body missing '{body_match}'"
             return "ok", response.status_code, ""
         return "WARN", response.status_code, f"HTTP {response.status_code}"
     except requests.exceptions.SSLError as e:
@@ -348,7 +369,7 @@ def check_service(config):
     https_status, https_details = "-", ""
     if config["https_hostname"]:
         https_status, _, https_details = check_https_endpoint(
-            config["https_hostname"], valid_codes
+            config["https_hostname"], valid_codes, config.get("body_match")
         )
 
     port_status, port_details = "-", ""
