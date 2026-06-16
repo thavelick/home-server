@@ -18,13 +18,26 @@
     type: database
     obj: "{{miniflux_db}}"
     role: "{{miniflux_db_user_name}}"
+- name: remove legacy miniflux repo list (replaced by the deb822 .sources file)
+  become: true
+  file:
+    path: /etc/apt/sources.list.d/miniflux.list
+    state: absent
 - name: add miniflux repo
   become: true
-  apt_repository:
-    repo: "deb [trusted=yes] https://repo.miniflux.app/apt/ /"
+  register: miniflux_repo
+  deb822_repository:
+    name: miniflux
+    types: deb
+    uris: https://repo.miniflux.app/apt/
+    suites: "/"
+    trusted: true
     state: present
-    filename: miniflux
+- name: update apt cache after miniflux repo change
+  become: true
+  apt:
     update_cache: true
+  when: miniflux_repo.changed
 - name: install miniflux
   become: true
   apt:

@@ -12,14 +12,22 @@
     url: https://repo.jellyfin.org/jellyfin_team.gpg.key
     dest: /etc/apt/keyrings/jellyfin.asc
     mode: '0644'
-- name: remove the legacy jellyfin repo list (replaced by the signed-by version)
+- name: remove legacy jellyfin repo lists (replaced by the deb822 .sources file)
   file:
-    path: /etc/apt/sources.list.d/repo_jellyfin_org_debian.list
+    path: "{{ item }}"
     state: absent
+  loop:
+    - /etc/apt/sources.list.d/repo_jellyfin_org_debian.list
+    - /etc/apt/sources.list.d/jellyfin.list
 - name: configure the jellyfin apt repo
-  apt_repository:
-    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/jellyfin.asc] https://repo.jellyfin.org/debian {{ ansible_distribution_release | lower }} main"
-    filename: jellyfin
+  deb822_repository:
+    name: jellyfin
+    types: deb
+    uris: https://repo.jellyfin.org/debian
+    suites: "{{ ansible_distribution_release | lower }}"
+    components: main
+    architectures: amd64
+    signed_by: /etc/apt/keyrings/jellyfin.asc
     state: present
 - name: install jellyfin
   apt:
