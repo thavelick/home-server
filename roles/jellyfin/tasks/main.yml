@@ -1,6 +1,30 @@
 ---
-- name: setup jellyfin
-  include_role: {name: vharmers.jellyfin}
+# Replaces the vharmers.jellyfin galaxy role, which used the apt_key module
+# (the apt-key binary was removed in Debian 13/trixie). Set the key up the
+# modern way: a dedicated keyring referenced via signed-by.
+- name: ensure apt keyrings directory exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+- name: install the jellyfin repo signing key
+  get_url:
+    url: https://repo.jellyfin.org/jellyfin_team.gpg.key
+    dest: /etc/apt/keyrings/jellyfin.asc
+    mode: '0644'
+- name: remove the legacy jellyfin repo list (replaced by the signed-by version)
+  file:
+    path: /etc/apt/sources.list.d/repo_jellyfin_org_debian.list
+    state: absent
+- name: configure the jellyfin apt repo
+  apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/jellyfin.asc] https://repo.jellyfin.org/debian {{ ansible_distribution_release | lower }} main"
+    filename: jellyfin
+    state: present
+- name: install jellyfin
+  apt:
+    name: jellyfin
+    state: present
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars:
