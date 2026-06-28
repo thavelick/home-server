@@ -6,4 +6,4 @@ onlyoffice_data_directory: /media/disk2/onlyoffice
 radarr_movies_directory: /media/disk2/movies
 tubesync_downloads_directory: /media/disk2/tubesync_downloads
 openvpn_provider: PIA
-openvpn_config: uk_london
+openvpn_config: ca_toronto
