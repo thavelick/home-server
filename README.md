@@ -4,6 +4,7 @@ A set of ansible scripts for setting up my home server.
 
 ## Services
 These scripts set up the following services:
+* [Ampcast](https://github.com/rekkyrosso/ampcast)
 * [Jellyfin](https://jellyfin.org)
 * [Just Bangs](https://github.com/thavelick/just-bangs)
 * [Kiwix](https://kiwix.org)

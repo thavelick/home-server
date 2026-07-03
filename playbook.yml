@@ -8,6 +8,7 @@
   become: true
   vars:
     backup_staging_directory: /var/www/backup-staging
+    ampcast_domain: ampcast.{{parent_domain}}
     home_assistant_domain: assistant.{{parent_domain}}
     home_assistant_site_root: /var/www/assistant.{{parent_domain}}
     home_assistant_config_directory: "{{home_assistant_site_root}}/config"
@@ -59,6 +60,7 @@
     certbot_certs:
       - domains:
           - "home.{{parent_domain}}"
+          - "{{ampcast_domain}}"
           - "{{home_assistant_domain}}"
           - "{{jellyfin_domain}}"
           - "{{jellyseerr_domain}}"
@@ -74,6 +76,7 @@
     - {role: common, tags: common}
     - {role: geerlingguy.certbot, tags: certbot}
     - {role: geerlingguy.docker, tags: docker}
+    - {role: ampcast, tags: ampcast}
     - {role: home_assistant, tags: home_assistant}
     - {role: jellyfin, tags: jellyfin}
     - {role: jellyseerr, tags: jellyseerr}

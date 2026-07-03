@@ -1,0 +1,13 @@
+---
+- name: run the ampcast container
+  docker_container:
+    name: ampcast
+    image: ghcr.io/rekkyrosso/ampcast:latest
+    pull: true
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "8420:8000"
+- name: configure nginx
+  include_role: {name: nginx_standard}
+  vars: {domain: "{{ampcast_domain}}", service_port: 8420}

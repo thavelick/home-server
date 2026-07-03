@@ -217,6 +217,12 @@ SERVICES = {
         "port": None,
         "body_match": "wallabag",
     },
+    "ampcast": {
+        "tag": "ampcast",
+        "https_hostname": f"ampcast.{PARENT_DOMAIN}",
+        "port": 8420,
+        "body_match": "ampcast",
+    },
     # Services with ports but no HTTPS hostnames
     "prowlarr": {"tag": "prowlarr", "https_hostname": None, "port": 9696},
     "radarr": {"tag": "radarr", "https_hostname": None, "port": 7878},

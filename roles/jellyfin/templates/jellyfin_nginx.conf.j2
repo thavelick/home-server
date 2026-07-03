@@ -26,7 +26,8 @@ server {
     # COOP/COEP. Disable if you use external plugins/images/assets
     add_header Cross-Origin-Opener-Policy "same-origin" always;
     add_header Cross-Origin-Embedder-Policy "require-corp" always;
-    add_header Cross-Origin-Resource-Policy "same-origin" always;
+    # "same-site" lets other *.tristanhavelick.com origins (e.g. Ampcast) embed album art.
+    add_header Cross-Origin-Resource-Policy "same-site" always;
 
     # Permissions policy. May cause issues on some clients
     add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), battery=(), bluetooth=(), camera=(), clipboard-read=(), display-capture=(), document-domain=(), encrypted-media=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), interest-cohort=(), keyboard-map=(), local-fonts=(), magnetometer=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()" always;
