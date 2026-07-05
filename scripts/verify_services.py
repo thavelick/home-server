@@ -218,11 +218,13 @@ SERVICES = {
         "body_match": "wallabag",
         "disabled": True,
     },
+    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "ampcast": {
         "tag": "ampcast",
         "https_hostname": f"ampcast.{PARENT_DOMAIN}",
         "port": 8420,
         "body_match": "ampcast",
+        "disabled": True,
     },
     # Services with ports but no HTTPS hostnames
     "prowlarr": {"tag": "prowlarr", "https_hostname": None, "port": 9696},
