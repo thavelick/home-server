@@ -41,7 +41,6 @@
       - "{{backup_staging_directory}}"
       - "{{nextcloud_data_directory}}"
       - "{{nextcloud_config_directory}}"
-      - "{{tubesync_config_directory}}"
       - "{{home_assistant_config_directory}}"
       - "{{home_assistant_matter_data_directory}}"
       - "{{jellyfin_data_directory}}"

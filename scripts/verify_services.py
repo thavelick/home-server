@@ -204,13 +204,6 @@ SERVICES = {
         "body_match": "Just Auth!",
     },
     "transmission": {"tag": "transmission", "https_hostname": None, "port": 9091},
-    "tubesync": {
-        "tag": "tubesync",
-        "https_hostname": f"tubesync.{PARENT_DOMAIN}",
-        "port": 4848,
-        "valid_status_codes": [200, 401],
-        "body_match": "Basic auth required",
-    },
     "wallabag": {
         "tag": "wallabag",
         "https_hostname": f"articles.{PARENT_DOMAIN}",

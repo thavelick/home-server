@@ -38,9 +38,6 @@
     searxng_site_root: /var/www/searxng.{{parent_domain}}
     transmission_domain: transmission.{{parent_domain}}
     transmission_base_directory: /var/www/transmission
-    tubesync_domain: tubesync.{{parent_domain}}
-    tubesync_base_directory: /var/www/tubesync
-    tubesync_config_directory: "{{tubesync_base_directory}}/config"
     ntopng_base_directory: /var/www/ntopng
     uptime_kuma_base_directory: /var/www/uptime-kuma
     uptime_kuma_data_directory: "{{uptime_kuma_base_directory}}/data"
@@ -70,7 +67,6 @@
           - "{{nextcloud_domain}}"
           - "{{onlyoffice_domain}}"
           - "{{searxng_domain}}"
-          - "{{tubesync_domain}}"
           - "{{wallabag_domain}}"
   roles:
     - {role: common, tags: common}
@@ -89,7 +85,6 @@
     - {role: radarr, tags: radarr}
     - {role: readarr, tags: readarr}
     - {role: searxng, tags: searxng}
-    - {role: tubesync, tags: tubesync}
     - {role: transmission, tags: transmission}
     - {role: ntopng, tags: ntopng}
     - {role: uptime_kuma, tags: uptime_kuma}
