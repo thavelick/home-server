@@ -1,0 +1,38 @@
+---
+- name: create the default site web root
+  file:
+    path: /var/www/default
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+- name: copy the generic index page
+  copy:
+    src: files/index.html
+    dest: /var/www/default/index.html
+    owner: www-data
+    group: www-data
+    mode: 0644
+# nginx's package installs a default_server site that serves its default page
+# for unmatched hostnames; remove it so our catch-all takes over.
+- name: remove the packaged nginx default site
+  register: default_site_removed
+  file:
+    dest: /etc/nginx/sites-enabled/default
+    state: absent
+- name: install the catch-all nginx site
+  register: default_site_conf
+  copy:
+    src: files/default_site.conf
+    dest: /etc/nginx/sites-available/default_site
+- name: enable the catch-all nginx site
+  register: default_site_link
+  file:
+    dest: /etc/nginx/sites-enabled/default_site
+    state: link
+    src: /etc/nginx/sites-available/default_site
+- name: restart nginx
+  when: default_site_removed.changed or default_site_conf.changed or default_site_link.changed
+  service:
+    name: nginx
+    state: restarted

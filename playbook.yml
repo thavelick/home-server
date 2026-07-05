@@ -89,6 +89,7 @@
     - {role: ntopng, tags: ntopng}
     - {role: uptime_kuma, tags: uptime_kuma}
     - {role: wallabag, tags: wallabag}
+    - {role: default_site, tags: default_site}
     - {role: dnsmasq, tags: dnsmasq}
     - {role: dynamicdns, tags: dynamicdns}
     - {role: backup, tags: backup}
