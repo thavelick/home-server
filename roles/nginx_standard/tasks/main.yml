@@ -2,13 +2,17 @@
 - name: copy nginx site config
   template: src={{nginx_conf_template}} dest=/etc/nginx/sites-available/{{domain}}
   register: nginx_standard
-- name: enable the nginx site config
+# Callers may override nginx_state to 'absent' to stop serving a site (the
+# sites-available config is left in place so it can be re-enabled easily).
+# Default 'present' links the site into sites-enabled.
+- name: enable or disable the nginx site config
   file:
     dest: /etc/nginx/sites-enabled/{{domain}}
-    state: link
-    src: /etc/nginx/sites-available/{{domain}}
+    state: "{{ 'link' if (nginx_state | default('present')) == 'present' else 'absent' }}"
+    src: "{{ '/etc/nginx/sites-available/' + domain if (nginx_state | default('present')) == 'present' else omit }}"
+  register: nginx_standard_link
 - name: restart nginx
-  when: nginx_standard.changed
+  when: nginx_standard.changed or nginx_standard_link.changed
   service:
     name: nginx
     state: restarted

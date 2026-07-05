@@ -166,17 +166,21 @@ SERVICES = {
         "port": 5055,
         "body_match": "Jellyseerr",
     },
+    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "just_bangs": {
         "tag": "just_bangs",
         "https_hostname": f"bangs.{PARENT_DOMAIN}",
         "port": 8484,
         "body_match": "Just Bangs!",
+        "disabled": True,
     },
+    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "kiwix": {
         "tag": "kiwix",
         "https_hostname": f"kiwix.{PARENT_DOMAIN}",
         "port": 8181,
         "body_match": "Kiwix",
+        "disabled": True,
     },
     "miniflux": {
         "tag": "miniflux",
@@ -190,11 +194,13 @@ SERVICES = {
         "port": 9787,
         "body_match": "Nextcloud",
     },
+    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "onlyoffice": {
         "tag": "onlyoffice",
         "https_hostname": f"onlyoffice.{PARENT_DOMAIN}",
         "port": 9786,
         "body_match": "ONLYOFFICE",
+        "disabled": True,
     },
     "searxng": {
         "tag": "searxng",
@@ -204,11 +210,13 @@ SERVICES = {
         "body_match": "Just Auth!",
     },
     "transmission": {"tag": "transmission", "https_hostname": None, "port": 9091},
+    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "wallabag": {
         "tag": "wallabag",
         "https_hostname": f"articles.{PARENT_DOMAIN}",
         "port": None,
         "body_match": "wallabag",
+        "disabled": True,
     },
     "ampcast": {
         "tag": "ampcast",
@@ -363,6 +371,12 @@ def check_service(config):
     Returns: (tag, https_status, port_status, details)
     """
     tag = config["tag"]
+
+    # Temporarily-disabled services are expected to be down: report "off" (which
+    # is not counted as ok/WARN/FAIL) rather than checking and flagging them.
+    if config.get("disabled"):
+        return tag, "off", "off", "temporarily disabled"
+
     valid_codes = config.get("valid_status_codes", [200])
 
     https_status, https_details = "-", ""
@@ -473,7 +487,11 @@ def main():
     all_results = []
     for config in SERVICES.values():
         tag, https_status, port_status, details = check_service(config)
-        details_str = f"  {colorize(details, RED)}" if details else ""
+        if details:
+            note_color = YELLOW if https_status == "off" else RED
+            details_str = f"  {colorize(details, note_color)}"
+        else:
+            details_str = ""
         print(
             f"{tag:<{name_width}}  "
             f"{pad_colored(https_status, 5)}  "

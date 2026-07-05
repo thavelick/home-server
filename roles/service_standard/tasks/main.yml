@@ -3,8 +3,11 @@
   template:
     src: templates/{{service_name}}.service.j2
     dest: /etc/systemd/system/{{service_name}}.service
-- name: start and enable the systemd service
+# Callers may override service_state/service_enabled to keep a service stopped
+# and disabled (e.g. to temporarily take a service offline). Defaults keep the
+# service running and enabled at boot.
+- name: set the systemd service state
   service:
     name: "{{service_name}}"
-    enabled: true
-    state: started
+    enabled: "{{service_enabled | default(true)}}"
+    state: "{{service_state | default('started')}}"
