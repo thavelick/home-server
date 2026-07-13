@@ -30,7 +30,6 @@
     nextcloud_base_directory: /var/www/nextcloud
     nextcloud_data_directory: "{{nextcloud_base_directory}}/data"
     nextcloud_config_directory: "{{nextcloud_base_directory}}/config"
-    onlyoffice_domain: onlyoffice.{{parent_domain}}
     prowlarr_base_directory: /var/www/prowlarr
     radarr_base_directory: /var/www/radarr
     radarr_data_directory: "{{transmission_base_directory}}/downloads"
@@ -65,7 +64,6 @@
           - "{{kiwix_domain}}"
           - "{{miniflux_domain}}"
           - "{{nextcloud_domain}}"
-          - "{{onlyoffice_domain}}"
           - "{{searxng_domain}}"
           - "{{wallabag_domain}}"
   roles:
@@ -80,7 +78,6 @@
     - {role: kiwix, tags: kiwix}
     - {role: miniflux, tags: miniflux}
     - {role: nextcloud, tags: nextcloud}
-    - {role: onlyoffice, tags: onlyoffice}
     - {role: prowlarr, tags: prowlarr}
     - {role: radarr, tags: radarr}
     - {role: readarr, tags: readarr}

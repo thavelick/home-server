@@ -14,14 +14,6 @@
     - "{{nextcloud_base_directory}}/app-hooks"
     - "{{nextcloud_base_directory}}/app-hooks/post_installation"
 
-# Although it looks like this should run automatically, it doesn't.
-# after nextcloud is installed, you have to docker exec into the container
-# and run this manually,
-- name: copy the onlyoffice install script
-  template:
-    src: templates/onlyoffice.sh.j2
-    dest: "{{nextcloud_base_directory}}/app-hooks/post_installation/onlyoffice.sh"
-    mode: 0755
 - name: run the nextcloud container
   docker_container:
     name: nextcloud

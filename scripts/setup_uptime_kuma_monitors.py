@@ -47,7 +47,6 @@ HTTP_MONITORS = [
     {"name": "Kiwix", "url": "http://bernard:8181", "tag": "public"},
     {"name": "Miniflux", "url": "http://bernard:8050", "tag": "public"},
     {"name": "Nextcloud", "url": "http://bernard:9787", "tag": "public"},
-    {"name": "Onlyoffice", "url": "http://bernard:9786", "tag": "public"},
     {"name": "SearXNG", "url": "http://bernard:8788", "tag": "public"},
     {"name": "Transmission", "url": "http://bernard:9091", "tag": "private"},
     {"name": "Prowlarr", "url": "http://bernard:9696", "tag": "private"},

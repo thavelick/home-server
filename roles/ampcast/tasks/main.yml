@@ -1,16 +1,13 @@
 ---
-# TEMPORARILY DISABLED: the ampcast container is kept stopped and its nginx
-# site is unpublished. To restore, set state back to 'started', re-enable the
-# image pull, and remove the nginx_state override below.
 - name: run the ampcast container
   docker_container:
     name: ampcast
     image: ghcr.io/rekkyrosso/ampcast:latest
-    pull: false
-    state: stopped
+    pull: true
+    state: started
     restart_policy: unless-stopped
     published_ports:
       - "8420:8000"
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{ampcast_domain}}", service_port: 8420, nginx_state: absent}
+  vars: {domain: "{{ampcast_domain}}", service_port: 8420}

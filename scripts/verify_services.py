@@ -166,21 +166,17 @@ SERVICES = {
         "port": 5055,
         "body_match": "Jellyseerr",
     },
-    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "just_bangs": {
         "tag": "just_bangs",
         "https_hostname": f"bangs.{PARENT_DOMAIN}",
         "port": 8484,
         "body_match": "Just Bangs!",
-        "disabled": True,
     },
-    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "kiwix": {
         "tag": "kiwix",
         "https_hostname": f"kiwix.{PARENT_DOMAIN}",
         "port": 8181,
         "body_match": "Kiwix",
-        "disabled": True,
     },
     "miniflux": {
         "tag": "miniflux",
@@ -194,14 +190,6 @@ SERVICES = {
         "port": 9787,
         "body_match": "Nextcloud",
     },
-    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
-    "onlyoffice": {
-        "tag": "onlyoffice",
-        "https_hostname": f"onlyoffice.{PARENT_DOMAIN}",
-        "port": 9786,
-        "body_match": "ONLYOFFICE",
-        "disabled": True,
-    },
     "searxng": {
         "tag": "searxng",
         "https_hostname": f"searxng.{PARENT_DOMAIN}",
@@ -210,21 +198,17 @@ SERVICES = {
         "body_match": "Just Auth!",
     },
     "transmission": {"tag": "transmission", "https_hostname": None, "port": 9091},
-    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "wallabag": {
         "tag": "wallabag",
         "https_hostname": f"articles.{PARENT_DOMAIN}",
         "port": None,
         "body_match": "wallabag",
-        "disabled": True,
     },
-    # TEMPORARILY DISABLED: to re-enable verification, remove "disabled": True.
     "ampcast": {
         "tag": "ampcast",
         "https_hostname": f"ampcast.{PARENT_DOMAIN}",
         "port": 8420,
         "body_match": "ampcast",
-        "disabled": True,
     },
     # Services with ports but no HTTPS hostnames
     "prowlarr": {"tag": "prowlarr", "https_hostname": None, "port": 9696},

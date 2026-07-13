@@ -69,12 +69,8 @@
     --env=prod
     {{wallabag_admin_user}}
     {{wallabag_admin_password}}
-# TEMPORARILY DISABLED: wallabag has no long-running service of its own (it is
-# served by nginx + php-fpm), so unpublishing its nginx site takes it offline.
-# To restore, remove the nginx_state override below.
 - name: configure nginx
   include_role: {name: nginx_standard}
   vars:
     domain: "{{wallabag_domain}}"
     nginx_conf_template: wallabag_nginx.conf.j2
-    nginx_state: absent

@@ -20,12 +20,9 @@
     owner: 'www-data'
     group: 'www-data'
     mode: '0755'
-# TEMPORARILY DISABLED: kiwix is kept stopped/disabled and its nginx site is
-# unpublished. To restore, remove the service_state/service_enabled overrides
-# and the nginx_state override below.
 - name: configure service
   include_role: {name: service_standard}
-  vars: {service_name: kiwix, service_state: stopped, service_enabled: false}
+  vars: {service_name: kiwix}
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{kiwix_domain}}", service_port: 8181, nginx_state: absent}
+  vars: {domain: "{{kiwix_domain}}", service_port: 8181}

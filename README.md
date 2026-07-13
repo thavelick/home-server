@@ -10,7 +10,6 @@ These scripts set up the following services:
 * [Kiwix](https://kiwix.org)
 * [Miniflux](https://miniflux.net)
 * [Nextcloud](https://nextcloud.com)
-* [OnlyOffice](https://www.onlyoffice.com)
 * [SearXNG](https://github.com/searxng/searxng)
     * With [Just Auth](https://github.com/thavelick/just-auth) for authentication
 * [TubeSync](https://github.com/meeb/tubesync)
@@ -41,7 +40,6 @@ These scripts set up the following services:
     marginalia_api_key=your_api_key
     miniflux_admin_password=good-password
     miniflux_db_user_password=such-a-great-password
-    onlyoffice_jwt_secret=something-really-secret
     openvpn_provider=your-provider
     openvpn_config=uk_london
     openvpn_username=p83748378

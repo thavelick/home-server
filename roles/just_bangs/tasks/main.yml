@@ -32,18 +32,14 @@
   copy:
     src: files/custom-bang.js
     dest: "{{just_bangs_site_root}}/public_html/custom-bang.js"
-# TEMPORARILY DISABLED: just-bangs is kept stopped/disabled and its nginx site
-# is unpublished. To restore, remove the service_state/service_enabled overrides
-# and the nginx_state override below, and uncomment the restart task.
 - name: configure service
   include_role: {name: service_standard}
-  vars: {service_name: just-bangs, service_state: stopped, service_enabled: false}
-# Disabled while just-bangs is offline (would otherwise restart the stopped service).
-# - name: restart the just bangs service
-#   when: custom_bangs_file.changed
-#   service:
-#     name: just-bangs
-#     state: restarted
+  vars: {service_name: just-bangs}
+- name: restart the just bangs service
+  when: custom_bangs_file.changed
+  service:
+    name: just-bangs
+    state: restarted
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{just_bangs_domain}}", service_port: 8484, nginx_state: absent}
+  vars: {domain: "{{just_bangs_domain}}", service_port: 8484}
