@@ -5,6 +5,7 @@ A set of ansible scripts for setting up my home server.
 ## Services
 These scripts set up the following services:
 * [Ampcast](https://github.com/rekkyrosso/ampcast)
+* [fmp4-demux-proxy](https://github.com/jeremy-albinet/Stitch-Revitalized-For-Roku/tree/main/fmp4-demux-proxy) for watching Twitch on a Roku
 * [Jellyfin](https://jellyfin.org)
 * [Just Bangs](https://github.com/thavelick/just-bangs)
 * [Kiwix](https://kiwix.org)
@@ -71,3 +72,21 @@ These scripts set up the following services:
     locally if you have them, and it's often difficult to determine which is the newest or
     best zim file in an automated fashion
 8. Visit all the sites!
+
+## Watching Twitch on a Roku
+
+Twitch Enhanced Broadcasting streams bundle audio and video into a single fMP4
+rendition. Roku's player expects one elementary stream per rendition, so those
+streams fail with error 970 or play with no audio. The `fmp4_demux_proxy` role
+runs a proxy that splits them apart.
+
+It does nothing until the Roku is pointed at it. In the
+[Stitch](https://github.com/jeremy-albinet/Stitch-Revitalized-For-Roku) channel,
+go to **Settings -> Proxy URL** and enter the server's address on the LAN:
+
+```
+http://<server-ip>:8080
+```
+
+Leave that field empty to disable the proxy; regular Twitch streams are
+unaffected either way.
