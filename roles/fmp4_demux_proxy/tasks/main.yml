@@ -1,0 +1,42 @@
+---
+# Demuxes Twitch Enhanced Broadcasting fMP4 streams into separate audio and
+# video renditions so Roku's CMAF-strict player can play them. Reached directly
+# over plain HTTP on the LAN -- no nginx hop, since every video segment flows
+# through here.
+#
+# Built from source rather than pulled: upstream's docker-publish workflow never
+# produced a :main tag, and the only images on ghcr.io are PR previews that get
+# deleted when their pull request closes.
+- name: check out the proxy source
+  git:
+    repo: https://github.com/jeremy-albinet/Stitch-Revitalized-For-Roku.git
+    dest: "{{fmp4_demux_proxy_source_directory}}"
+    version: main
+  register: fmp4_demux_proxy_checkout
+# docker_image_build (not docker_image) because the Dockerfile uses BuildKit
+# cache and bind mounts, which the legacy build API cannot handle.
+- name: build the fmp4-demux-proxy image
+  community.docker.docker_image_build:
+    name: fmp4-demux-proxy
+    tag: latest
+    path: "{{fmp4_demux_proxy_source_directory}}/fmp4-demux-proxy"
+    pull: true
+    rebuild: "{{'always' if fmp4_demux_proxy_checkout.changed else 'never'}}"
+  register: fmp4_demux_proxy_image
+- name: run the fmp4-demux-proxy container
+  docker_container:
+    name: fmp4-demux-proxy
+    image: fmp4-demux-proxy:latest
+    state: started
+    # Recreate when a rebuild produced a new image; docker_container otherwise
+    # leaves the running container alone even though the tag now points elsewhere.
+    recreate: "{{fmp4_demux_proxy_image.changed}}"
+    restart_policy: unless-stopped
+    published_ports:
+      - "8080:8080"
+    env:
+      PORT: "8080"
+      LOG_LEVEL: "INFO"
+      # SSRF guard: the proxy refuses any upstream URL (including after
+      # redirects) whose host does not match one of these suffixes.
+      UPSTREAM_HOST_ALLOWLIST: "ttvnw.net,twitch.tv,twitchcdn.net"

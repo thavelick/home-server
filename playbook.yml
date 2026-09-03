@@ -9,6 +9,7 @@
   vars:
     backup_staging_directory: /var/www/backup-staging
     ampcast_domain: ampcast.{{parent_domain}}
+    fmp4_demux_proxy_source_directory: /var/www/fmp4-demux-proxy
     home_assistant_domain: assistant.{{parent_domain}}
     home_assistant_site_root: /var/www/assistant.{{parent_domain}}
     home_assistant_config_directory: "{{home_assistant_site_root}}/config"
@@ -71,6 +72,7 @@
     - {role: geerlingguy.certbot, tags: certbot}
     - {role: geerlingguy.docker, tags: docker}
     - {role: ampcast, tags: ampcast}
+    - {role: fmp4_demux_proxy, tags: fmp4_demux_proxy}
     - {role: home_assistant, tags: home_assistant}
     - {role: jellyfin, tags: jellyfin}
     - {role: jellyseerr, tags: jellyseerr}
