@@ -9,6 +9,7 @@ These scripts set up the following services:
 * [Jellyfin](https://jellyfin.org)
 * [Just Bangs](https://github.com/thavelick/just-bangs)
 * [Kiwix](https://kiwix.org)
+* Links: personal short links (links.example.com/slug), behind [Just Auth](https://github.com/thavelick/just-auth)
 * [Miniflux](https://miniflux.net)
 * [Nextcloud](https://nextcloud.com)
 * [SearXNG](https://github.com/searxng/searxng)
@@ -54,6 +55,9 @@ These scripts set up the following services:
     searxng_secret_key=another-secret-key
     searxng_just_auth_password="choose a password for searxng"
     searxng_just_auth_salt="just a random string"
+    links_just_auth_password="choose a password for links"
+    links_just_auth_salt="another random string"
+    google_accounts={"work": "you@work.com", "personal": "you@gmail.com"}
     home_assistant_google_service_account_private_key="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
     home_assistant_google_service_account_private_key_id=your_private_key_id
     EOF

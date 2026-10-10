@@ -1,0 +1,40 @@
+---
+- name: copy the links map
+  register: links_map
+  template:
+    src: templates/links.map.j2
+    dest: /etc/nginx/links.map
+- name: copy the internal redirect site config
+  register: links_redirects_conf
+  template:
+    src: templates/links_redirects.conf.j2
+    dest: /etc/nginx/sites-available/links_redirects
+- name: enable the internal redirect site config
+  register: links_redirects_link
+  file:
+    dest: /etc/nginx/sites-enabled/links_redirects
+    state: link
+    src: /etc/nginx/sites-available/links_redirects
+# The map is hand-edited often; check the config before reloading so a typo
+# fails the play instead of taking nginx (and every other site) down.
+- name: check the nginx config
+  when: links_map.changed or links_redirects_conf.changed or links_redirects_link.changed
+  command: nginx -t
+  changed_when: false
+- name: reload nginx
+  when: links_map.changed or links_redirects_conf.changed or links_redirects_link.changed
+  service:
+    name: nginx
+    state: reloaded
+- name: configure just auth
+  include_role:
+    name: just_auth
+  vars:
+    proxy_to_service_name: links
+    password: "{{links_just_auth_password}}"
+    salt: "{{links_just_auth_salt}}"
+    auth_port: "{{links_auth_port}}"
+    app_port: "{{links_redirect_port}}"
+- name: configure nginx
+  include_role: {name: nginx_standard}
+  vars: {domain: "{{links_domain}}", service_port: "{{links_auth_port}}"}

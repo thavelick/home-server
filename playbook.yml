@@ -21,6 +21,7 @@
     jellyseerr_domain: jellyseerr.{{parent_domain}}
     just_auth_site_root: /var/www/just_auth
     letsencrypt_state_directory: /root/letsencrypt
+    links_domain: links.{{parent_domain}}
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
     kiwix_domain: kiwix.{{parent_domain}}
@@ -63,6 +64,7 @@
           - "{{jellyseerr_domain}}"
           - "{{just_bangs_domain}}"
           - "{{kiwix_domain}}"
+          - "{{links_domain}}"
           - "{{miniflux_domain}}"
           - "{{nextcloud_domain}}"
           - "{{searxng_domain}}"
@@ -78,6 +80,7 @@
     - {role: jellyseerr, tags: jellyseerr}
     - {role: just_bangs, tags: just_bangs}
     - {role: kiwix, tags: kiwix}
+    - {role: links, tags: links}
     - {role: miniflux, tags: miniflux}
     - {role: nextcloud, tags: nextcloud}
     - {role: prowlarr, tags: prowlarr}

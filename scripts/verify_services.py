@@ -178,6 +178,13 @@ SERVICES = {
         "port": 8181,
         "body_match": "Kiwix",
     },
+    "links": {
+        "tag": "links",
+        "https_hostname": f"links.{PARENT_DOMAIN}",
+        "port": 8790,
+        # links sits behind just_auth, which serves its sign-in page until authenticated
+        "body_match": "Just Auth!",
+    },
     "miniflux": {
         "tag": "miniflux",
         "https_hostname": f"miniflux.{PARENT_DOMAIN}",

@@ -1,0 +1,18 @@
+# Internal-only listener that turns /<slug> into a redirect. The public
+# links.{{parent_domain}} site proxies to just_auth, which proxies here once
+# signed in.
+map $uri $links_target {
+    include /etc/nginx/links.map;
+}
+
+server {
+    listen 127.0.0.1:{{links_redirect_port}};
+    default_type text/plain;
+
+    location / {
+        if ($links_target = "") {
+            return 404 "No link named $uri\n";
+        }
+        return 302 $links_target;
+    }
+}

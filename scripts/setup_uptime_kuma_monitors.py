@@ -45,6 +45,7 @@ HTTP_MONITORS = [
     {"name": "Jellyseerr", "url": "http://bernard:5055", "tag": "public"},
     {"name": "Just Bangs", "url": "http://bernard:8484", "tag": "public"},
     {"name": "Kiwix", "url": "http://bernard:8181", "tag": "public"},
+    {"name": "Links", "url": "http://bernard:8790", "tag": "public"},
     {"name": "Miniflux", "url": "http://bernard:8050", "tag": "public"},
     {"name": "Nextcloud", "url": "http://bernard:9787", "tag": "public"},
     {"name": "SearXNG", "url": "http://bernard:8788", "tag": "public"},

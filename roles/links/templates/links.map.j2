@@ -1,0 +1,39 @@
+# Short links served at links.{{parent_domain}}/<slug>.
+# One per line: /slug "target";  Always quote the target, or nginx treats a
+# '#' in the URL as the start of a comment. Emails live in the vault under
+# google_accounts so they stay out of git.
+
+# gmail
+/ggmail     "https://mail.google.com/mail/u/{{google_accounts.gmail}}/";
+/gdrive     "https://drive.google.com/drive/my-drive?authuser={{google_accounts.gmail}}";
+/gdocs      "https://docs.google.com/document/?authuser={{google_accounts.gmail}}";
+/gsheets    "https://docs.google.com/spreadsheets/?authuser={{google_accounts.gmail}}";
+/gcal       "https://calendar.google.com/calendar/r?authuser={{google_accounts.gmail}}";
+
+# media_startup
+/ambgmail   "https://mail.google.com/mail/u/{{google_accounts.media_startup}}/";
+/ambdrive   "https://drive.google.com/drive/my-drive?authuser={{google_accounts.media_startup}}";
+/ambdocs    "https://docs.google.com/document/?authuser={{google_accounts.media_startup}}";
+/ambsheets  "https://docs.google.com/spreadsheets/?authuser={{google_accounts.media_startup}}";
+/ambcal     "https://calendar.google.com/calendar/r?authuser={{google_accounts.media_startup}}";
+
+# personal
+/thgmail    "https://mail.google.com/mail/u/{{google_accounts.personal}}/";
+/thdrive    "https://drive.google.com/drive/my-drive?authuser={{google_accounts.personal}}";
+/thdocs     "https://docs.google.com/document/?authuser={{google_accounts.personal}}";
+/thsheets   "https://docs.google.com/spreadsheets/?authuser={{google_accounts.personal}}";
+/thcal      "https://calendar.google.com/calendar/r?authuser={{google_accounts.personal}}";
+
+# tax_startup
+/ttfgmail   "https://mail.google.com/mail/u/{{google_accounts.tax_startup}}/";
+/ttfdrive   "https://drive.google.com/drive/my-drive?authuser={{google_accounts.tax_startup}}";
+/ttfdocs    "https://docs.google.com/document/?authuser={{google_accounts.tax_startup}}";
+/ttfsheets  "https://docs.google.com/spreadsheets/?authuser={{google_accounts.tax_startup}}";
+/ttfcal     "https://calendar.google.com/calendar/r?authuser={{google_accounts.tax_startup}}";
+
+# tax_startup_secondary
+/ptogmail   "https://mail.google.com/mail/u/{{google_accounts.tax_startup_secondary}}/";
+/ptodrive   "https://drive.google.com/drive/my-drive?authuser={{google_accounts.tax_startup_secondary}}";
+/ptodocs    "https://docs.google.com/document/?authuser={{google_accounts.tax_startup_secondary}}";
+/ptosheets  "https://docs.google.com/spreadsheets/?authuser={{google_accounts.tax_startup_secondary}}";
+/ptocal     "https://calendar.google.com/calendar/r?authuser={{google_accounts.tax_startup_secondary}}";
