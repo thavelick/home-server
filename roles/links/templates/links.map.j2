@@ -4,31 +4,52 @@
 # google_accounts so they stay out of git.
 
 # gmail
-/ggmail     "https://mail.google.com/mail/u/{{google_accounts.gmail}}/";
+/ggmail     "https://mail.google.com/mail/?authuser={{google_accounts.gmail}}";
 /gdrive     "https://drive.google.com/drive/my-drive?authuser={{google_accounts.gmail}}";
 /gdocs      "https://docs.google.com/document/?authuser={{google_accounts.gmail}}";
 /gsheets    "https://docs.google.com/spreadsheets/?authuser={{google_accounts.gmail}}";
 /gcal       "https://calendar.google.com/calendar/r?authuser={{google_accounts.gmail}}";
 
 # media_startup
-/ambgmail   "https://mail.google.com/mail/u/{{google_accounts.media_startup}}/";
+/ambgmail   "https://mail.google.com/mail/?authuser={{google_accounts.media_startup}}";
 /ambdrive   "https://drive.google.com/drive/my-drive?authuser={{google_accounts.media_startup}}";
 /ambdocs    "https://docs.google.com/document/?authuser={{google_accounts.media_startup}}";
 /ambsheets  "https://docs.google.com/spreadsheets/?authuser={{google_accounts.media_startup}}";
 /ambcal     "https://calendar.google.com/calendar/r?authuser={{google_accounts.media_startup}}";
+/ambmeet    "https://meet.google.com/?authuser={{google_accounts.media_startup}}";
 
 # personal
 /thdrive    "https://drive.google.com/drive/my-drive?authuser={{google_accounts.personal}}";
 /thdocs     "https://docs.google.com/document/?authuser={{google_accounts.personal}}";
 /thsheets   "https://docs.google.com/spreadsheets/?authuser={{google_accounts.personal}}";
 /thcal      "https://calendar.google.com/calendar/r?authuser={{google_accounts.personal}}";
+/thmail     "https://webmail.migadu.com/#/mailbox/INBOX";
+/thmeet     "https://meet.google.com/?authuser={{google_accounts.personal}}";
+/voice      "https://voice.google.com/messages?authuser={{google_accounts.personal}}";
 
 # tax_startup
-/ttfgmail   "https://mail.google.com/mail/u/{{google_accounts.tax_startup}}/";
+/ttfgmail   "https://mail.google.com/mail/?authuser={{google_accounts.tax_startup}}";
 /ttfdrive   "https://drive.google.com/drive/my-drive?authuser={{google_accounts.tax_startup}}";
 /ttfdocs    "https://docs.google.com/document/?authuser={{google_accounts.tax_startup}}";
 /ttfsheets  "https://docs.google.com/spreadsheets/?authuser={{google_accounts.tax_startup}}";
 /ttfcal     "https://calendar.google.com/calendar/r?authuser={{google_accounts.tax_startup}}";
+/ttfweekly  "https://docs.google.com/document/d/1GLRgYHIwqjotswn85wPr-yqN-kY7kT0oHc7oSZQ2bNI/edit?authuser={{google_accounts.tax_startup}}";
 
 # tax_startup_secondary
-/ptogmail   "https://mail.google.com/mail/u/{{google_accounts.tax_startup_secondary}}/";
+/ptogmail   "https://mail.google.com/mail/?authuser={{google_accounts.tax_startup_secondary}}";
+
+# github
+/thgh       "https://github.com/thavelick";
+/ambgh      "https://github.com/reaaz/atmospheric-video-generator";
+/ambprs     "https://github.com/reaaz/atmospheric-video-generator/pulls";
+/ambci      "https://github.com/reaaz/atmospheric-video-generator/actions";
+/ttfgh      "https://github.com/ptolemy-street/1099-filer";
+/ttfprs     "https://github.com/ptolemy-street/1099-filer/pulls";
+/ttfci      "https://github.com/ptolemy-street/1099-filer/actions";
+/ttfi       "https://github.com/ptolemy-street/1099-filer/issues?q=is%3Aissue+is%3Aopen+label%3Ablocks-customer-launch+-label%3Ablocked-external+-is%3Ablocked";
+
+# other
+/aileaderboard "https://artificialanalysis.ai/leaderboards/models";
+/spx        "https://www.marketwatch.com/investing/index/spx";
+/ambweekly  "https://app.notion.com/p/Ambience-Weekly-Updates-234fb580717880b5b674e6f582c53898";
+/sun        "https://www.tristanhavelick.com/open-sun-safe/";
