@@ -15,6 +15,7 @@ These scripts set up the following services:
 * [TubeSync](https://github.com/meeb/tubesync)
 * [Transmission + OpenVPN](https://github.com/haugene/docker-transmission-openvpn)
 * [Wallabag](https://wallabag.org)
+* [Webhook.site](https://github.com/webhooksite/webhook.site)
 * Dynamic DNS with Namecheap
 
 ## Usage

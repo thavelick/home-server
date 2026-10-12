@@ -210,6 +210,12 @@ SERVICES = {
         "port": 8420,
         "body_match": "ampcast",
     },
+    "webhooks": {
+        "tag": "webhooks",
+        "https_hostname": f"webhooks.{PARENT_DOMAIN}",
+        "port": 8084,
+        "body_match": "Webhook Tester",
+    },
     # Services with ports but no HTTPS hostnames
     "prowlarr": {"tag": "prowlarr", "https_hostname": None, "port": 9696},
     "radarr": {"tag": "radarr", "https_hostname": None, "port": 7878},

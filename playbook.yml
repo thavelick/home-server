@@ -40,6 +40,7 @@
     ntopng_base_directory: /var/www/ntopng
     uptime_kuma_base_directory: /var/www/uptime-kuma
     uptime_kuma_data_directory: "{{uptime_kuma_base_directory}}/data"
+    webhooks_domain: webhooks.{{parent_domain}}
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
@@ -66,6 +67,7 @@
           - "{{nextcloud_domain}}"
           - "{{searxng_domain}}"
           - "{{wallabag_domain}}"
+          - "{{webhooks_domain}}"
   roles:
     - {role: common, tags: common}
     - {role: geerlingguy.certbot, tags: certbot}
@@ -86,6 +88,7 @@
     - {role: ntopng, tags: ntopng}
     - {role: uptime_kuma, tags: uptime_kuma}
     - {role: wallabag, tags: wallabag}
+    - {role: webhooks, tags: webhooks}
     - {role: default_site, tags: default_site}
     - {role: dnsmasq, tags: dnsmasq}
     - {role: dynamicdns, tags: dynamicdns}
