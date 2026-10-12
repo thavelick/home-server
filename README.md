@@ -5,9 +5,11 @@ A set of ansible scripts for setting up my home server.
 ## Services
 These scripts set up the following services:
 * [Ampcast](https://github.com/rekkyrosso/ampcast)
+* [fmp4-demux-proxy](https://github.com/jeremy-albinet/Stitch-Revitalized-For-Roku/tree/main/fmp4-demux-proxy) for watching Twitch on a Roku
 * [Jellyfin](https://jellyfin.org)
 * [Just Bangs](https://github.com/thavelick/just-bangs)
 * [Kiwix](https://kiwix.org)
+* Links: personal short links (links.example.com/slug), behind [Just Auth](https://github.com/thavelick/just-auth)
 * [Miniflux](https://miniflux.net)
 * [Nextcloud](https://nextcloud.com)
 * [SearXNG](https://github.com/searxng/searxng)
@@ -54,6 +56,9 @@ These scripts set up the following services:
     searxng_secret_key=another-secret-key
     searxng_just_auth_password="choose a password for searxng"
     searxng_just_auth_salt="just a random string"
+    links_just_auth_password="choose a password for links"
+    links_just_auth_salt="another random string"
+    google_accounts={"work": "you@work.com", "personal": "you@gmail.com"}
     home_assistant_google_service_account_private_key="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
     home_assistant_google_service_account_private_key_id=your_private_key_id
     EOF
@@ -72,3 +77,21 @@ These scripts set up the following services:
     locally if you have them, and it's often difficult to determine which is the newest or
     best zim file in an automated fashion
 8. Visit all the sites!
+
+## Watching Twitch on a Roku
+
+Twitch Enhanced Broadcasting streams bundle audio and video into a single fMP4
+rendition. Roku's player expects one elementary stream per rendition, so those
+streams fail with error 970 or play with no audio. The `fmp4_demux_proxy` role
+runs a proxy that splits them apart.
+
+It does nothing until the Roku is pointed at it. In the
+[Stitch](https://github.com/jeremy-albinet/Stitch-Revitalized-For-Roku) channel,
+go to **Settings -> Proxy URL** and enter the server's address on the LAN:
+
+```
+http://<server-ip>:8080
+```
+
+Leave that field empty to disable the proxy; regular Twitch streams are
+unaffected either way.

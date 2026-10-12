@@ -178,6 +178,13 @@ SERVICES = {
         "port": 8181,
         "body_match": "Kiwix",
     },
+    "links": {
+        "tag": "links",
+        "https_hostname": f"links.{PARENT_DOMAIN}",
+        "port": 8790,
+        # links sits behind just_auth, which serves its sign-in page until authenticated
+        "body_match": "Just Auth!",
+    },
     "miniflux": {
         "tag": "miniflux",
         "https_hostname": f"miniflux.{PARENT_DOMAIN}",
@@ -222,6 +229,13 @@ SERVICES = {
     "readarr": {"tag": "readarr", "https_hostname": None, "port": 8787},
     "ntopng": {"tag": "ntopng", "https_hostname": None, "port": 3000},
     "uptime_kuma": {"tag": "uptime_kuma", "https_hostname": None, "port": 3001},
+    # The proxy registers only /health, /m3u8 and /s, so a GET of / is a 404.
+    "fmp4_demux_proxy": {
+        "tag": "fmp4_demux_proxy",
+        "https_hostname": None,
+        "port": 8080,
+        "valid_status_codes": [404],
+    },
 }
 
 
