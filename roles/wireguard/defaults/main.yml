@@ -1,5 +1,4 @@
 ---
-wireguard_interface: wg0
 # UDP 443 gets through public Wi-Fi that blocks WireGuard's default 51820.
 # nginx only uses TCP 443, so the two don't collide.
 wireguard_port: 443

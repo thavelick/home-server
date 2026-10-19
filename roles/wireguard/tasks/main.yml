@@ -16,7 +16,7 @@
 - name: derive the server public key
   command: wg pubkey
   args: {stdin: "{{wireguard_server_private_key}}"}
-  register: wireguard_server_public_key
+  register: wireguard_server_pubkey_result
   changed_when: false
   check_mode: false
   no_log: true
@@ -25,7 +25,7 @@
   args: {stdin: "{{wireguard_peer_private_keys[item.name]}}"}
   loop: "{{wireguard_peers}}"
   loop_control: {label: "{{item.name}}"}
-  register: wireguard_peer_public_keys
+  register: wireguard_peer_pubkey_results
   changed_when: false
   check_mode: false
   no_log: true
@@ -33,20 +33,20 @@
   register: wireguard_config
   template:
     src: templates/wg0.conf.j2
-    dest: /etc/wireguard/{{wireguard_interface}}.conf
+    dest: /etc/wireguard/wg0.conf
     owner: root
     group: root
     mode: '0600'
   diff: false
 - name: start and enable wireguard
   service:
-    name: wg-quick@{{wireguard_interface}}
+    name: wg-quick@wg0
     state: started
     enabled: true
 - name: restart wireguard
   when: wireguard_config.changed
   service:
-    name: wg-quick@{{wireguard_interface}}
+    name: wg-quick@wg0
     state: restarted
 - name: create the local client config directory
   delegate_to: localhost

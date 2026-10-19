@@ -4,28 +4,27 @@ Address = {{wireguard_server_address}}/{{wireguard_subnet.split('/')[1]}}
 ListenPort = {{wireguard_port}}
 PrivateKey = {{wireguard_server_private_key}}
 
-# Forward VPN traffic to studio only. Docker sets the FORWARD policy to DROP,
-# but these rules don't rely on it: anything else leaving through the LAN
-# interface (other LAN hosts, the internet) is dropped explicitly. Traffic to
-# this server's own ports, including Docker-published ones, isn't forwarded
-# out the LAN interface, so it's untouched.
-# Traffic to studio is masqueraded so its replies come back here rather than
-# going to the router, which has no route to {{wireguard_subnet}}.
+# Devices may reach this server's ports and studio, nothing else. Traffic to
+# Docker-published ports is forwarded to the containers and accepted by
+# Docker's own FORWARD chains, which run before these appended rules; anything
+# else forwarded from the tunnel (other LAN hosts, the internet, other devices)
+# is dropped. Traffic to studio is masqueraded so its replies come back here
+# rather than going to the router, which has no route to {{wireguard_subnet}}.
+# The rules live in their own chains so teardown never depends on their
+# contents, even after the config changes.
 {% set lan = wireguard_lan_interface %}
-{% set rules = [
-  "FORWARD -i %s -o %s -d %s -j ACCEPT" | format(wireguard_interface, lan, studio_ip),
-  "FORWARD -i %s -o %s -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT" | format(lan, wireguard_interface),
-  "FORWARD -i %s -o %s -j DROP" | format(wireguard_interface, lan),
-  "FORWARD -i %s -o %s -j DROP" | format(lan, wireguard_interface),
-  "FORWARD -i %s -o %s -j DROP" | format(wireguard_interface, wireguard_interface),
-] %}
-{% for rule in rules %}
-PostUp = iptables -A {{rule}}
-PreDown = iptables -D {{rule}}
-{% endfor %}
-PostUp = iptables -t nat -A POSTROUTING -s {{wireguard_subnet}} -o {{lan}} -d {{studio_ip}} -j MASQUERADE
-PreDown = iptables -t nat -D POSTROUTING -s {{wireguard_subnet}} -o {{lan}} -d {{studio_ip}} -j MASQUERADE
-{% for peer in wireguard_peer_public_keys.results %}
+PostUp = iptables -N WIREGUARD || iptables -F WIREGUARD
+PostUp = iptables -A WIREGUARD -i wg0 -o {{lan}} -d {{studio_ip}} -j ACCEPT
+PostUp = iptables -A WIREGUARD -o wg0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+PostUp = iptables -A WIREGUARD -i wg0 -j DROP
+PostUp = iptables -A WIREGUARD -o wg0 -j DROP
+PostUp = iptables -A FORWARD -j WIREGUARD
+PostUp = iptables -t nat -N WIREGUARD || iptables -t nat -F WIREGUARD
+PostUp = iptables -t nat -A WIREGUARD -s {{wireguard_subnet}} -o {{lan}} -d {{studio_ip}} -j MASQUERADE
+PostUp = iptables -t nat -A POSTROUTING -j WIREGUARD
+PreDown = iptables -D FORWARD -j WIREGUARD || true; iptables -F WIREGUARD || true; iptables -X WIREGUARD || true
+PreDown = iptables -t nat -D POSTROUTING -j WIREGUARD || true; iptables -t nat -F WIREGUARD || true; iptables -t nat -X WIREGUARD || true
+{% for peer in wireguard_peer_pubkey_results.results %}
 
 # {{peer.item.name}}
 [Peer]

@@ -2,8 +2,6 @@
 
 # dnsmasq.conf for local DNS resolution
 interface=eth0
-# VPN clients query the server address through the tunnel
-interface=wg0
 listen-address=127.0.0.1,{{ web_server_ip }}
 
 # DNS settings for hosting domain

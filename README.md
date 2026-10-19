@@ -114,7 +114,7 @@ One-time manual steps:
 Each device in `wireguard_peers` (`group_vars/home/vars.yml`) needs a private
 key under `wireguard_peer_private_keys` in the vault, plus
 `wireguard_server_private_key` for the server. Generate keys with `wg genkey`
-(`brew install wireguard-tools`).
+(`brew install wireguard-tools qrencode`).
 
 The playbook writes each device's config, private key included, to the
 gitignored `wireguard_clients/` directory. To import one:
