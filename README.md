@@ -18,6 +18,7 @@ These scripts set up the following services:
 * [Transmission + OpenVPN](https://github.com/haugene/docker-transmission-openvpn)
 * [Wallabag](https://wallabag.org)
 * [Webhook.site](https://github.com/webhooksite/webhook.site)
+* [WireGuard](https://www.wireguard.com) for remote access to the server and studio
 * Dynamic DNS with Namecheap
 
 ## Usage
@@ -95,3 +96,35 @@ http://<server-ip>:8080
 
 Leave that field empty to disable the proxy; regular Twitch streams are
 unaffected either way.
+
+## Remote access with WireGuard
+
+The `wireguard` role runs a VPN on UDP 443. A connected device can reach every
+port on the server and on studio (the Mac at `studio_ip`, as
+`studio.<parent_domain>`), and nothing else: not the rest of the LAN, and not
+the internet. It's a split tunnel, so other traffic stays on the local network,
+while DNS goes to the server's dnsmasq so local names resolve.
+
+One-time manual steps:
+
+1. On the router, forward **UDP** 443 to the server. (TCP 443 stays pointed at
+   nginx; the two don't conflict.)
+2. Once SSH over the VPN works, delete the router's SSH port forward.
+
+Each device in `wireguard_peers` (`group_vars/home/vars.yml`) needs a private
+key under `wireguard_peer_private_keys` in the vault, plus
+`wireguard_server_private_key` for the server. Generate keys with `wg genkey`
+(`brew install wireguard-tools qrencode`).
+
+The playbook writes each device's config, private key included, to the
+gitignored `wireguard_clients/` directory. To import one:
+
+* Phone or tablet: in the WireGuard app, add a tunnel from a QR code, and scan
+  the output of `qrencode -t ansiutf8 < wireguard_clients/phone.conf`
+* Laptop: in the WireGuard app, import `wireguard_clients/laptop.conf`
+
+To revoke a device, remove it from `wireguard_peers` and its key from the
+vault, then rerun with `--tags wireguard`.
+
+To use T3 Code remotely, connect the VPN, run `npx t3 pair` on studio, and pair
+the app with `http://studio.<parent_domain>:3773`.

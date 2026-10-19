@@ -1,0 +1,33 @@
+# {{ ansible_managed }}
+[Interface]
+Address = {{wireguard_server_address}}/{{wireguard_subnet.split('/')[1]}}
+ListenPort = {{wireguard_port}}
+PrivateKey = {{wireguard_server_private_key}}
+
+# Devices may reach this server's ports and studio, nothing else. Traffic to
+# Docker-published ports is forwarded to the containers and accepted by
+# Docker's own FORWARD chains, which run before these appended rules; anything
+# else forwarded from the tunnel (other LAN hosts, the internet, other devices)
+# is dropped. Traffic to studio is masqueraded so its replies come back here
+# rather than going to the router, which has no route to {{wireguard_subnet}}.
+# The rules live in their own chains so teardown never depends on their
+# contents, even after the config changes.
+{% set lan = wireguard_lan_interface %}
+PostUp = iptables -N WIREGUARD || iptables -F WIREGUARD
+PostUp = iptables -A WIREGUARD -i wg0 -o {{lan}} -d {{studio_ip}} -j ACCEPT
+PostUp = iptables -A WIREGUARD -o wg0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+PostUp = iptables -A WIREGUARD -i wg0 -j DROP
+PostUp = iptables -A WIREGUARD -o wg0 -j DROP
+PostUp = iptables -A FORWARD -j WIREGUARD
+PostUp = iptables -t nat -N WIREGUARD || iptables -t nat -F WIREGUARD
+PostUp = iptables -t nat -A WIREGUARD -s {{wireguard_subnet}} -o {{lan}} -d {{studio_ip}} -j MASQUERADE
+PostUp = iptables -t nat -A POSTROUTING -j WIREGUARD
+PreDown = iptables -D FORWARD -j WIREGUARD || true; iptables -F WIREGUARD || true; iptables -X WIREGUARD || true
+PreDown = iptables -t nat -D POSTROUTING -j WIREGUARD || true; iptables -t nat -F WIREGUARD || true; iptables -t nat -X WIREGUARD || true
+{% for peer in wireguard_peer_pubkey_results.results %}
+
+# {{peer.item.name}}
+[Peer]
+PublicKey = {{peer.stdout}}
+AllowedIPs = {{peer.item.address}}/32
+{% endfor %}

@@ -4,3 +4,5 @@ roles:
   - name: geerlingguy.certbot
   - name: geerlingguy.docker
   - name: stefangweichinger.ansible_rclone
+collections:
+  - name: ansible.posix

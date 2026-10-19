@@ -1,0 +1,8 @@
+---
+# UDP 443 gets through public Wi-Fi that blocks WireGuard's default 51820.
+# nginx only uses TCP 443, so the two don't collide.
+wireguard_port: 443
+wireguard_server_address: 10.8.0.1
+wireguard_subnet: 10.8.0.0/24
+wireguard_lan_interface: "{{ansible_facts.default_ipv4.interface}}"
+wireguard_clients_directory: "{{playbook_dir}}/wireguard_clients"

@@ -4,3 +4,4 @@ ansible.log
 scratch/
 .playwright-mcp/
 .Trash
+wireguard_clients/
