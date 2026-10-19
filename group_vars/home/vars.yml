@@ -5,3 +5,9 @@ ffmpegfs_mount_directory: /media/podcasts_mp4
 radarr_movies_directory: /media/disk2/movies
 openvpn_provider: PIA
 openvpn_config: ca_toronto
+# One entry per device; each needs a matching key in vault.yml's
+# wireguard_peer_private_keys. Generate one with `wg genkey`.
+wireguard_peers:
+  - {name: phone, address: 10.8.0.2}
+  - {name: laptop, address: 10.8.0.3}
+  - {name: tablet, address: 10.8.0.4}

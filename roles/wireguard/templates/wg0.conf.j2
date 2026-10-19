@@ -1,0 +1,34 @@
+# {{ ansible_managed }}
+[Interface]
+Address = {{wireguard_server_address}}/{{wireguard_subnet.split('/')[1]}}
+ListenPort = {{wireguard_port}}
+PrivateKey = {{wireguard_server_private_key}}
+
+# Forward VPN traffic to studio only. Docker sets the FORWARD policy to DROP,
+# but these rules don't rely on it: anything else leaving through the LAN
+# interface (other LAN hosts, the internet) is dropped explicitly. Traffic to
+# this server's own ports, including Docker-published ones, isn't forwarded
+# out the LAN interface, so it's untouched.
+# Traffic to studio is masqueraded so its replies come back here rather than
+# going to the router, which has no route to {{wireguard_subnet}}.
+{% set lan = wireguard_lan_interface %}
+{% set rules = [
+  "FORWARD -i %s -o %s -d %s -j ACCEPT" | format(wireguard_interface, lan, studio_ip),
+  "FORWARD -i %s -o %s -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT" | format(lan, wireguard_interface),
+  "FORWARD -i %s -o %s -j DROP" | format(wireguard_interface, lan),
+  "FORWARD -i %s -o %s -j DROP" | format(lan, wireguard_interface),
+  "FORWARD -i %s -o %s -j DROP" | format(wireguard_interface, wireguard_interface),
+] %}
+{% for rule in rules %}
+PostUp = iptables -A {{rule}}
+PreDown = iptables -D {{rule}}
+{% endfor %}
+PostUp = iptables -t nat -A POSTROUTING -s {{wireguard_subnet}} -o {{lan}} -d {{studio_ip}} -j MASQUERADE
+PreDown = iptables -t nat -D POSTROUTING -s {{wireguard_subnet}} -o {{lan}} -d {{studio_ip}} -j MASQUERADE
+{% for peer in wireguard_peer_public_keys.results %}
+
+# {{peer.item.name}}
+[Peer]
+PublicKey = {{peer.stdout}}
+AllowedIPs = {{peer.item.address}}/32
+{% endfor %}

@@ -47,6 +47,8 @@
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
     web_server_ip: "{{ansible_facts.default_ipv4.address}}"
+    # studio is the Mac on the LAN running T3 Code; the router pins this address.
+    studio_ip: 192.168.1.209
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
     miniflux_db: miniflux_db
@@ -97,6 +99,7 @@
     - {role: default_site, tags: default_site}
     - {role: dnsmasq, tags: dnsmasq}
     - {role: dynamicdns, tags: dynamicdns}
+    - {role: wireguard, tags: wireguard}
     - {role: backup, tags: backup}
   post_tasks:
     - name: Verify deployed services are responding

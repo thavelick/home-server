@@ -1,0 +1,69 @@
+---
+# Remote access for wireguard_peers. A connected device reaches every port on
+# this server and on studio, and nothing else on the LAN or the internet.
+# Client configs (with private keys) are rendered into the gitignored
+# wireguard_clients/ directory for importing into each device's app.
+- name: install wireguard and iptables
+  apt:
+    name:
+      - iptables
+      - wireguard-tools
+- name: enable ip forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_file: /etc/sysctl.d/99-wireguard.conf
+- name: derive the server public key
+  command: wg pubkey
+  args: {stdin: "{{wireguard_server_private_key}}"}
+  register: wireguard_server_public_key
+  changed_when: false
+  check_mode: false
+  no_log: true
+- name: derive peer public keys
+  command: wg pubkey
+  args: {stdin: "{{wireguard_peer_private_keys[item.name]}}"}
+  loop: "{{wireguard_peers}}"
+  loop_control: {label: "{{item.name}}"}
+  register: wireguard_peer_public_keys
+  changed_when: false
+  check_mode: false
+  no_log: true
+- name: configure the wireguard interface
+  register: wireguard_config
+  template:
+    src: templates/wg0.conf.j2
+    dest: /etc/wireguard/{{wireguard_interface}}.conf
+    owner: root
+    group: root
+    mode: '0600'
+  diff: false
+- name: start and enable wireguard
+  service:
+    name: wg-quick@{{wireguard_interface}}
+    state: started
+    enabled: true
+- name: restart wireguard
+  when: wireguard_config.changed
+  service:
+    name: wg-quick@{{wireguard_interface}}
+    state: restarted
+- name: create the local client config directory
+  delegate_to: localhost
+  become: false
+  run_once: true
+  file:
+    path: "{{wireguard_clients_directory}}"
+    state: directory
+    mode: '0700'
+- name: render client configs locally
+  delegate_to: localhost
+  become: false
+  run_once: true
+  template:
+    src: templates/client.conf.j2
+    dest: "{{wireguard_clients_directory}}/{{item.name}}.conf"
+    mode: '0600'
+  loop: "{{wireguard_peers}}"
+  loop_control: {label: "{{item.name}}"}
+  diff: false
