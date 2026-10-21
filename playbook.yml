@@ -42,13 +42,14 @@
     ntopng_base_directory: /var/www/ntopng
     uptime_kuma_base_directory: /var/www/uptime-kuma
     uptime_kuma_data_directory: "{{uptime_kuma_base_directory}}/data"
-    webhooks_domain: webhooks.{{parent_domain}}
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
     web_server_ip: "{{ansible_facts.default_ipv4.address}}"
     # studio is the Mac on the LAN running T3 Code; the router pins this address.
     studio_ip: 192.168.1.209
+    # nextcloud's LAN/VPN allow-list references this too.
+    wireguard_subnet: 10.8.0.0/24
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
     miniflux_db: miniflux_db
@@ -72,7 +73,6 @@
           - "{{nextcloud_domain}}"
           - "{{searxng_domain}}"
           - "{{wallabag_domain}}"
-          - "{{webhooks_domain}}"
   roles:
     - {role: common, tags: common}
     - {role: geerlingguy.certbot, tags: certbot}
@@ -95,7 +95,6 @@
     - {role: ntopng, tags: ntopng}
     - {role: uptime_kuma, tags: uptime_kuma}
     - {role: wallabag, tags: wallabag}
-    - {role: webhooks, tags: webhooks}
     - {role: default_site, tags: default_site}
     - {role: dnsmasq, tags: dnsmasq}
     - {role: dynamicdns, tags: dynamicdns}

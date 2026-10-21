@@ -17,7 +17,6 @@ These scripts set up the following services:
 * [TubeSync](https://github.com/meeb/tubesync)
 * [Transmission + OpenVPN](https://github.com/haugene/docker-transmission-openvpn)
 * [Wallabag](https://wallabag.org)
-* [Webhook.site](https://github.com/webhooksite/webhook.site)
 * [WireGuard](https://www.wireguard.com) for remote access to the server and studio
 * Dynamic DNS with Namecheap
 
