@@ -2,6 +2,12 @@ server {
 	server_name {{domain}};
     client_max_body_size 1024M;
 
+    # Temporary: LAN/VPN only until the nextcloud image ships PHP >= 8.5.12
+    # (PHP2Shell, GHSA-w8hw-w9fx-j79w / GHSA-6wmf-4rv5-p3rp).
+    allow {{local_network}};
+    allow {{wireguard_subnet}};
+    deny all;
+
     location ^~ /.well-known {
         location = /.well-known/carddav { return 301 /remote.php/dav/; }
         location = /.well-known/caldav  { return 301 /remote.php/dav/; }
