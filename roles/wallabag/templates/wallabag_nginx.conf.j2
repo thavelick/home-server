@@ -1,5 +1,7 @@
 server {
 	server_name {{wallabag_domain}};
+	# HTTP2Shell (CVE-2026-111497): see the map in nginx.conf.
+	if ($reject_brotli_body) { return 415; }
 	root {{wallabag_site_root}}/public_html/web;
 	location / {
 	    try_files $uri /app.php$is_args$args;

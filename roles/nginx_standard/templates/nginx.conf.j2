@@ -1,5 +1,7 @@
 server {
 	server_name {{domain}};
+	# HTTP2Shell (CVE-2026-111497): see the map in nginx.conf.
+	if ($reject_brotli_body) { return 415; }
 	location / {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header Host $host;
