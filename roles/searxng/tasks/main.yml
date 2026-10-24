@@ -43,6 +43,17 @@
     requirements: "{{searxng_site_root}}/src/requirements.txt"
     virtualenv: "{{searxng_site_root}}/venv"
   when: searxng_clone.changed
+# HTTP2Shell (CVE-2026-111497): Brotli <= 1.2.0 has an out-of-bounds write in
+# its decoder, and httpx decodes br responses from upstream engines and the
+# image proxy whenever it's installed. Without it httpx falls back to gzip.
+# Runs unconditionally because the requirements install above can pull it back.
+- name: remove brotli from the searxng virtualenv
+  become_user: 'www-data'
+  register: searxng_brotli
+  pip:
+    name: [brotli, brotlicffi]
+    state: absent
+    virtualenv: "{{searxng_site_root}}/venv"
 - name: copy the searxng config file
   become_user: 'www-data'
   register: searxng_config
@@ -53,7 +64,7 @@
   include_role: {name: service_standard}
   vars: {service_name: searxng}
 - name: restart the systemd service
-  when: searxng_config.changed
+  when: searxng_config.changed or searxng_brotli.changed
   service:
     name: searxng
     state: restarted
