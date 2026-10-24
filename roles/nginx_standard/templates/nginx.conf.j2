@@ -2,13 +2,24 @@ server {
 	server_name {{domain}};
 	# HTTP2Shell (CVE-2026-111497): see the map in nginx.conf.
 	if ($reject_brotli_body) { return 415; }
-	location / {
+{% if lan_only %}
+	# LAN/VPN only; public_paths below stay reachable from the internet.
+	allow {{local_network}};
+	allow {{wireguard_subnet}};
+	deny all;
+{% endif %}
+{% for location in ['/'] + (public_paths if lan_only else []) %}
+	location {{location}} {
+{% if location != '/' %}
+		allow all;
+{% endif %}
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header Host $host;
 	proxy_set_header Upgrade $http_upgrade;
 	proxy_set_header Connection "upgrade";
 		proxy_pass http://localhost:{{service_port}};
 	}
+{% endfor %}
 	listen 443 ssl;
     add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
 
