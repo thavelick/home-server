@@ -10,7 +10,11 @@ One-time setup script to create Uptime Kuma monitors and tags for all home
 server services.
 
 Usage:
-    uv run setup_uptime_kuma_monitors.py <username> <password> <parent_domain>
+    uv run setup_uptime_kuma_monitors.py <username> <password> <parent_domain> \
+        [--backup-push-token TOKEN] [--disk-health-push-token TOKEN]
+
+The push tokens are backup_push_token and disk_health_push_token from
+group_vars/home/vault.yml (`ansible-vault view group_vars/home/vault.yml`).
 
 Requires Uptime Kuma 2.x running on bernard:3001.
 """
@@ -71,9 +75,23 @@ def ensure_tags(api: UptimeKumaApi) -> Dict[str, int]:
     return tag_ids
 
 
-def build_monitors(parent_domain: str) -> list:
+# Hourly cron jobs on bernard report to these. The monitor goes down if a job
+# reports a problem or misses its slot, so the interval allows some slack.
+PUSH_MONITOR_INTERVAL_SECONDS = 65 * 60
+
+
+def build_monitors(parent_domain: str, push_tokens: Dict[str, str]) -> list:
     """Build the full list of monitor definitions."""
     monitors = []
+
+    for name, token in push_tokens.items():
+        monitors.append({
+            "type": MonitorType.PUSH,
+            "name": name,
+            "pushToken": token,
+            "interval": PUSH_MONITOR_INTERVAL_SECONDS,
+            "tag": "private",
+        })
 
     for m in PING_MONITORS:
         monitors.append({
@@ -112,15 +130,20 @@ def create_monitor(api: UptimeKumaApi, monitor: dict, tag_id: int, tag_name: str
     result = api.add_monitor(**monitor, conditions=json.dumps([]))
     monitor_id = result["monitorID"]
     api.add_monitor_tag(tag_id=tag_id, monitor_id=monitor_id, value="")
-    desc = monitor.get("hostname") or monitor.get("url")
+    desc = monitor.get("hostname") or monitor.get("url") or "push"
     print(f"  ADD   {monitor['name']} ({desc}) [{tag_name}]")
 
 
-def sync_monitors(api: UptimeKumaApi, parent_domain: str, tag_ids: Dict[str, int]) -> None:
+def sync_monitors(
+    api: UptimeKumaApi,
+    parent_domain: str,
+    push_tokens: Dict[str, str],
+    tag_ids: Dict[str, int],
+) -> None:
     """Create or tag monitors, skipping those that already exist."""
     existing = {m["name"]: m for m in api.get_monitors()}
 
-    for monitor in build_monitors(parent_domain):
+    for monitor in build_monitors(parent_domain, push_tokens):
         name = monitor["name"]
         tag_name = monitor.pop("tag")
         tag_id = tag_ids[tag_name]
@@ -144,13 +167,26 @@ def main() -> None:
     parser.add_argument("username", help="Uptime Kuma username")
     parser.add_argument("password", help="Uptime Kuma password")
     parser.add_argument("parent_domain", help="Parent domain (e.g. example.com)")
+    parser.add_argument("--backup-push-token", help="Token for the backup push monitor")
+    parser.add_argument(
+        "--disk-health-push-token", help="Token for the disk health push monitor"
+    )
     args = parser.parse_args()
+
+    push_tokens = {
+        name: token
+        for name, token in [
+            ("Backup DB Integrity", args.backup_push_token),
+            ("Disk Health", args.disk_health_push_token),
+        ]
+        if token
+    }
 
     api = UptimeKumaApi(UPTIME_KUMA_URL)
     api.login(args.username, args.password)
 
     tag_ids = ensure_tags(api)
-    sync_monitors(api, args.parent_domain, tag_ids)
+    sync_monitors(api, args.parent_domain, push_tokens, tag_ids)
 
     api.disconnect()
     print("\nDone.")
