@@ -1,2 +1,6 @@
 ---
 nginx_conf_template: "nginx.conf.j2"
+# Restrict the site to the LAN and WireGuard subnet. public_paths lists
+# location prefixes that stay internet-reachable (only used with lan_only).
+lan_only: false
+public_paths: []

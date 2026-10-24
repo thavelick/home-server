@@ -10,4 +10,4 @@
       - "8420:8000"
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{ampcast_domain}}", service_port: 8420}
+  vars: {domain: "{{ampcast_domain}}", service_port: 8420, lan_only: true}

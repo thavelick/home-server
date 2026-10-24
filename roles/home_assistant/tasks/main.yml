@@ -68,6 +68,12 @@
   systemd:
     name: home-assistant-wait-for-internet.service
     enabled: true
+# LAN/VPN only, except the endpoint Google's cloud calls for the
+# google_assistant integration (it authenticates with an HA token).
 - name: configure nginx
   include_role: {name: nginx_standard}
-  vars: {domain: "{{home_assistant_domain}}", service_port: 8123}
+  vars:
+    domain: "{{home_assistant_domain}}"
+    service_port: 8123
+    lan_only: true
+    public_paths: [/api/google_assistant]
