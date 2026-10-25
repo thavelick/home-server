@@ -20,15 +20,13 @@ address=/assistant.tristanhavelick.com/{{ web_server_ip }}
 address=/home.tristanhavelick.com/{{ web_server_ip }}
 address=/studio.tristanhavelick.com/{{ studio_ip }}
 
-# Stop DNS-SD queries from looping between dnsmasq and the router
-local=/b._dns-sd._udp.0.1.168.192.in-addr.arpa/
-local=/db._dns-sd._udp.0.1.168.192.in-addr.arpa/
-local=/lb._dns-sd._udp.0.1.168.192.in-addr.arpa/
+# The router forwards its own lookups to us, so never send anything back to
+# it or unanswerable queries loop between the two forever. Answer LAN
+# reverse lookups (including DNS-SD probes) from /etc/hosts or NXDOMAIN.
+local=/1.168.192.in-addr.arpa/
 
-# Forward reverse DNS for LAN to router (for local hostnames)
-server=/1.168.192.in-addr.arpa/192.168.1.1
-
-# Forward all other queries to Google DNS
+# Ignore /etc/resolv.conf (it points at the router) and only use Google DNS
+no-resolv
 server=8.8.8.8
 server=8.8.4.4
 
