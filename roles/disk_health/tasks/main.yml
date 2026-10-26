@@ -1,0 +1,25 @@
+---
+- name: install smartmontools
+  apt:
+    name: smartmontools
+# smartd runs periodic SMART checks and logs problems to the journal.
+- name: start and enable smartd
+  service:
+    name: smartd
+    state: started
+    enabled: true
+- name: copy the disk health script
+  copy:
+    src: files/disk_health.sh
+    dest: /root/disk_health.sh
+    owner: root
+    group: root
+    mode: 0755
+- name: set up a cron to report disk health hourly
+  cron:
+    name: disk-health
+    minute: "15"
+    hour: "*"
+    job: >-
+      DISK_HEALTH_PUSH_URL={{uptime_kuma_push_url_base ~ disk_health_push_token if disk_health_push_token else ''}}
+      /root/disk_health.sh

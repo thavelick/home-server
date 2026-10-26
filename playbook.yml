@@ -42,6 +42,8 @@
     ntopng_base_directory: /var/www/ntopng
     uptime_kuma_base_directory: /var/www/uptime-kuma
     uptime_kuma_data_directory: "{{uptime_kuma_base_directory}}/data"
+    # Append a push monitor's token to report to it (backup, disk_health).
+    uptime_kuma_push_url_base: http://localhost:3001/api/push/
     wallabag_domain: articles.{{parent_domain}}
     wallabag_site_root: /var/www/articles.{{parent_domain}}
     wallabag_server_name: "Tristan's Wallabag"
@@ -100,6 +102,7 @@
     - {role: dynamicdns, tags: dynamicdns}
     - {role: wireguard, tags: wireguard}
     - {role: backup, tags: backup}
+    - {role: disk_health, tags: disk_health}
   post_tasks:
     - name: Verify deployed services are responding
       ansible.builtin.command: ./scripts/verify_services.py
