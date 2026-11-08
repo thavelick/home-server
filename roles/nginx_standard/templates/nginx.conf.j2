@@ -4,14 +4,15 @@ server {
 	if ($reject_brotli_body) { return 415; }
 {% if lan_only %}
 	# LAN/VPN only; public_paths below stay reachable from the internet.
-	allow {{local_network}};
-	allow {{wireguard_subnet}};
-	deny all;
+	include snippets/lan_only.conf;
 {% endif %}
 {% for location in ['/'] + (public_paths if lan_only else []) %}
 	location {{location}} {
 {% if location != '/' %}
 		allow all;
+		# Limits are per client IP (zones in nginx.conf).
+		limit_req zone=public_paths burst=10 nodelay;
+		limit_conn public_conn 10;
 {% endif %}
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header Host $host;
@@ -29,11 +30,3 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/home.tristanhavelick.com/privkey.pem;
 }
 
-server {
-    if ($host = {{domain}}) {
-        return 301 https://$host$request_uri;
-    }
-	server_name {{domain}};
-    listen 80;
-    return 404;
-}

@@ -91,6 +91,20 @@ http://<server-ip>:8080
 Leave that field empty to disable the proxy; regular Twitch streams are
 unaffected either way.
 
+## What the internet can reach
+
+The router forwards TCP 80 and 443 to the server, but nginx only answers two
+things from outside `lan_or_vpn_networks` (`playbook.yml`):
+
+* Let's Encrypt's HTTP challenge on port 80, which certbot renews through in
+  webroot mode (`roles/default_site`)
+* Home Assistant's `public_paths`, which Google Assistant calls, rate-limited
+  per IP (`roles/home_assistant`, zones in `roles/common/files/nginx.conf`)
+
+Every site includes `snippets/lan_only.conf`, so from anywhere else you need
+the VPN below. Outside requests to unknown hostnames, and to anything on port 80
+besides the challenge, get a dropped connection.
+
 ## Remote access with WireGuard
 
 The `wireguard` role runs a VPN on UDP 443. A connected device can reach every

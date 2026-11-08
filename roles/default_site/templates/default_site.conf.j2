@@ -1,0 +1,49 @@
+# The router forwards ports 80 and 443 to the internet, but only Let's Encrypt
+# (port 80) and Home Assistant's public_paths (port 443) should answer it.
+geo $lan_or_vpn {
+    default 0;
+{% for network in lan_or_vpn_networks %}
+    {{network}} 1;
+{% endfor %}
+}
+
+# All of port 80. No site defines its own port-80 server, so this one handles
+# every hostname: Let's Encrypt's HTTP challenge for certbot's webroot renewal,
+# an HTTPS redirect for LAN/VPN clients, and a dropped connection for the rest.
+server {
+    listen 80 default_server;
+    server_name _;
+
+    location /.well-known/acme-challenge/ {
+        root {{certbot_webroot}};
+    }
+    location / {
+        if ($lan_or_vpn) {
+            return 301 https://$host$request_uri;
+        }
+        return 444;
+    }
+}
+
+{% if default_site_cert.stat.exists %}
+# Catch-all vhost for hostnames that don't match a configured service (e.g.
+# home.tristanhavelick.com). LAN/VPN clients get a generic page; internet
+# clients get a dropped connection.
+server {
+    listen 443 ssl default_server;
+    server_name _;
+
+    ssl_certificate /etc/letsencrypt/live/home.tristanhavelick.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/home.tristanhavelick.com/privkey.pem;
+
+    if ($lan_or_vpn = 0) {
+        return 444;
+    }
+
+    root /var/www/default;
+    default_type text/plain;
+    location / {
+        try_files $uri /index.html;
+    }
+}
+{% endif %}
