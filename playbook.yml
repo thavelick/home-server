@@ -47,15 +47,25 @@
     # studio is the Mac on the LAN running T3 Code; the router pins this address.
     studio_ip: 192.168.1.209
     wireguard_subnet: 10.8.0.0/24
+    # Source addresses every site trusts; everything else only reaches
+    # Home Assistant's public_paths and Let's Encrypt's challenge path.
+    # 172.16.0.0/12 covers Docker networks, so containers like Uptime Kuma
+    # that hit a site by its public hostname aren't refused.
+    lan_or_vpn_networks:
+      - "{{local_network}}"
+      - "{{wireguard_subnet}}"
+      - 172.16.0.0/12
+      - 127.0.0.1
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
     miniflux_db: miniflux_db
     miniflux_admin_name: admin
     miniflux_port: 8050
     certbot_create_if_missing: true
-    certbot_create_method: standalone
-    certbot_create_standalone_stop_services:
-      - nginx
+    # nginx serves the HTTP challenge from this folder (see default_site),
+    # so certbot no longer stops nginx to take over port 80.
+    certbot_create_method: webroot
+    certbot_webroot: /var/www/letsencrypt
     certbot_certs:
       - domains:
           - "home.{{parent_domain}}"
@@ -71,6 +81,8 @@
           - "{{wallabag_domain}}"
   roles:
     - {role: common, tags: common}
+    # Before certbot: it sets up the port-80 challenge site certbot renews through.
+    - {role: default_site, tags: default_site}
     - {role: geerlingguy.certbot, tags: certbot}
     - {role: geerlingguy.docker, tags: docker}
     - {role: ampcast, tags: ampcast}
@@ -90,7 +102,6 @@
     - {role: ntopng, tags: ntopng}
     - {role: uptime_kuma, tags: uptime_kuma}
     - {role: wallabag, tags: wallabag}
-    - {role: default_site, tags: default_site}
     - {role: dnsmasq, tags: dnsmasq}
     - {role: dynamicdns, tags: dynamicdns}
     - {role: wireguard, tags: wireguard}
