@@ -64,5 +64,9 @@ http:
     - 192.168.1.126
     - 172.17.0.1
   use_x_forwarded_for: true
-  ip_ban_enabled: false
-  login_attempts_threshold: -1
+  # Ban an IP after 20 failed logins or bad-token requests. Only
+  # /api/google_assistant and /auth/token are internet-facing (nginx). Bans
+  # are permanent: unban by removing the IP from /config/ip_bans.yaml and
+  # restarting HA.
+  ip_ban_enabled: true
+  login_attempts_threshold: 20
