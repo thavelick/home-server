@@ -9,6 +9,7 @@
     - "{{home_assistant_config_directory}}"
     - "{{home_assistant_matter_data_directory}}"
 - name: deploy home assistant configuration files
+  register: home_assistant_config_files
   copy:
     src: "{{item}}"
     dest: "{{home_assistant_config_directory}}/{{item}}"
@@ -42,6 +43,10 @@
       - /sys/class/thermal:/sys/class/thermal:ro
     env:
       TZ: "{{current_timezone.stdout}}"
+# HA reads configuration.yaml only at startup.
+- name: restart home assistant when its configuration changed
+  when: home_assistant_config_files.changed
+  command: docker restart homeassistant
 - name: run matter server container
   docker_container:
     name: matter-server
