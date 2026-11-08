@@ -1,9 +1,5 @@
 [
     {
-        "t": "al",
-        "u": "https://kiwix.tristanhavelick.com/search?content=archlinux_en_all_nopic_2022-05&pattern={{{s}}}"
-    },
-    {
         "t": "cl",
         "u": "https://denver.craigslist.org/search/?query={{{s}}}"
     },
@@ -20,10 +16,6 @@
         "u": "https://www.justwatch.com/us/search?q={{{s}}}"
     },
     {
-        "t": "k",
-        "u": "https://kiwix.tristanhavelick.com/search?pattern={{{s}}}"
-    },
-    {
         "t": "lg",
         "u": "http://libgen.is/search.php?req={{{s}}}"
     },
@@ -38,10 +30,6 @@
     {
         "t": "pw",
         "u": "http://bernard:9696/search?query={{{s}}}&type=search"
-    },
-    {
-        "t": "py",
-        "u": "https://kiwix.tristanhavelick.com/search?content=python-3.10.2&pattern={{{s}}}"
     },
     {
         "t": "sg",

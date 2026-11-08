@@ -24,8 +24,6 @@
     links_domain: links.{{parent_domain}}
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
-    kiwix_domain: kiwix.{{parent_domain}}
-    kiwix_site_root: /var/www/kiwix.{{parent_domain}}
     miniflux_domain: miniflux.{{parent_domain}}
     miniflux_site_root: /var/www/miniflux.{{parent_domain}}
     nextcloud_domain: nextcloud.{{parent_domain}}
@@ -67,7 +65,6 @@
           - "{{jellyfin_domain}}"
           - "{{jellyseerr_domain}}"
           - "{{just_bangs_domain}}"
-          - "{{kiwix_domain}}"
           - "{{links_domain}}"
           - "{{miniflux_domain}}"
           - "{{nextcloud_domain}}"
@@ -83,7 +80,6 @@
     - {role: jellyfin, tags: jellyfin}
     - {role: jellyseerr, tags: jellyseerr}
     - {role: just_bangs, tags: just_bangs}
-    - {role: kiwix, tags: kiwix}
     - {role: links, tags: links}
     - {role: miniflux, tags: miniflux}
     - {role: nextcloud, tags: nextcloud}
