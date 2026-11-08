@@ -46,7 +46,6 @@
     web_server_ip: "{{ansible_facts.default_ipv4.address}}"
     # studio is the Mac on the LAN running T3 Code; the router pins this address.
     studio_ip: 192.168.1.209
-    # nextcloud's LAN/VPN allow-list references this too.
     wireguard_subnet: 10.8.0.0/24
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
