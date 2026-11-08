@@ -25,6 +25,20 @@ server {
     }
 }
 
+# Kiwix was removed (#19), but a scraper that crawled it keeps requesting its
+# URLs. Dropped connections look like a temporary error worth retrying; 410
+# Gone tells crawlers the pages are permanently gone.
+server {
+    listen 80;
+{% if default_site_cert.stat.exists %}
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/home.tristanhavelick.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/home.tristanhavelick.com/privkey.pem;
+{% endif %}
+    server_name kiwix.{{parent_domain}};
+    return 410;
+}
+
 {% if default_site_cert.stat.exists %}
 # Catch-all vhost for hostnames that don't match a configured service (e.g.
 # home.tristanhavelick.com). LAN/VPN clients get a generic page; internet
