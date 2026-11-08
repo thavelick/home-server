@@ -172,12 +172,6 @@ SERVICES = {
         "port": 8484,
         "body_match": "Just Bangs!",
     },
-    "kiwix": {
-        "tag": "kiwix",
-        "https_hostname": f"kiwix.{PARENT_DOMAIN}",
-        "port": 8181,
-        "body_match": "Kiwix",
-    },
     "links": {
         "tag": "links",
         "https_hostname": f"links.{PARENT_DOMAIN}",

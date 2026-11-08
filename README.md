@@ -8,7 +8,6 @@ These scripts set up the following services:
 * [fmp4-demux-proxy](https://github.com/jeremy-albinet/Stitch-Revitalized-For-Roku/tree/main/fmp4-demux-proxy) for watching Twitch on a Roku
 * [Jellyfin](https://jellyfin.org)
 * [Just Bangs](https://github.com/thavelick/just-bangs)
-* [Kiwix](https://kiwix.org)
 * Links: personal short links (links.example.com/slug), behind [Just Auth](https://github.com/thavelick/just-auth)
 * [Miniflux](https://miniflux.net)
 * [Nextcloud](https://nextcloud.com)
@@ -72,11 +71,7 @@ These scripts set up the following services:
     ```bash
     ansible-playbook -i hosts playbook.yml
     ```
-7. Copy/Upload zim files for kiwix to {{kiwix_site_root}}/data
-  * I thought about automating this, but many of these files are huge, making them easier to copy
-    locally if you have them, and it's often difficult to determine which is the newest or
-    best zim file in an automated fashion
-8. Visit all the sites!
+7. Visit all the sites!
 
 ## Watching Twitch on a Roku
 
