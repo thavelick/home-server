@@ -34,6 +34,15 @@
   loop:
     - /etc/letsencrypt/renewal-hooks/pre/stop_services
     - /etc/letsencrypt/renewal-hooks/post/start_services
+# In webroot mode nginx keeps running during renewal, so it has to be told to
+# load the new cert. Deploy hooks run only after a successful renewal.
+- name: reload nginx after each certificate renewal
+  copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-nginx
+    mode: 0755
+    content: |
+      #!/bin/sh
+      systemctl reload nginx
 # On a fresh server the cert doesn't exist yet, so the template leaves out the
 # HTTPS catch-all until certbot has issued it.
 - name: check whether the certificate exists
