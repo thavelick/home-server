@@ -1,6 +1,3 @@
 ---
 books_webdav_root: "{{nextcloud_data_directory}}/admin/files/books"
 books_webdav_user: kobo
-# Fixed so the hash, and the password file, only change when the password does.
-# Not derived from the password: that would leak a fast-to-check fingerprint of it.
-books_webdav_password_salt: bK7mQ2xV9tLc4RzN

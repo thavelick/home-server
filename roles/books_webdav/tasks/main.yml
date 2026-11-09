@@ -7,6 +7,8 @@
 # nginx hashes the password on every request, inside a worker that every other
 # site shares. Keep SHA-512's standard 5000 rounds (Ansible's passlib default is
 # 656000, roughly 100x slower); the password's length is what protects it.
+# The vaulted salt is fixed so the file only changes when the password does. It
+# isn't derived from the password, which would leak a fast-to-check fingerprint.
 - name: write the books password file
   no_log: true
   copy:

@@ -37,6 +37,7 @@ These scripts set up the following services:
 
     [servers.vars]
     books_webdav_password=a-long-random-password
+    books_webdav_password_salt=16RandomAlnumChrs
     certbot_admin_email=tristan@example.com
     dynamicdns_password=aaaaaaaa11111111aaaaaaaa11111111
     nextcloud_admin_user=your-hidden-password
