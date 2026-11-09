@@ -21,6 +21,9 @@ server {
 	}
 
 	listen 443 ssl;
+	# Plain HTTP, direct by IP on the LAN for when DNS is unreliable. The router
+	# doesn't forward this port.
+	listen {{books_webdav_lan_port}};
     add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
 
     ssl_certificate /etc/letsencrypt/live/home.tristanhavelick.com/fullchain.pem;
