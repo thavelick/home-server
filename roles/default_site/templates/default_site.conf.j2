@@ -1,5 +1,6 @@
 # The router forwards ports 80 and 443 to the internet, but only Let's Encrypt
-# (port 80) and Home Assistant's public_paths (port 443) should answer it.
+# (port 80), Home Assistant's public_paths and the books site (port 443) should
+# answer it.
 geo $lan_or_vpn {
     default 0;
 {% for network in lan_or_vpn_networks %}

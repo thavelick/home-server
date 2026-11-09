@@ -96,6 +96,14 @@ def build_monitors(parent_domain: str) -> list:
         "url": f"https://articles.{parent_domain}",
         "tag": "public",
     })
+    # Password-protected, so a 401 without the password means it's healthy.
+    monitors.append({
+        "type": MonitorType.HTTP,
+        "name": "Books WebDAV",
+        "url": f"https://books.{parent_domain}",
+        "accepted_statuscodes": ["401"],
+        "tag": "public",
+    })
     monitors.append({
         "type": MonitorType.HTTP,
         "name": "Personal Site",

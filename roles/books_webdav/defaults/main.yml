@@ -1,0 +1,4 @@
+---
+books_webdav_root: "{{nextcloud_data_directory}}/admin/files/books"
+books_webdav_user: kobo
+books_webdav_lan_port: 9788
