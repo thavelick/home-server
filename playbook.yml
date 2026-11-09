@@ -8,6 +8,7 @@
   become: true
   vars:
     backup_staging_directory: /var/www/backup-staging
+    books_domain: books.{{parent_domain}}
     ampcast_domain: ampcast.{{parent_domain}}
     fmp4_demux_proxy_source_directory: /var/www/fmp4-demux-proxy
     home_assistant_domain: assistant.{{parent_domain}}
@@ -47,8 +48,9 @@
     # studio is the Mac on the LAN running T3 Code; the router pins this address.
     studio_ip: 192.168.1.209
     wireguard_subnet: 10.8.0.0/24
-    # Source addresses every site trusts; everything else only reaches
-    # Home Assistant's public_paths and Let's Encrypt's challenge path.
+    # Source addresses every LAN-only site trusts; everything else only reaches
+    # the books WebDAV site, Home Assistant's public_paths and Let's Encrypt's
+    # challenge path.
     # 172.16.0.0/12 covers Docker networks, so containers like Uptime Kuma
     # that hit a site by its public hostname aren't refused.
     lan_or_vpn_networks:
@@ -70,6 +72,7 @@
       - domains:
           - "home.{{parent_domain}}"
           - "{{ampcast_domain}}"
+          - "{{books_domain}}"
           - "{{home_assistant_domain}}"
           - "{{jellyfin_domain}}"
           - "{{jellyseerr_domain}}"
@@ -84,6 +87,7 @@
     # Before certbot: it sets up the port-80 challenge site certbot renews through.
     - {role: default_site, tags: default_site}
     - {role: geerlingguy.certbot, tags: certbot}
+    - {role: books_webdav, tags: books_webdav}
     - {role: geerlingguy.docker, tags: docker}
     - {role: ampcast, tags: ampcast}
     - {role: fmp4_demux_proxy, tags: fmp4_demux_proxy}

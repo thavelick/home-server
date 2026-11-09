@@ -1,0 +1,28 @@
+# Read-only WebDAV for KOReader. Public on purpose (no lan_only): nginx serves
+# the Nextcloud books folder straight from disk, so nothing here reaches PHP or
+# the Nextcloud container. dav_methods is left unset, so nothing can write.
+server {
+	server_name {{books_domain}};
+	# HTTP2Shell (CVE-2026-111497): see the map in nginx.conf.
+	if ($reject_brotli_body) { return 415; }
+
+	root {{books_webdav_root}};
+	disable_symlinks on;
+
+	auth_basic "books";
+	auth_basic_user_file /etc/nginx/books.htpasswd;
+	# Limits are per client IP (zones in nginx.conf).
+	limit_req zone=books_webdav burst=30 nodelay;
+	limit_conn public_conn 10;
+
+	location / {
+		dav_ext_methods PROPFIND OPTIONS;
+		limit_except GET PROPFIND OPTIONS { deny all; }
+	}
+
+	listen 443 ssl;
+    add_header Strict-Transport-Security "max-age=15552000; includeSubDomains" always;
+
+    ssl_certificate /etc/letsencrypt/live/home.tristanhavelick.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/home.tristanhavelick.com/privkey.pem;
+}

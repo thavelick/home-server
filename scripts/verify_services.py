@@ -148,6 +148,13 @@ def parse_hosts_file(filename: str = "hosts") -> Tuple[str, str]:
 SERVER_HOSTNAME, PARENT_DOMAIN = parse_hosts_file()
 
 SERVICES = {
+    # Password-protected, so a 401 without the password means it's healthy.
+    "books_webdav": {
+        "tag": "books_webdav",
+        "https_hostname": f"books.{PARENT_DOMAIN}",
+        "port": None,
+        "valid_status_codes": [401],
+    },
     "home_assistant": {
         "tag": "home_assistant",
         "https_hostname": f"assistant.{PARENT_DOMAIN}",

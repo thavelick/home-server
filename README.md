@@ -5,6 +5,7 @@ A set of ansible scripts for setting up my home server.
 ## Services
 These scripts set up the following services:
 * [Ampcast](https://github.com/rekkyrosso/ampcast)
+* Books: read-only WebDAV of Nextcloud's `books` folder, for KOReader
 * [fmp4-demux-proxy](https://github.com/jeremy-albinet/Stitch-Revitalized-For-Roku/tree/main/fmp4-demux-proxy) for watching Twitch on a Roku
 * [Jellyfin](https://jellyfin.org)
 * [Just Bangs](https://github.com/thavelick/just-bangs)
@@ -35,6 +36,7 @@ These scripts set up the following services:
     my-server.dev.local
 
     [servers.vars]
+    books_webdav_password=a-long-random-password
     certbot_admin_email=tristan@example.com
     dynamicdns_password=aaaaaaaa11111111aaaaaaaa11111111
     nextcloud_admin_user=your-hidden-password
@@ -93,16 +95,20 @@ unaffected either way.
 
 ## What the internet can reach
 
-The router forwards TCP 80 and 443 to the server, but nginx only answers two
+The router forwards TCP 80 and 443 to the server, but nginx only answers three
 things from outside `lan_or_vpn_networks` (`playbook.yml`):
 
 * Let's Encrypt's HTTP challenge on port 80, which certbot renews through in
   webroot mode (`roles/default_site`)
 * Home Assistant's `public_paths`, which Google Assistant calls, rate-limited
   per IP (`roles/home_assistant`, zones in `roles/common/files/nginx.conf`)
+* `books.<parent_domain>`, a password-protected, read-only WebDAV view of
+  Nextcloud's `books` folder for KOReader, rate-limited per IP
+  (`roles/books_webdav`). nginx serves the files from disk, so no request reaches
+  Nextcloud, and uploads still go through Nextcloud on the VPN.
 
-Every site includes `snippets/lan_only.conf`, so from anywhere else you need
-the VPN below. Outside requests to unknown hostnames, and to anything on port 80
+Every other site includes `snippets/lan_only.conf`, so from anywhere else you
+need the VPN below. Outside requests to unknown hostnames, and to anything on port 80
 besides the challenge, get a dropped connection.
 
 ## Remote access with WireGuard

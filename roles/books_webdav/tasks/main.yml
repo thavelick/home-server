@@ -1,0 +1,50 @@
+---
+- name: install the nginx WebDAV module
+  register: books_webdav_module
+  apt:
+    name: libnginx-mod-http-dav-ext
+    state: present
+# nginx hashes the password on every request, inside a worker that every other
+# site shares. Keep SHA-512's standard 5000 rounds (Ansible's passlib default is
+# 656000, roughly 100x slower); the password's length is what protects it.
+- name: write the books password file
+  no_log: true
+  copy:
+    dest: /etc/nginx/books.htpasswd
+    content: "{{books_webdav_user}}:{{books_webdav_password | password_hash('sha512', books_webdav_password_salt, rounds=5000)}}\n"
+    owner: root
+    group: www-data
+    mode: 0640
+- name: copy the books site config
+  register: books_webdav_conf
+  template:
+    src: templates/books.conf.j2
+    dest: /etc/nginx/sites-available/{{books_domain}}
+- name: enable the books site
+  register: books_webdav_link
+  file:
+    dest: /etc/nginx/sites-enabled/{{books_domain}}
+    state: link
+    src: /etc/nginx/sites-available/{{books_domain}}
+# A restart with a bad config stops every site, so test first. If the test
+# fails, take this site back out so later restarts of nginx still work.
+- name: test the nginx config
+  when: books_webdav_module.changed or books_webdav_conf.changed or books_webdav_link.changed
+  block:
+    - name: run nginx -t
+      command: nginx -t
+      changed_when: false
+  rescue:
+    - name: disable the books site
+      file:
+        dest: /etc/nginx/sites-enabled/{{books_domain}}
+        state: absent
+    - name: stop before restarting nginx
+      fail:
+        msg: nginx -t failed, so the books site was disabled and nginx was not restarted.
+# A restart, not a reload, so a newly installed module gets loaded.
+- name: restart nginx
+  when: books_webdav_module.changed or books_webdav_conf.changed or books_webdav_link.changed
+  service:
+    name: nginx
+    state: restarted
