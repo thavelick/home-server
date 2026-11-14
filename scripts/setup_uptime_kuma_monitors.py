@@ -162,12 +162,17 @@ def login(api: UptimeKumaApi, username: str, password: str) -> None:
 
 
 def add_monitor(api: UptimeKumaApi, **kwargs) -> dict:
-    """api.add_monitor, plus the conditions field Uptime Kuma 2 requires.
+    """api.add_monitor, plus fields uptime-kuma-api 1.2.1 won't accept.
 
-    uptime-kuma-api 1.2.1 predates Kuma 2 and rejects a conditions argument.
-    Kuma JSON-encodes the field itself, so it gets a plain list.
+    The library predates Kuma 2 and rejects a conditions argument; Kuma
+    JSON-encodes the field itself, so it gets a plain list. The library also
+    won't take a pushToken (it generates a random one), so ours is set
+    afterwards to match the token the cron jobs on bernard push to.
     """
+    push_token = kwargs.pop("pushToken", None)
     data = api._build_monitor_data(**kwargs)
+    if push_token:
+        data["pushToken"] = push_token
     _convert_monitor_input(data)
     _check_arguments_monitor(data)
     data["conditions"] = []
