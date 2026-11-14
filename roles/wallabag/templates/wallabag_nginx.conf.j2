@@ -2,6 +2,7 @@ server {
 	server_name {{wallabag_domain}};
 	# HTTP2Shell (CVE-2026-111497): see the map in nginx.conf.
 	if ($reject_brotli_body) { return 415; }
+	include snippets/lan_only.conf;
 	root {{wallabag_site_root}}/public_html/web;
 	location / {
 	    try_files $uri /app.php$is_args$args;
@@ -22,11 +23,3 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/home.tristanhavelick.com/privkey.pem;
 }
 
-server {
-    if ($host = {{wallabag_domain}}) {
-        return 301 https://$host$request_uri;
-    }
-	server_name {{wallabag_domain}};
-    listen 80;
-    return 404;
-}

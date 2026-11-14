@@ -5,10 +5,10 @@ A set of ansible scripts for setting up my home server.
 ## Services
 These scripts set up the following services:
 * [Ampcast](https://github.com/rekkyrosso/ampcast)
+* Books: read-only WebDAV of Nextcloud's `books` folder, for KOReader
 * [fmp4-demux-proxy](https://github.com/jeremy-albinet/Stitch-Revitalized-For-Roku/tree/main/fmp4-demux-proxy) for watching Twitch on a Roku
 * [Jellyfin](https://jellyfin.org)
 * [Just Bangs](https://github.com/thavelick/just-bangs)
-* [Kiwix](https://kiwix.org)
 * Links: personal short links (links.example.com/slug), behind [Just Auth](https://github.com/thavelick/just-auth)
 * [Miniflux](https://miniflux.net)
 * [Nextcloud](https://nextcloud.com)
@@ -36,6 +36,8 @@ These scripts set up the following services:
     my-server.dev.local
 
     [servers.vars]
+    books_webdav_password=a-long-random-password
+    books_webdav_password_salt=16RandomAlnumChrs
     certbot_admin_email=tristan@example.com
     dynamicdns_password=aaaaaaaa11111111aaaaaaaa11111111
     nextcloud_admin_user=your-hidden-password
@@ -72,11 +74,7 @@ These scripts set up the following services:
     ```bash
     ansible-playbook -i hosts playbook.yml
     ```
-7. Copy/Upload zim files for kiwix to {{kiwix_site_root}}/data
-  * I thought about automating this, but many of these files are huge, making them easier to copy
-    locally if you have them, and it's often difficult to determine which is the newest or
-    best zim file in an automated fashion
-8. Visit all the sites!
+7. Visit all the sites!
 
 ## Watching Twitch on a Roku
 
@@ -95,6 +93,24 @@ http://<server-ip>:8080
 
 Leave that field empty to disable the proxy; regular Twitch streams are
 unaffected either way.
+
+## What the internet can reach
+
+The router forwards TCP 80 and 443 to the server, but nginx only answers three
+things from outside `lan_or_vpn_networks` (`playbook.yml`):
+
+* Let's Encrypt's HTTP challenge on port 80, which certbot renews through in
+  webroot mode (`roles/default_site`)
+* Home Assistant's `public_paths`, which Google Assistant calls, rate-limited
+  per IP (`roles/home_assistant`, zones in `roles/common/files/nginx.conf`)
+* `books.<parent_domain>`, a password-protected, read-only WebDAV view of
+  Nextcloud's `books` folder for KOReader, rate-limited per IP
+  (`roles/books_webdav`). nginx serves the files from disk, so no request reaches
+  Nextcloud, and uploads still go through Nextcloud on the VPN.
+
+Every other site includes `snippets/lan_only.conf`, so from anywhere else you
+need the VPN below. Outside requests to unknown hostnames, and to anything on port 80
+besides the challenge, get a dropped connection.
 
 ## Remote access with WireGuard
 

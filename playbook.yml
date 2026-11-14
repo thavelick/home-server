@@ -8,6 +8,7 @@
   become: true
   vars:
     backup_staging_directory: /var/www/backup-staging
+    books_domain: books.{{parent_domain}}
     ampcast_domain: ampcast.{{parent_domain}}
     fmp4_demux_proxy_source_directory: /var/www/fmp4-demux-proxy
     home_assistant_domain: assistant.{{parent_domain}}
@@ -24,8 +25,6 @@
     links_domain: links.{{parent_domain}}
     just_bangs_domain: bangs.{{parent_domain}}
     just_bangs_site_root: /var/www/bangs.{{parent_domain}}
-    kiwix_domain: kiwix.{{parent_domain}}
-    kiwix_site_root: /var/www/kiwix.{{parent_domain}}
     miniflux_domain: miniflux.{{parent_domain}}
     miniflux_site_root: /var/www/miniflux.{{parent_domain}}
     nextcloud_domain: nextcloud.{{parent_domain}}
@@ -50,26 +49,36 @@
     web_server_ip: "{{ansible_facts.default_ipv4.address}}"
     # studio is the Mac on the LAN running T3 Code; the router pins this address.
     studio_ip: 192.168.1.209
-    # nextcloud's LAN/VPN allow-list references this too.
     wireguard_subnet: 10.8.0.0/24
+    # Source addresses every LAN-only site trusts; everything else only reaches
+    # the books WebDAV site, Home Assistant's public_paths and Let's Encrypt's
+    # challenge path.
+    # 172.16.0.0/12 covers Docker networks, so containers like Uptime Kuma
+    # that hit a site by its public hostname aren't refused.
+    lan_or_vpn_networks:
+      - "{{local_network}}"
+      - "{{wireguard_subnet}}"
+      - 172.16.0.0/12
+      - 127.0.0.1
     miniflux_linux_user: miniflux
     miniflux_db_user_name: miniflux_db_user
     miniflux_db: miniflux_db
     miniflux_admin_name: admin
     miniflux_port: 8050
     certbot_create_if_missing: true
-    certbot_create_method: standalone
-    certbot_create_standalone_stop_services:
-      - nginx
+    # nginx serves the HTTP challenge from this folder (see default_site),
+    # so certbot no longer stops nginx to take over port 80.
+    certbot_create_method: webroot
+    certbot_webroot: /var/www/letsencrypt
     certbot_certs:
       - domains:
           - "home.{{parent_domain}}"
           - "{{ampcast_domain}}"
+          - "{{books_domain}}"
           - "{{home_assistant_domain}}"
           - "{{jellyfin_domain}}"
           - "{{jellyseerr_domain}}"
           - "{{just_bangs_domain}}"
-          - "{{kiwix_domain}}"
           - "{{links_domain}}"
           - "{{miniflux_domain}}"
           - "{{nextcloud_domain}}"
@@ -77,7 +86,10 @@
           - "{{wallabag_domain}}"
   roles:
     - {role: common, tags: common}
+    # Before certbot: it sets up the port-80 challenge site certbot renews through.
+    - {role: default_site, tags: default_site}
     - {role: geerlingguy.certbot, tags: certbot}
+    - {role: books_webdav, tags: books_webdav}
     - {role: geerlingguy.docker, tags: docker}
     - {role: ampcast, tags: ampcast}
     - {role: fmp4_demux_proxy, tags: fmp4_demux_proxy}
@@ -85,7 +97,6 @@
     - {role: jellyfin, tags: jellyfin}
     - {role: jellyseerr, tags: jellyseerr}
     - {role: just_bangs, tags: just_bangs}
-    - {role: kiwix, tags: kiwix}
     - {role: links, tags: links}
     - {role: miniflux, tags: miniflux}
     - {role: nextcloud, tags: nextcloud}
@@ -97,7 +108,6 @@
     - {role: ntopng, tags: ntopng}
     - {role: uptime_kuma, tags: uptime_kuma}
     - {role: wallabag, tags: wallabag}
-    - {role: default_site, tags: default_site}
     - {role: dnsmasq, tags: dnsmasq}
     - {role: dynamicdns, tags: dynamicdns}
     - {role: wireguard, tags: wireguard}

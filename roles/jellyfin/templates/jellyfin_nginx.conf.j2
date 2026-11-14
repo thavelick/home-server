@@ -3,6 +3,7 @@ server {
 	listen 443 ssl;
 	# HTTP2Shell (CVE-2026-111497): see the map in nginx.conf.
 	if ($reject_brotli_body) { return 415; }
+	include snippets/lan_only.conf;
 
     ## The default `client_max_body_size` is 1M, this might not be enough for some posters, etc.
     client_max_body_size 20M;
@@ -92,11 +93,3 @@ server {
     }
 }
 
-server {
-    if ($host = {{domain}}) {
-        return 301 https://$host$request_uri;
-    }
-	server_name {{domain}};
-    listen 80;
-    return 404;
-}

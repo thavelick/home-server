@@ -1,0 +1,5 @@
+# Included by every site: only LAN, VPN and local sources get through.
+{% for network in lan_or_vpn_networks %}
+allow {{network}};
+{% endfor %}
+deny all;

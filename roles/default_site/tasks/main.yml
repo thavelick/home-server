@@ -1,10 +1,17 @@
 ---
+# Runs before certbot (see playbook.yml): it owns port 80, which certbot's
+# webroot renewal depends on, and the lan_only snippet every site includes.
 - name: create the default site web root
   file:
     path: /var/www/default
     state: directory
     owner: www-data
     group: www-data
+    mode: 0755
+- name: create the Let's Encrypt challenge web root
+  file:
+    path: "{{certbot_webroot}}"
+    state: directory
     mode: 0755
 - name: copy the generic index page
   copy:
@@ -13,6 +20,35 @@
     owner: www-data
     group: www-data
     mode: 0644
+- name: install the lan_only snippet every site includes
+  register: default_site_snippet
+  template:
+    src: templates/lan_only.conf.j2
+    dest: /etc/nginx/snippets/lan_only.conf
+# Certbot used to renew in standalone mode, stopping nginx to take over port 80.
+# Hooks in these folders run on every renewal, so remove the old ones.
+- name: remove certbot's standalone stop/start hooks
+  file:
+    dest: "{{item}}"
+    state: absent
+  loop:
+    - /etc/letsencrypt/renewal-hooks/pre/stop_services
+    - /etc/letsencrypt/renewal-hooks/post/start_services
+# In webroot mode nginx keeps running during renewal, so it has to be told to
+# load the new cert. Deploy hooks run only after a successful renewal.
+- name: reload nginx after each certificate renewal
+  copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-nginx
+    mode: 0755
+    content: |
+      #!/bin/sh
+      systemctl reload nginx
+# On a fresh server the cert doesn't exist yet, so the template leaves out the
+# HTTPS catch-all until certbot has issued it.
+- name: check whether the certificate exists
+  register: default_site_cert
+  stat:
+    path: /etc/letsencrypt/live/home.tristanhavelick.com/fullchain.pem
 # nginx's package installs a default_server site that serves its default page
 # for unmatched hostnames; remove it so our catch-all takes over.
 - name: remove the packaged nginx default site
@@ -22,8 +58,8 @@
     state: absent
 - name: install the catch-all nginx site
   register: default_site_conf
-  copy:
-    src: files/default_site.conf
+  template:
+    src: templates/default_site.conf.j2
     dest: /etc/nginx/sites-available/default_site
 - name: enable the catch-all nginx site
   register: default_site_link
@@ -32,7 +68,9 @@
     state: link
     src: /etc/nginx/sites-available/default_site
 - name: restart nginx
-  when: default_site_removed.changed or default_site_conf.changed or default_site_link.changed
+  when: >-
+    default_site_snippet.changed or default_site_removed.changed or
+    default_site_conf.changed or default_site_link.changed
   service:
     name: nginx
     state: restarted

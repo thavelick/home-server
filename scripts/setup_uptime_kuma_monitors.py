@@ -54,7 +54,6 @@ HTTP_MONITORS = [
     {"name": "Jellyfin", "url": "http://bernard:8096", "tag": "public"},
     {"name": "Jellyseerr", "url": "http://bernard:5055", "tag": "public"},
     {"name": "Just Bangs", "url": "http://bernard:8484", "tag": "public"},
-    {"name": "Kiwix", "url": "http://bernard:8181", "tag": "public"},
     {"name": "Links", "url": "http://bernard:8790", "tag": "public"},
     {"name": "Miniflux", "url": "http://bernard:8050", "tag": "public"},
     {"name": "Nextcloud", "url": "http://bernard:9787", "tag": "public"},
@@ -119,6 +118,14 @@ def build_monitors(parent_domain: str, push_tokens: Dict[str, str]) -> list:
         "type": MonitorType.HTTP,
         "name": "Wallabag",
         "url": f"https://articles.{parent_domain}",
+        "tag": "public",
+    })
+    # Password-protected, so a 401 without the password means it's healthy.
+    monitors.append({
+        "type": MonitorType.HTTP,
+        "name": "Books WebDAV",
+        "url": f"https://books.{parent_domain}",
+        "accepted_statuscodes": ["401"],
         "tag": "public",
     })
     monitors.append({
