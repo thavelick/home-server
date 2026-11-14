@@ -26,10 +26,12 @@ Requires Uptime Kuma 2.x running on bernard:3001.
 """
 
 import argparse
-import json
 from typing import Dict, Optional
 
+import socketio
 from uptime_kuma_api import MonitorType, UptimeKumaApi
+from uptime_kuma_api.api import _check_arguments_monitor, _convert_monitor_input
+from uptime_kuma_api.event import Event
 
 
 UPTIME_KUMA_URL = "http://bernard:3001"
@@ -138,6 +140,41 @@ def build_monitors(parent_domain: str, push_tokens: Dict[str, str]) -> list:
     return monitors
 
 
+LOGIN_ATTEMPTS = 3
+
+
+def login(api: UptimeKumaApi, username: str, password: str) -> None:
+    """Log in, reconnecting if Kuma drops the request.
+
+    Kuma sometimes never sees a login sent right after connecting, and the
+    call times out. A fresh connection then works.
+    """
+    for attempt in range(1, LOGIN_ATTEMPTS + 1):
+        try:
+            api.login(username, password)
+            return
+        except socketio.exceptions.TimeoutError:
+            if attempt == LOGIN_ATTEMPTS:
+                raise
+            print(f"  login timed out, reconnecting ({attempt}/{LOGIN_ATTEMPTS})")
+            api.disconnect()
+            api.connect()
+
+
+def add_monitor(api: UptimeKumaApi, **kwargs) -> dict:
+    """api.add_monitor, plus the conditions field Uptime Kuma 2 requires.
+
+    uptime-kuma-api 1.2.1 predates Kuma 2 and rejects a conditions argument.
+    Kuma JSON-encodes the field itself, so it gets a plain list.
+    """
+    data = api._build_monitor_data(**kwargs)
+    _convert_monitor_input(data)
+    _check_arguments_monitor(data)
+    data["conditions"] = []
+    with api.wait_for_event(Event.MONITOR_LIST):
+        return api._call("add", data)
+
+
 def find_notification_id(api: UptimeKumaApi, name: str) -> int:
     """Return the ID of the notification with this name, or exit if missing."""
     notifications = {n["name"]: n["id"] for n in api.get_notifications()}
@@ -156,9 +193,7 @@ def create_monitor(
 ) -> None:
     """Create a new monitor and assign its tag and notification."""
     notification_ids = [notification_id] if notification_id is not None else []
-    result = api.add_monitor(
-        **monitor, notificationIDList=notification_ids, conditions=json.dumps([])
-    )
+    result = add_monitor(api, **monitor, notificationIDList=notification_ids)
     monitor_id = result["monitorID"]
     api.add_monitor_tag(tag_id=tag_id, monitor_id=monitor_id, value="")
     desc = monitor.get("hostname") or monitor.get("url") or "push"
@@ -228,7 +263,7 @@ def main() -> None:
     }
 
     api = UptimeKumaApi(UPTIME_KUMA_URL)
-    api.login(args.username, args.password)
+    login(api, args.username, args.password)
 
     notification_id = (
         find_notification_id(api, args.notification) if args.notification else None
