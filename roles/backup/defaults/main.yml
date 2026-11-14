@@ -1,0 +1,4 @@
+---
+# Token of the Uptime Kuma push monitor that prebackup.sh reports to.
+# Empty skips the push.
+backup_push_token: ""

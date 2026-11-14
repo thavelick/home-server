@@ -10,16 +10,29 @@ One-time setup script to create Uptime Kuma monitors and tags for all home
 server services.
 
 Usage:
-    uv run setup_uptime_kuma_monitors.py <username> <password> <parent_domain>
+    uv run setup_uptime_kuma_monitors.py <username> <password> <parent_domain> \
+        [--backup-push-token TOKEN] [--disk-health-push-token TOKEN] \
+        [--notification NAME]
+
+The push tokens are backup_push_token and disk_health_push_token from
+group_vars/home/vault.yml (`ansible-vault view group_vars/home/vault.yml`).
+
+--notification names an existing Uptime Kuma notification (Settings ->
+Notifications). It is attached to the monitors marked "notify" below (the
+backup and disk health push monitors) and removed from all others, so the
+rest show on the dashboard without paging. Kuma's "Default enabled" setting
+only applies to monitors created in the web UI, not via the API.
 
 Requires Uptime Kuma 2.x running on bernard:3001.
 """
 
 import argparse
-import json
-from typing import Dict
+from typing import Dict, Optional
 
+import socketio
 from uptime_kuma_api import MonitorType, UptimeKumaApi
+from uptime_kuma_api.api import _check_arguments_monitor, _convert_monitor_input
+from uptime_kuma_api.event import Event
 
 
 UPTIME_KUMA_URL = "http://bernard:3001"
@@ -70,9 +83,24 @@ def ensure_tags(api: UptimeKumaApi) -> Dict[str, int]:
     return tag_ids
 
 
-def build_monitors(parent_domain: str) -> list:
+# Hourly cron jobs on bernard report to these. The monitor goes down if a job
+# reports a problem or misses its slot, so the interval allows some slack.
+PUSH_MONITOR_INTERVAL_SECONDS = 65 * 60
+
+
+def build_monitors(parent_domain: str, push_tokens: Dict[str, str]) -> list:
     """Build the full list of monitor definitions."""
     monitors = []
+
+    for name, token in push_tokens.items():
+        monitors.append({
+            "type": MonitorType.PUSH,
+            "name": name,
+            "pushToken": token,
+            "interval": PUSH_MONITOR_INTERVAL_SECONDS,
+            "tag": "private",
+            "notify": True,
+        })
 
     for m in PING_MONITORS:
         monitors.append({
@@ -114,34 +142,128 @@ def build_monitors(parent_domain: str) -> list:
     return monitors
 
 
-def create_monitor(api: UptimeKumaApi, monitor: dict, tag_id: int, tag_name: str) -> None:
-    """Create a new monitor and assign its tag."""
-    result = api.add_monitor(**monitor, conditions=json.dumps([]))
+LOGIN_ATTEMPTS = 3
+
+
+def login(api: UptimeKumaApi, username: str, password: str) -> None:
+    """Log in, reconnecting if Kuma drops the request.
+
+    Kuma sometimes never sees a login sent right after connecting, and the
+    call times out. A fresh connection then works.
+    """
+    for attempt in range(1, LOGIN_ATTEMPTS + 1):
+        try:
+            api.login(username, password)
+            return
+        except socketio.exceptions.TimeoutError:
+            if attempt == LOGIN_ATTEMPTS:
+                raise
+            print(f"  login timed out, reconnecting ({attempt}/{LOGIN_ATTEMPTS})")
+            api.disconnect()
+            api.connect()
+
+
+def add_monitor(api: UptimeKumaApi, **kwargs) -> dict:
+    """api.add_monitor, plus fields uptime-kuma-api 1.2.1 won't accept.
+
+    The library predates Kuma 2 and rejects a conditions argument; Kuma
+    JSON-encodes the field itself, so it gets a plain list. The library also
+    won't take a pushToken (it generates a random one), so ours is set
+    afterwards to match the token the cron jobs on bernard push to.
+    """
+    push_token = kwargs.pop("pushToken", None)
+    data = api._build_monitor_data(**kwargs)
+    if push_token:
+        data["pushToken"] = push_token
+    _convert_monitor_input(data)
+    _check_arguments_monitor(data)
+    data["conditions"] = []
+    with api.wait_for_event(Event.MONITOR_LIST):
+        return api._call("add", data)
+
+
+def edit_monitor(api: UptimeKumaApi, monitor_id: int, **changes) -> dict:
+    """api.edit_monitor without the library's Kuma 1.x argument checks.
+
+    The library validates the whole monitor it reads back, and Kuma 2 leaves
+    fields such as dns_resolve_type empty on monitors where they don't apply,
+    which the check rejects. Monitors created by an older version of this
+    script stored conditions double-encoded as the string "[]", so that is
+    reset to a real empty list.
+    """
+    data = api.get_monitor(monitor_id)
+    data.update(changes)
+    _convert_monitor_input(data)
+    if data.get("conditions") in (None, "[]"):
+        data["conditions"] = []
+    with api.wait_for_event(Event.MONITOR_LIST):
+        return api._call("editMonitor", data)
+
+
+def find_notification_id(api: UptimeKumaApi, name: str) -> int:
+    """Return the ID of the notification with this name, or exit if missing."""
+    notifications = {n["name"]: n["id"] for n in api.get_notifications()}
+    if name not in notifications:
+        available = ", ".join(sorted(notifications)) or "none"
+        raise SystemExit(f"No notification named '{name}'. Available: {available}")
+    return notifications[name]
+
+
+def create_monitor(
+    api: UptimeKumaApi,
+    monitor: dict,
+    tag_id: int,
+    tag_name: str,
+    notification_ids: list,
+) -> None:
+    """Create a new monitor and assign its tag and notifications."""
+    result = add_monitor(api, **monitor, notificationIDList=notification_ids)
     monitor_id = result["monitorID"]
     api.add_monitor_tag(tag_id=tag_id, monitor_id=monitor_id, value="")
-    desc = monitor.get("hostname") or monitor.get("url")
+    desc = monitor.get("hostname") or monitor.get("url") or "push"
     print(f"  ADD   {monitor['name']} ({desc}) [{tag_name}]")
 
 
-def sync_monitors(api: UptimeKumaApi, parent_domain: str, tag_ids: Dict[str, int]) -> None:
-    """Create or tag monitors, skipping those that already exist."""
+def sync_monitors(
+    api: UptimeKumaApi,
+    parent_domain: str,
+    push_tokens: Dict[str, str],
+    tag_ids: Dict[str, int],
+    notification_id: Optional[int],
+) -> None:
+    """Create and tag monitors, and attach or remove the notification."""
     existing = {m["name"]: m for m in api.get_monitors()}
 
-    for monitor in build_monitors(parent_domain):
+    for monitor in build_monitors(parent_domain, push_tokens):
         name = monitor["name"]
         tag_name = monitor.pop("tag")
         tag_id = tag_ids[tag_name]
+        notify = monitor.pop("notify", False)
 
         if name not in existing:
-            create_monitor(api, monitor, tag_id, tag_name)
+            notification_ids = [notification_id] if notify and notification_id else []
+            create_monitor(api, monitor, tag_id, tag_name, notification_ids)
             continue
 
-        existing_tag_ids = {t["tag_id"] for t in existing[name].get("tags", [])}
+        current = existing[name]
+        existing_tag_ids = {t["tag_id"] for t in current.get("tags", [])}
         if tag_id in existing_tag_ids:
             print(f"  SKIP  {name} (already exists with tag)")
         else:
-            api.add_monitor_tag(tag_id=tag_id, monitor_id=existing[name]["id"], value="")
+            api.add_monitor_tag(tag_id=tag_id, monitor_id=current["id"], value="")
             print(f"  TAG   {name} <- {tag_name}")
+
+        if notification_id is None:
+            continue
+        current_ids = current.get("notificationIDList", [])
+        has_it = notification_id in current_ids
+        if notify and not has_it:
+            edit_monitor(api, current["id"], notificationIDList=[*current_ids, notification_id])
+            print(f"  NOTIFY + {name}")
+        elif not notify and has_it:
+            remaining = [i for i in current_ids if i != notification_id]
+            edit_monitor(api, current["id"], notificationIDList=remaining)
+            print(f"  NOTIFY - {name}")
 
 
 def main() -> None:
@@ -151,13 +273,33 @@ def main() -> None:
     parser.add_argument("username", help="Uptime Kuma username")
     parser.add_argument("password", help="Uptime Kuma password")
     parser.add_argument("parent_domain", help="Parent domain (e.g. example.com)")
+    parser.add_argument("--backup-push-token", help="Token for the backup push monitor")
+    parser.add_argument(
+        "--disk-health-push-token", help="Token for the disk health push monitor"
+    )
+    parser.add_argument(
+        "--notification",
+        help="Name of an existing Uptime Kuma notification for the push monitors",
+    )
     args = parser.parse_args()
 
-    api = UptimeKumaApi(UPTIME_KUMA_URL)
-    api.login(args.username, args.password)
+    push_tokens = {
+        name: token
+        for name, token in [
+            ("Backup DB Integrity", args.backup_push_token),
+            ("Disk Health", args.disk_health_push_token),
+        ]
+        if token
+    }
 
+    api = UptimeKumaApi(UPTIME_KUMA_URL)
+    login(api, args.username, args.password)
+
+    notification_id = (
+        find_notification_id(api, args.notification) if args.notification else None
+    )
     tag_ids = ensure_tags(api)
-    sync_monitors(api, args.parent_domain, tag_ids)
+    sync_monitors(api, args.parent_domain, push_tokens, tag_ids, notification_id)
 
     api.disconnect()
     print("\nDone.")

@@ -10,7 +10,7 @@
     - "{{backup_staging_directory}}"
     - "{{borg_backup_directory}}"
 - name: copy the pre-backup script
-  template:
+  copy:
     src: files/prebackup.sh
     dest: "/root/prebackup.sh"
     owner: root
@@ -22,10 +22,10 @@
     minute: "30"
     hour: "*"
     job: >-
+      BACKUP_PUSH_URL={{uptime_kuma_push_url_base ~ backup_push_token if backup_push_token else ''}}
       /root/prebackup.sh {{backup_staging_directory}}
       wallabag={{wallabag_site_root}}/wallabag.db
       nextcloud={{nextcloud_data_directory}}/nextcloud.db
-      jellyfin_library={{jellyfin_data_directory}}/data/library.db
       jellyfin={{jellyfin_data_directory}}/data/jellyfin.db
       radarr={{radarr_config_directory}}/radarr.db
       prowlarr={{prowlarr_config_directory}}/prowlarr.db

@@ -1,0 +1,4 @@
+---
+# Token of the Uptime Kuma push monitor that disk_health.sh reports to.
+# Empty skips the push.
+disk_health_push_token: ""
