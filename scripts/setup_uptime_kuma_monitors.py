@@ -180,6 +180,24 @@ def add_monitor(api: UptimeKumaApi, **kwargs) -> dict:
         return api._call("add", data)
 
 
+def edit_monitor(api: UptimeKumaApi, monitor_id: int, **changes) -> dict:
+    """api.edit_monitor without the library's Kuma 1.x argument checks.
+
+    The library validates the whole monitor it reads back, and Kuma 2 leaves
+    fields such as dns_resolve_type empty on monitors where they don't apply,
+    which the check rejects. Monitors created by an older version of this
+    script stored conditions double-encoded as the string "[]", so that is
+    reset to a real empty list.
+    """
+    data = api.get_monitor(monitor_id)
+    data.update(changes)
+    _convert_monitor_input(data)
+    if data.get("conditions") in (None, "[]"):
+        data["conditions"] = []
+    with api.wait_for_event(Event.MONITOR_LIST):
+        return api._call("editMonitor", data)
+
+
 def find_notification_id(api: UptimeKumaApi, name: str) -> int:
     """Return the ID of the notification with this name, or exit if missing."""
     notifications = {n["name"]: n["id"] for n in api.get_notifications()}
@@ -234,7 +252,8 @@ def sync_monitors(
 
         current_notification_ids = current.get("notificationIDList", [])
         if notification_id is not None and notification_id not in current_notification_ids:
-            api.edit_monitor(
+            edit_monitor(
+                api,
                 current["id"],
                 notificationIDList=[*current_notification_ids, notification_id],
             )
