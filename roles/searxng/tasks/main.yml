@@ -64,7 +64,7 @@
   include_role: {name: service_standard}
   vars: {service_name: searxng}
 - name: restart the systemd service
-  when: searxng_config.changed or searxng_brotli.changed
+  when: searxng_clone.changed or searxng_config.changed or searxng_brotli.changed
   service:
     name: searxng
     state: restarted

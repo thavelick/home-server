@@ -17,6 +17,7 @@
     clone: true
     update: true
 - name: create the systemd service
+  register: just_auth_unit
   template:
     src: templates/just-auth.service.j2
     dest: /etc/systemd/system/{{proxy_to_service_name}}-just-auth.service
@@ -25,3 +26,14 @@
     name: "{{proxy_to_service_name}}-just-auth"
     enabled: true
     state: started
+    daemon_reload: "{{ just_auth_unit.changed }}"
+# Every *-just-auth service runs from the same checkout, so whichever role pulls
+# new code has to restart all of them, not just its own.
+- name: restart every just-auth service after a code update
+  when: just_auth_clone.changed
+  command: systemctl restart '*-just-auth.service'
+- name: restart this just-auth service after a unit change
+  when: just_auth_unit.changed and not just_auth_clone.changed
+  service:
+    name: "{{proxy_to_service_name}}-just-auth"
+    state: restarted
